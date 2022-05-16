@@ -24,13 +24,13 @@ class AuthController extends BaseController
         $data = $request->all();
         $validator = Validator::make($data, [
             'name' => 'required',
-            'email' => 'required|email',
+            'email' => 'required|email|unique:users',
             'password' => 'required',
             'password_confirmation' => 'required|same:password',
         ]);
 
         if($validator->fails()){
-            return $this->sendError('validation error', $validator->errors(), 400);
+            return $this->sendError('validation error', $validator->errors()->first(), 400);
         }
 
         $user = User::create([
@@ -39,11 +39,11 @@ class AuthController extends BaseController
             'password' => Hash::make($data['password']),
         ]);
 
-        $success['token']['type']   =  'Bearer';
-        $success['token']['token']  =  $user->createToken(env('APP_NAME'))->plainTextToken;
-        $success['user'] =  $user;
+        $payload['token']['type']   =  'Bearer';
+        $payload['token']['token']  =  $user->createToken(env('APP_NAME'))->plainTextToken;
+        $payload['user'] =  $user;
 
-        return $this->sendResponse($success, 'success register user');
+        return $this->sendResponse($payload, 'success register user');
     }
 
     /**
@@ -53,13 +53,36 @@ class AuthController extends BaseController
      */
     public function login(Request $request)
     {
-        if(Auth::attempt(['email' => $request->email, 'password' => $request->password])){
-            $user = Auth::user();
-            $success['token']['type'] =  'bearer';
-            $success['token']['token'] =  $user->createToken(env('APP_NAME'))->plainTextToken;
-            $success['user'] =  $user;
+        $data = $request->all();
+        $validator = Validator::make($data, [
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
 
-            return $this->sendResponse($success, 'success login user');
+        if($validator->fails()){
+            return $this->sendError('validation error', $validator->errors()->first(), 400);
+        }
+
+        $user = User::where('email', $data['email'])->first();
+        if(!$user){
+            return $this->sendError('user not found', 'user not found', 400);
+        }
+
+        if(!Hash::check($data['password'], $user->password)){
+            return $this->sendError('password not match', 'password not match', 400);
+        }
+
+        if (Auth::viaRemember()) {
+            $payload = $this->loginPayload(auth()->user(), auth()->user()->tokens()->first()->token);
+
+            return $this->sendResponse($payload, 'success login user');
+        }
+
+        if(Auth::attempt(['email' => $request->email, 'password' => $request->password], $request->remember)){
+            $user = Auth::user();
+            $payload = $this->loginPayload($user, $user->createToken(env('APP_NAME'))->plainTextToken);
+
+            return $this->sendResponse($payload, 'success login user');
         } else{
             return $this->sendError('unauthorized', ['error' => 'unauthorized'], 401);
         }
@@ -92,4 +115,14 @@ class AuthController extends BaseController
             return $this->sendError('failed get profile', ['error' => 'failed get profile'], 400);
         }
     }
+
+    private function loginPayload($user, $token)
+    {
+        $payload['user'] =  $user;
+        $payload['token']['type'] =  'bearer';
+        $payload['token']['token'] =  $token;
+
+        return $payload;
+    }
+
 }
