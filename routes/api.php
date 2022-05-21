@@ -3,8 +3,6 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\Api\V1\AuthController;
-
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -16,16 +14,6 @@ use App\Http\Controllers\Api\V1\AuthController;
 |
 */
 
-Route::controller(AuthController::class)->group(function(){
-    Route::post('register', 'register');
-    Route::post('login', 'login');
-});
-
-Route::get('/health/check', function(){
-    return response()->json(['status' => 'ok']);
-});
-
-Route::group(['middleware' => ['auth:sanctum']], function () {
-    Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get('/profile', [AuthController::class, 'profile']);
+Route::middleware('auth:api')->get('/user', function (Request $request) {
+    return $request->user();
 });

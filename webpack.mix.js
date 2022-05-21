@@ -1,5 +1,8 @@
 const mix = require('laravel-mix');
 
+let source = 'public/app/src/';
+let build = 'public/app/build/';
+
 /*
  |--------------------------------------------------------------------------
  | Mix Asset Management
@@ -11,7 +14,7 @@ const mix = require('laravel-mix');
  |
  */
 
-mix.js('resources/js/app.js', 'public/js')
-    .postCss('resources/css/app.css', 'public/css', [
-        //
-    ]);
+mix.js('public/app/app.js',build)
+    .js('public/app/api.js',build)
+    .js(source + 'news.js', build)
+    .version();
