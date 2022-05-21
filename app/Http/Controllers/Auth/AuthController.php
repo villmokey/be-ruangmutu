@@ -7,6 +7,9 @@ use Validator;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Requests\Api\Auth\LoginRequest;
+use App\Http\Requests\Api\Auth\RegisterRequest;
+use App\Http\Requests\Api\Master\Document\CreateDocumentRequest;
 
 use App\Http\Controllers\ApiController;
 
@@ -28,25 +31,25 @@ class AuthController extends ApiController
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function register(Request $request): \Illuminate\Http\JsonResponse
+    public function register(RegisterRequest $request): \Illuminate\Http\JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|min:2|max:100',
-            'email' => 'required|string|email|max:100|unique:users',
-            'password' => 'required|string|confirmed|min:6',
-        ]);
+        $input = $request->all();
 
-        if($validator->fails()) {
-            return $this->sendError($validator->errors()->first(), 'validasi error', 400);
-        }
-
-        $user = User::create([
-                'name' => $request->name,
-                'email' => $request->email,
-                'password' => Hash::make($request->password)
+        try {
+            $user = User::create([
+                'name' => $input['name'],
+                'email' => $input['email'],
+                'password' => Hash::make($input['password'])
             ]);
 
-        return $this->sendSuccess($user, 'berhasil mendaftarkan pengguna', 200);
+            if ($user) {
+                return $this->sendSuccess($user, null, 200);
+            }
+
+            return $this->sendError(null, null, 500);
+        } catch (\Exception $exception) {
+            return $this->sendError($exception->getMessage(),"",500);
+        }
     }
 
     /**
@@ -54,19 +57,21 @@ class AuthController extends ApiController
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function login(Request $request): \Illuminate\Http\JsonResponse
+    public function login(LoginRequest $request): \Illuminate\Http\JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|email',
-            'password' => 'required|string|min:6',
-        ]);
+        $input = $request->all();
 
-        if ($validator->fails()) {
-            return $this->sendError($validator->errors()->first(), 'validasi error', 422);
+        $user = User::where('email', $input['email'])->first();
+        if(!$user){
+            return $this->sendError(null, 'user tidak ditemukan', 404);
         }
 
-        if (!$token = auth()->attempt($validator->validated())) {
-            return $this->sendError(null, 'email atau password salah', 401);
+        if(!Hash::check($input['password'], $user->password)){
+            return $this->sendError(null, 'password tidak cocok', 400);
+        }
+
+        if (!$token = auth()->attempt(['email' => $input['email'], 'password' => $input['password']])) {
+            return $this->sendError(null, 'email atau password tidak cocok', 401);
         }
 
         return $this->respondWithToken($token, 'berhasil login');
