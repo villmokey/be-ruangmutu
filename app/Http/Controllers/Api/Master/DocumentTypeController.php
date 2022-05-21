@@ -19,6 +19,7 @@ class DocumentTypeController extends ApiController
     {
         $this->documentTypeService    =   $documentTypeService;
         parent::__construct($request);
+        $this->middleware('auth:api', ['except' => ['index', 'show']]);
     }
 
     public function index(Request $request): \Illuminate\Http\JsonResponse
