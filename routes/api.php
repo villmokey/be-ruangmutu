@@ -3,6 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\Api\Master\DocumentTypeController;
+use App\Http\Controllers\Auth\AuthController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -22,7 +24,18 @@ Route::get('/health/check', function () {
     return response()->json(['status' => 'ok']);
 });
 
-Route::prefix('v1')->group(function(){
-    Route::apiResource('document-type', \App\Http\Controllers\Api\Master\DocumentTypeController::class);
-    Route::put('document-type/{id}/status', [\App\Http\Controllers\Api\Master\DocumentTypeController::class,'updatePublish']);
+Route::prefix('v1')->group(function () {
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/login', [AuthController::class, 'login']);
+});
+
+Route::middleware('api')->prefix('v1')->group(function(){
+    // Auth
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::post('/refresh', [AuthController::class, 'refresh']);
+    Route::get('/profile', [AuthController::class, 'profile']);
+
+    // Document Type
+    Route::apiResource('document-type', DocumentTypeController::class);
+    Route::put('document-type/{id}/status', [DocumentTypeController::class,'updatePublish']);
 });
