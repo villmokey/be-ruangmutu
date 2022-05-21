@@ -27,6 +27,8 @@ Route::middleware('api')->prefix('v1')->group(function(){
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/refresh', [AuthController::class, 'refresh']);
     Route::get('/profile', [AuthController::class, 'profile']);
+    Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+    Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
     // Document Type
     Route::apiResource('document-type', DocumentTypeController::class);

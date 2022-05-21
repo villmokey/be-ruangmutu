@@ -4,11 +4,15 @@ namespace App\Http\Controllers\Auth;
 
 use Auth;
 use Validator;
-use App\Models\User;
+use Mail;
+use App\Models\Entity\User;
+use App\Models\Entity\PasswordReset;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\Api\Auth\LoginRequest;
 use App\Http\Requests\Api\Auth\RegisterRequest;
+use App\Http\Requests\Api\Auth\ForgotPasswordRequest;
+use App\Http\Requests\Api\Auth\ResetPasswordRequest;
 use App\Http\Requests\Api\Master\Document\CreateDocumentRequest;
 
 use App\Http\Controllers\ApiController;
@@ -126,5 +130,76 @@ class AuthController extends ApiController
         ];
 
         return $this->sendSuccess($data, $message, 200);
+    }
+
+    /**
+     * It checks if the email exists in the database, if it does, it deletes the existing password
+     * reset token and creates a new one, then sends an email to the user with the token
+     *
+     * @param ForgotPasswordRequest request The request object.
+     */
+    public function forgotPassword(ForgotPasswordRequest $request)
+    {
+        $input = $request->all();
+        $token = Str::random(64);
+
+        $user = User::where('email', $input['email'])->first();
+        if(!$user){
+            return $this->sendError(null, 'user tidak ditemukan', 404);
+        }
+
+        $existingReset = PasswordReset::where('email', $input['email'])->first();
+        if($existingReset){
+            $existingReset->delete();
+        }
+
+        $passwordReset = PasswordReset::create([
+            'email' => $input['email'],
+            'token' => $token
+        ]);
+
+        if($passwordReset){
+            $data = [
+                'email' => $input['email'],
+                'token' => $token
+            ];
+            Mail::send('emails.forgot-password', $data, function($message) use ($input) {
+                $message->to($input['email'])->subject('Reset Password');
+            });
+            return $this->sendSuccess(null, 'berhasil mengirim email', 200);
+        } else {
+            return $this->sendError(null, 'gagal mengirim permintaan reset password', 500);
+        }
+    }
+
+    /**
+     * The above function is used to reset the password of the user.
+     *
+     * @param ResetPasswordRequest request The request object.
+     */
+    public function resetPassword(ResetPasswordRequest $request)
+    {
+        $input = $request->all();
+
+        $passwordReset = PasswordReset::where('token', $input['token'])->first();
+        if(!$passwordReset){
+            return $this->sendError(null, 'token tidak ditemukan', 404);
+        }
+
+        $user = User::where('email', $passwordReset->email)->first();
+        if(!$user){
+            return $this->sendError(null, 'user tidak ditemukan', 404);
+        }
+
+        $user->password = Hash::make($input['password']);
+        $changePassword = $user->save();
+
+        $passwordReset->delete();
+
+        if ($changePassword) {
+            return $this->sendSuccess(null, 'berhasil reset password', 200);
+        } else {
+            return $this->sendError(null, 'gagal reset password', 500);
+        }
     }
 }
