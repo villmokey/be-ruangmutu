@@ -7,19 +7,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class News extends AppModel
+class DocumentType extends AppModel
 {
     use SoftDeletes;
 
-    protected $table    =   'news';
+    protected $table    =   'document_types';
 
     protected $fillable =   [
-        'title_id',
-        'title_en',
-        'title_norsk',
-        'desc_id',
-        'desc_en',
-        'desc_norsk',
+        'name',
+        'desc',
         'is_publish'
     ];
 }

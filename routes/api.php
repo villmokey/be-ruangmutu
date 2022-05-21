@@ -17,3 +17,12 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::get('/health/check', function () {
+    return response()->json(['status' => 'ok']);
+});
+
+Route::prefix('v1')->group(function(){
+    Route::apiResource('document-type', \App\Http\Controllers\Api\Master\DocumentTypeController::class);
+    Route::put('document-type/{id}/status', [\App\Http\Controllers\Api\Master\DocumentTypeController::class,'updatePublish']);
+});

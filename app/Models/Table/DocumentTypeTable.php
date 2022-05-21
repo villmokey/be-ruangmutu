@@ -2,11 +2,11 @@
 
 namespace App\Models\Table;
 
-use App\Models\Entity\News;
+use App\Models\Entity\DocumentType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class NewsTable extends News
+class DocumentTypeTable extends DocumentType
 {
 
 }
