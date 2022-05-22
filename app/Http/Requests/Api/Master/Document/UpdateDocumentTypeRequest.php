@@ -5,7 +5,7 @@ namespace App\Http\Requests\Api\Master\Document;
 use App\Http\Requests\InitialRequestValidation;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateDocumentRequest extends FormRequest
+class UpdateDocumentTypeRequest extends FormRequest
 {
     use InitialRequestValidation;
     /**

@@ -5,7 +5,7 @@ namespace App\Http\Requests\Api\Master\Document;
 use App\Http\Requests\InitialRequestValidation;
 use Illuminate\Foundation\Http\FormRequest;
 
-class CreateDocumentRequest extends FormRequest
+class UpdateDocumentTagequest extends FormRequest
 {
     use InitialRequestValidation;
     /**
@@ -27,15 +27,13 @@ class CreateDocumentRequest extends FormRequest
     {
         return [
             'name' =>  'required',
-            'desc' =>  'required',
         ];
     }
 
     public function messages()
     {
         return [
-            'name.required'     =>  'Nama Tipe Dokumen Tidak boleh kosong',
-            'desc.required'      =>  'Deskripsi Tipe Dokumen Tidak boleh kosong',
+            'name.required'     =>  'Nama Tag Dokumen Tidak boleh kosong',
         ];
     }
 }

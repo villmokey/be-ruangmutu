@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Master\DocumentTypeController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Api\Utils\FileUploadController;
+use App\Http\Controllers\Api\Master\DocumentTagController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -34,6 +35,10 @@ Route::middleware('api')->prefix('v1')->group(function(){
     // Document Type
     Route::apiResource('document-type', DocumentTypeController::class);
     Route::put('document-type/{id}/status', [DocumentTypeController::class,'updatePublish']);
+
+    // Document Tag
+    Route::apiResource('document-tag', DocumentTagController::class);
+    Route::put('document-tag/{id}/status', [DocumentTagController::class,'updatePublish']);
 
     Route::post('/upload/image',[FileUploadController::class,'uploadImage']);
     Route::post('/upload/file',[FileUploadController::class,'uploadFile']);
