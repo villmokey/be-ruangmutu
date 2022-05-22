@@ -118,10 +118,6 @@ class FileUploadService extends AppService
                 'file_path'  => $this->normalizeBackslash($this->filePath),
             ]);
 
-            // $fileRecord['storage_prefix'] = "{$storagePrefix[0]}/{$storagePrefix[1]}";
-//            $fileRecord['base_url'] = $this->storage()->url(null);
-            // $fileRecord['file_real_path'] = $this->storage()->path($this->filePath);
-
             DB::commit();
             return $fileRecord;
         } catch (\Exception $exception) {

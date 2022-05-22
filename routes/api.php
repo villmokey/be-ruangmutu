@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Api\Master\DocumentTypeController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Api\Utils\FileUploadController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -33,4 +34,7 @@ Route::middleware('api')->prefix('v1')->group(function(){
     // Document Type
     Route::apiResource('document-type', DocumentTypeController::class);
     Route::put('document-type/{id}/status', [DocumentTypeController::class,'updatePublish']);
+
+    Route::post('/upload/image',[FileUploadController::class,'uploadImage']);
+    Route::post('/upload/file',[FileUploadController::class,'uploadFile']);
 });
