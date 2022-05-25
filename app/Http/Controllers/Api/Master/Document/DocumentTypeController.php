@@ -1,23 +1,23 @@
 <?php
 
-namespace App\Http\Controllers\Api\Master;
+namespace App\Http\Controllers\Api\Master\Document;
 
 use App\Http\Controllers\ApiController;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\Master\Document\CreateDocumentTagRequest;
-use App\Http\Requests\Api\Master\Document\UpdateDocumentTagRequest;
-use App\Service\Master\Document\DocumentTagService;
+use App\Http\Requests\Api\Master\Document\CreateDocumentTypeRequest;
+use App\Http\Requests\Api\Master\Document\UpdateDocumentTypeRequest;
+use App\Service\Master\Document\DocumentTypeService;
 use Illuminate\Http\Request;
 
-class DocumentTagController extends ApiController
+class DocumentTypeController extends ApiController
 {
-    protected $documentTagService;
+    protected $documentTypeService;
 
     public function __construct(
-        DocumentTagService $documentTagService,
+        DocumentTypeService $documentTypeService,
         Request $request)
     {
-        $this->documentTagService    =   $documentTagService;
+        $this->documentTypeService    =   $documentTypeService;
         parent::__construct($request);
         $this->middleware('auth:api', ['except' => ['index', 'show']]);
     }
@@ -30,9 +30,9 @@ class DocumentTagController extends ApiController
         $paginate       = $this->request->query('paginate', true);
 
         if ($paginate == 'true' || $paginate == '1') {
-            $result = $this->documentTagService->getPaginated($search, $perPage, $page);
+            $result = $this->documentTypeService->getPaginated($search, $perPage, $page);
         } else {
-            $result = $this->documentTagService->getAll($search);
+            $result = $this->documentTypeService->getAll($search);
         }
 
         try {
@@ -46,10 +46,10 @@ class DocumentTagController extends ApiController
         }
     }
 
-    public function store(CreateDocumentTagRequest $request): \Illuminate\Http\JsonResponse
+    public function store(CreateDocumentTypeRequest $request): \Illuminate\Http\JsonResponse
     {
         $input  =   $request->all();
-        $result =   $this->documentTagService->create($input);
+        $result =   $this->documentTypeService->create($input);
 
         try {
             if ($result->success) {
@@ -63,10 +63,10 @@ class DocumentTagController extends ApiController
         }
     }
 
-    public function update($id, UpdateDocumentTagRequest $request): \Illuminate\Http\JsonResponse
+    public function update($id, UpdateDocumentTypeRequest $request): \Illuminate\Http\JsonResponse
     {
         $input  =   $request->all();
-        $result =   $this->documentTagService->update($id,$input);
+        $result =   $this->documentTypeService->update($id,$input);
 
         try {
             if ($result->success) {
@@ -82,7 +82,7 @@ class DocumentTagController extends ApiController
 
     public function destroy($id): \Illuminate\Http\JsonResponse
     {
-        $result =   $this->documentTagService->delete($id);
+        $result =   $this->documentTypeService->delete($id);
         try {
             if ($result->success) {
                 $response = $result->data;
@@ -97,7 +97,7 @@ class DocumentTagController extends ApiController
 
     public function show($id): \Illuminate\Http\JsonResponse
     {
-        $result = $this->documentTagService->getById($id);
+        $result = $this->documentTypeService->getById($id);
 
         try {
             if ($result->success) {
@@ -112,7 +112,7 @@ class DocumentTagController extends ApiController
 
     public function updatePublish($id): \Illuminate\Http\JsonResponse
     {
-        $result =   $this->documentTagService->updatePublish($id);
+        $result =   $this->documentTypeService->updatePublish($id);
 
         try {
             if ($result->success) {

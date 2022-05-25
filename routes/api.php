@@ -3,10 +3,12 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\Api\Master\DocumentTypeController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Api\Utils\FileUploadController;
-use App\Http\Controllers\Api\Master\DocumentTagController;
+use App\Http\Controllers\Api\Master\Document\DocumentTagController;
+use App\Http\Controllers\Api\Master\Document\DocumentTypeController;
+use App\Http\Controllers\Api\Master\Service\ServiceUnitController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -39,6 +41,10 @@ Route::middleware('api')->prefix('v1')->group(function(){
     // Document Tag
     Route::apiResource('document-tag', DocumentTagController::class);
     Route::put('document-tag/{id}/status', [DocumentTagController::class,'updatePublish']);
+
+    // Service Unit
+    Route::apiResource('service-unit', ServiceUnitController::class);
+    Route::put('service-unit/{id}/status', [ServiceUnitController::class,'updatePublish']);
 
     Route::post('/upload/image',[FileUploadController::class,'uploadImage']);
     Route::post('/upload/file',[FileUploadController::class,'uploadFile']);

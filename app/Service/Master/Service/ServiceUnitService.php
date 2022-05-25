@@ -1,18 +1,18 @@
 <?php
 
 
-namespace App\Service\Master\Document;
+namespace App\Service\Master\Service;
 
 
-use App\Models\Table\DocumentTypeTable;
+use App\Models\Table\ServiceUnitTable;
 use App\Service\AppService;
 use App\Service\AppServiceInterface;
 use Illuminate\Database\Eloquent\Model;
 
-class DocumentTypeService extends AppService implements AppServiceInterface
+class ServiceUnitService extends AppService implements AppServiceInterface
 {
 
-    public function __construct(DocumentTypeTable $model)
+    public function __construct(ServiceUnitTable $model)
     {
         parent::__construct($model);
     }
@@ -55,12 +55,12 @@ class DocumentTypeService extends AppService implements AppServiceInterface
 
         try {
 
-            $documentType = $this->model->newQuery()->create([
+            $serviceUnit = $this->model->newQuery()->create([
                 'name'    =>  $data['name'],
             ]);
 
             \DB::commit(); // commit the changes
-            return $this->sendSuccess($documentType);
+            return $this->sendSuccess($serviceUnit);
         } catch (\Exception $exception) {
             \DB::rollBack(); // rollback the changes
             return $this->sendError(null, $this->debug ? $exception->getMessage() : null);
@@ -69,17 +69,17 @@ class DocumentTypeService extends AppService implements AppServiceInterface
 
     public function update($id, $data)
     {
-        $documentType   =   $this->model->newQuery()->find($id);
+        $serviceUnit   =   $this->model->newQuery()->find($id);
 
         \DB::beginTransaction();
 
         try {
 
-            $documentType->name    =   $data['name'];
-            $documentType->save();
+            $serviceUnit->name    =   $data['name'];
+            $serviceUnit->save();
 
             \DB::commit(); // commit the changes
-            return $this->sendSuccess($documentType);
+            return $this->sendSuccess($serviceUnit);
         } catch (\Exception $exception) {
             \DB::rollBack(); // rollback the changes
             return $this->sendError(null, $this->debug ? $exception->getMessage() : null);
@@ -101,16 +101,16 @@ class DocumentTypeService extends AppService implements AppServiceInterface
 
     public function updatePublish($id)
     {
-        $documentType = $this->model->newQuery()->find($id);
+        $serviceUnit = $this->model->newQuery()->find($id);
 
         \DB::beginTransaction();
 
         try {
-            $documentType->is_publish = $documentType->is_publish ? false : true;
-            $documentType->save();
+            $serviceUnit->is_publish = $serviceUnit->is_publish ? false : true;
+            $serviceUnit->save();
 
             \DB::commit(); // commit the changes
-            return $this->sendSuccess($documentType);
+            return $this->sendSuccess($serviceUnit);
         } catch (\Exception $exception) {
             \DB::rollBack(); // rollback the changes
             return $this->sendError(null, $this->debug ? $exception->getMessage() : null);
