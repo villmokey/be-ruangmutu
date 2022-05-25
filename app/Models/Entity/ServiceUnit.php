@@ -14,6 +14,7 @@ class ServiceUnit extends AppModel
     protected $table    =   'service_units';
 
     protected $fillable =   [
+        'pic_id',
         'name',
         'is_publish'
     ];

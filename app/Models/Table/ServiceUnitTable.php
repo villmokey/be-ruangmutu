@@ -8,5 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class ServiceUnitTable extends ServiceUnit
 {
-
+    public function pic()
+    {
+        return $this->belongsTo(UserTable::class, 'pic_id');
+    }
 }

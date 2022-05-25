@@ -21,6 +21,7 @@ class ServiceUnitService extends AppService implements AppServiceInterface
     {
         $result =   $this->model->newQuery()
                                 ->where('is_publish', true)
+                                ->with('pic')
                                 ->when($search, function ($query, $search) {
                                     return $query->where('name','like','%'.$search.'%');
                                 })
@@ -33,6 +34,7 @@ class ServiceUnitService extends AppService implements AppServiceInterface
     {
         $result  = $this->model->newQuery()
                                 ->where('is_publish', true)
+                                ->with('pic')
                                 ->when($search, function ($query, $search) {
                                     return $query->where('name','like','%'.$search.'%');
                                 })
@@ -44,7 +46,7 @@ class ServiceUnitService extends AppService implements AppServiceInterface
 
     public function getById($id)
     {
-        $result = $this->model->newQuery()->find($id);
+        $result = $this->model->newQuery()->with('pic')->find($id);
 
         return $this->sendSuccess($result);
     }
@@ -56,6 +58,7 @@ class ServiceUnitService extends AppService implements AppServiceInterface
         try {
 
             $serviceUnit = $this->model->newQuery()->create([
+                'pic_id'   =>  $data['pic_id'],
                 'name'    =>  $data['name'],
             ]);
 
@@ -75,7 +78,8 @@ class ServiceUnitService extends AppService implements AppServiceInterface
 
         try {
 
-            $serviceUnit->name    =   $data['name'];
+            $serviceUnit->pic_id    =   $data['pic_id'];
+            $serviceUnit->name      =   $data['name'];
             $serviceUnit->save();
 
             \DB::commit(); // commit the changes

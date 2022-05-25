@@ -26,6 +26,7 @@ class UpdateServiceUnitRequest extends FormRequest
     public function rules()
     {
         return [
+            'pic_id' => 'required|exists:users,id',
             'name' =>  'required',
         ];
     }
@@ -33,6 +34,8 @@ class UpdateServiceUnitRequest extends FormRequest
     public function messages()
     {
         return [
+            'pic_id.required'   => 'PIC Tidak boleh kosong',
+            'pic_id.exists'     => 'PIC Tidak ditemukan',
             'name.required'     =>  'Nama Unit Layanan Tidak boleh kosong',
         ];
     }
