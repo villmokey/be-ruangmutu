@@ -15,7 +15,6 @@ class DocumentType extends AppModel
 
     protected $fillable =   [
         'name',
-        'desc',
         'is_publish'
     ];
 }

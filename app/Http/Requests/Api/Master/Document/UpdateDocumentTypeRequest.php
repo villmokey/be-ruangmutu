@@ -27,7 +27,6 @@ class UpdateDocumentTypeRequest extends FormRequest
     {
         return [
             'name' =>  'required',
-            'desc' =>  'required',
         ];
     }
 
@@ -35,7 +34,6 @@ class UpdateDocumentTypeRequest extends FormRequest
     {
         return [
             'name.required'     =>  'Nama Tipe Dokumen Tidak boleh kosong',
-            'desc.required'      =>  'Deskripsi Tipe Dokumen Tidak boleh kosong',
         ];
     }
 }
