@@ -16,5 +16,6 @@ class DocumentTag extends AppModel
     protected $fillable =   [
         'name',
         'slug',
+        'is_publish'
     ];
 }
