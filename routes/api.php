@@ -60,6 +60,10 @@ Route::middleware('api')->prefix('v1')->group(function(){
     // Quality Indicator Profile
     Route::apiResource('quality-indicator-profile', QualityIndicatorProfileController::class);
 
+    // Quality Goal
+    Route::get('quality-goal', [QualityIndicatorProfileController::class,'qualityGoal']);
+
+    // File Upload
     Route::post('/upload/image',[FileUploadController::class,'uploadImage']);
     Route::post('/upload/file',[FileUploadController::class,'uploadFile']);
 });

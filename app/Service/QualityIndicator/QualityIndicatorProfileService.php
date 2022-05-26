@@ -17,7 +17,7 @@ class QualityIndicatorProfileService extends AppService implements AppServiceInt
         parent::__construct($model);
     }
 
-    public function getAll($search = null)
+    public function getAll($search = null, $year = null)
     {
         $result =   $this->model->newQuery()
                                 ->with('program')
@@ -26,12 +26,15 @@ class QualityIndicatorProfileService extends AppService implements AppServiceInt
                                 ->when($search, function ($query, $search) {
                                     return $query->where('title','like','%'.$search.'%');
                                 })
+                                ->when($year, function ($query, $year) {
+                                    return $query->whereYear('created_at', $year);
+                                })
                                 ->get();
 
         return $this->sendSuccess($result);
     }
 
-    public function getPaginated($search = null, $perPage = 15, $page = null)
+    public function getPaginated($search = null, $year = null, $perPage = 15, $page = null)
     {
         $result  = $this->model->newQuery()
                                 ->with('program')
@@ -39,6 +42,9 @@ class QualityIndicatorProfileService extends AppService implements AppServiceInt
                                 ->with('pic')
                                 ->when($search, function ($query, $search) {
                                     return $query->where('title','like','%'.$search.'%');
+                                })
+                                ->when($year, function ($query, $year) {
+                                    return $query->whereYear('created_at', $year);
                                 })
                                 ->orderBy('created_at','DESC')
                                 ->paginate((int)$perPage, ['*'], null, $page);
@@ -149,5 +155,36 @@ class QualityIndicatorProfileService extends AppService implements AppServiceInt
             \DB::rollBack(); // rollback the changes
             return $this->sendError(null, $this->debug ? $exception->getMessage() : null);
         }
+    }
+
+    public function getAllQualityGoal($search = null, $year = null)
+    {
+        $result =   $this->model->newQuery()
+                                ->select('title')
+                                ->when($search, function ($query, $search) {
+                                    return $query->where('title','like','%'.$search.'%');
+                                })
+                                ->when($year, function ($query, $year) {
+                                    return $query->whereYear('created_at', $year);
+                                })
+                                ->get();
+
+        return $this->sendSuccess($result);
+    }
+
+    public function getPaginatedQualityGoal($search = null, $year = null, $perPage = 15, $page = null)
+    {
+        $result  = $this->model->newQuery()
+                                ->select('title')
+                                ->when($search, function ($query, $search) {
+                                    return $query->where('title','like','%'.$search.'%');
+                                })
+                                ->when($year, function ($query, $year) {
+                                    return $query->whereYear('created_at', $year);
+                                })
+                                ->orderBy('created_at','DESC')
+                                ->paginate((int)$perPage, ['*'], null, $page);
+
+        return $this->sendSuccess($result);
     }
 }
