@@ -45,6 +45,7 @@ class AuthController extends ApiController
 
         try {
             $user = User::create([
+                'nip' => $input['nip'],
                 'name' => $input['name'],
                 'email' => $input['email'],
                 'password' => Hash::make($input['password'])
