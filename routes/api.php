@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\Master\Document\DocumentTypeController;
 use App\Http\Controllers\Api\Master\Service\ServiceUnitController;
 use App\Http\Controllers\Api\Master\Program\ProgramController;
 use App\Http\Controllers\Api\Master\Program\SubProgramController;
+use App\Http\Controllers\Api\QualityIndicator\QualityIndicatorProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -55,6 +56,9 @@ Route::middleware('api')->prefix('v1')->group(function(){
     // Sub Program
     Route::apiResource('sub-program', SubProgramController::class);
     Route::put('sub-program/{id}/status', [SubProgramController::class,'updatePublish']);
+
+    // Quality Indicator Profile
+    Route::apiResource('quality-indicator-profile', QualityIndicatorProfileController::class);
 
     Route::post('/upload/image',[FileUploadController::class,'uploadImage']);
     Route::post('/upload/file',[FileUploadController::class,'uploadFile']);

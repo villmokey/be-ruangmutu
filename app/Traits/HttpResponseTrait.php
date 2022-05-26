@@ -59,7 +59,7 @@ trait HttpResponseTrait
 
         return response()->json([
             'code'      => $code,
-            'success'   => true,
+            'success'   => false,
             'message'   => $message,
             'data'      => $data
         ], $code);
