@@ -5,10 +5,14 @@ namespace App\Http\Controllers\Auth;
 use Auth;
 use Validator;
 use Mail;
+
 use App\Models\Entity\User;
 use App\Models\Entity\PasswordReset;
+use Spatie\Permission\Models\Role;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+
 use App\Http\Requests\Api\Auth\LoginRequest;
 use App\Http\Requests\Api\Auth\RegisterRequest;
 use App\Http\Requests\Api\Auth\ForgotPasswordRequest;
@@ -45,6 +49,7 @@ class AuthController extends ApiController
                 'email' => $input['email'],
                 'password' => Hash::make($input['password'])
             ]);
+            $user->assignRole('guest');
 
             if ($user) {
                 return $this->sendSuccess($user, null, 200);
@@ -110,7 +115,13 @@ class AuthController extends ApiController
      */
     public function profile()
     {
-        return $this->sendSuccess(auth()->user(), 'berhasil mendapat profile', 200);
+        $userData = User::where('id', auth()->user()->id)
+            ->with('roles')
+            ->first();
+
+        $userData->role = $userData->getRoleNames()->first();
+
+        return $this->sendSuccess($userData, 'berhasil mendapat profile', 200);
     }
 
     /**
@@ -122,8 +133,14 @@ class AuthController extends ApiController
      */
     protected function respondWithToken($token, $message)
     {
+        $userData = User::where('id', auth()->user()->id)
+            ->with('roles')
+            ->first();
+
+        $userData->role = $userData->getRoleNames()->first();
+
         $data = [
-            'user' => auth()->user(),
+            'user' => $userData,
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60
