@@ -116,7 +116,9 @@ class AuthController extends ApiController
     public function profile()
     {
         $userData = User::where('id', auth()->user()->id)
-            ->with('roles')
+            ->with(['roles' => function ($query) {
+                $query->select('name', 'guard_name');
+            }])
             ->first();
 
         $userData->role = $userData->getRoleNames()->first();
@@ -134,7 +136,9 @@ class AuthController extends ApiController
     protected function respondWithToken($token, $message)
     {
         $userData = User::where('id', auth()->user()->id)
-            ->with('roles')
+            ->with(['roles' => function ($query) {
+                $query->select('name', 'guard_name');
+            }])
             ->first();
 
         $userData->role = $userData->getRoleNames()->first();
