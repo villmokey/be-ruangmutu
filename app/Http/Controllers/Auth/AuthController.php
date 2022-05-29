@@ -73,7 +73,7 @@ class AuthController extends ApiController
 
         $user = User::where('email', $input['email'])->first();
         if(!$user){
-            return $this->sendError(null, 'user tidak ditemukan', 404);
+            return $this->sendError(null, 'user tidak ditemukan', 400);
         }
 
         if(!Hash::check($input['password'], $user->password)){
