@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Artisan;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,7 +14,7 @@ use Artisan;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return response()->json(['status' => 'ok']);
 });
 
 Route::get('run-seeder',function(){
