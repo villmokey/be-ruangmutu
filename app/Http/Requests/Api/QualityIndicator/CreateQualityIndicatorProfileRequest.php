@@ -49,6 +49,8 @@ class CreateQualityIndicatorProfileRequest extends FormRequest
             'data_presentation' =>  'required',
             'data_collection_instrument' =>  'required',
             'pic_id' =>  'required|exists:users,id',
+            'signature.*.user_id' => 'required|exists:users,id',
+            'signature.*.level' => 'required|in:1,2,3',
         ];
     }
 
@@ -81,6 +83,10 @@ class CreateQualityIndicatorProfileRequest extends FormRequest
             'data_collection_instrument.required'   => 'Data Collection Instrument Tidak boleh kosong',
             'pic_id.required'   => 'PIC Tidak boleh kosong',
             'pic_id.exists'     => 'PIC Tidak ditemukan',
+            'signature.*.user_id.required'   => 'User Tidak boleh kosong',
+            'signature.*.user_id.exists'     => 'User Tidak ditemukan',
+            'signature.*.level.required'    => 'Tingkatan tanda tangan Tidak boleh kosong',
+            'signature.*.level.in'          => 'Tingkatan tanda tangan hanya 1,2 dan 3',
         ];
     }
 }

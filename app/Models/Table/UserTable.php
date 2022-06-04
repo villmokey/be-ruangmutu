@@ -8,5 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class UserTable extends User
 {
-
+    public function signature()
+    {
+        return $this->morphOne(FileTable::class, 'fileable');
+    }
 }

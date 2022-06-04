@@ -27,4 +27,9 @@ class QualityIndicatorProfileTable extends QualityIndicatorProfile
     {
         return $this->morphOne(FileTable::class, 'fileable');
     }
+
+    public function signature()
+    {
+        return $this->hasMany(QualityIndicatorProfileSignatureTable::class, 'indicator_profile_id');
+    }
 }

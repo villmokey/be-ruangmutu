@@ -5,6 +5,7 @@ namespace App\Service\QualityIndicator;
 
 
 use App\Models\Table\QualityIndicatorProfileTable;
+use App\Models\Table\QualityIndicatorProfileSignatureTable;
 use App\Models\Table\FileTable;
 
 use App\Service\AppService;
@@ -17,15 +18,18 @@ class QualityIndicatorProfileService extends AppService implements AppServiceInt
 {
     protected $fileUploadService;
     protected $fileTable;
+    protected $signatureTable;
 
     public function __construct(
         FileUploadService $fileUploadService,
         FileTable $fileTable,
+        QualityIndicatorProfileSignatureTable $signatureTable,
         QualityIndicatorProfileTable $model
     )
     {
         $this->fileUploadService    =   $fileUploadService;
         $this->fileTable            =   $fileTable;
+        $this->signatureTable       =   $signatureTable;
         parent::__construct($model);
     }
 
@@ -36,6 +40,7 @@ class QualityIndicatorProfileService extends AppService implements AppServiceInt
                                 ->with('subProgram')
                                 ->with('pic')
                                 ->with('document')
+                                ->with('signature.user')
                                 ->when($search, function ($query, $search) {
                                     return $query->where('title','like','%'.$search.'%');
                                 })
@@ -54,6 +59,7 @@ class QualityIndicatorProfileService extends AppService implements AppServiceInt
                                 ->with('subProgram')
                                 ->with('pic')
                                 ->with('document')
+                                ->with('signature.user')
                                 ->when($search, function ($query, $search) {
                                     return $query->where('title','like','%'.$search.'%');
                                 })
@@ -73,6 +79,7 @@ class QualityIndicatorProfileService extends AppService implements AppServiceInt
                                 ->with('subProgram')
                                 ->with('pic')
                                 ->with('document')
+                                ->with('signature.user')
                                 ->find($id);
 
         return $this->sendSuccess($result);
@@ -107,6 +114,14 @@ class QualityIndicatorProfileService extends AppService implements AppServiceInt
                 'data_presentation'         =>  $data['data_presentation'],
                 'pic_id'                    =>  $data['pic_id'],
             ]);
+
+            foreach($data['signature'] as $signatures) {
+                $this->signatureTable->newQuery()->create([
+                    'indicator_profile_id' => $qualityIndicatorProfile->id,
+                    'user_id'                      => $signatures['user_id'],
+                    'level'                        => $signatures['level'],
+                ]);
+            }
 
             if (!empty($data['document_id'])) {
                 $image = $this->fileTable->newQuery()->find($data['document_id']);
