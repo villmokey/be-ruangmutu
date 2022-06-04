@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateQualityIndicatorProfileSignatures extends Migration
+class CreateQualityIndicatorProfileDimensions extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,10 @@ class CreateQualityIndicatorProfileSignatures extends Migration
      */
     public function up()
     {
-        Schema::create('quality_indicator_profile_signatures', function (Blueprint $table) {
+        Schema::create('quality_indicator_profile_dimensions', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('profile_id');
-            $table->bigInteger('user_id')->unsigned();
-            $table->integer('level');
-            $table->boolean('signed')->default(false);
+            $table->string('name');
             $table->softDeletes();
             $table->timestamps();
 
@@ -27,10 +25,6 @@ class CreateQualityIndicatorProfileSignatures extends Migration
             ->on('quality_indicator_profiles')
             ->onUpdate('cascade')->onDelete('restrict');
 
-            $table->foreign('user_id')
-            ->references('id')
-            ->on('users')
-            ->onUpdate('cascade')->onDelete('restrict');
         });
     }
 
@@ -41,6 +35,6 @@ class CreateQualityIndicatorProfileSignatures extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('quality_indicator_profile_signatures');
+        Schema::dropIfExists('quality_indicator_profile_dimensions');
     }
 }

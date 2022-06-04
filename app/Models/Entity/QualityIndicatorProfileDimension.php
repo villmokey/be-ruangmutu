@@ -7,16 +7,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class QualityIndicatorProfileSignature extends AppModel
+class QualityIndicatorProfileDimension extends AppModel
 {
     use SoftDeletes;
 
-    protected $table    =   'quality_indicator_profile_signatures';
+    protected $table    =   'quality_indicator_profile_dimensions';
 
     protected $fillable =   [
         'profile_id',
-        'user_id',
-        'level',
-        'signed',
+        'name',
     ];
 }

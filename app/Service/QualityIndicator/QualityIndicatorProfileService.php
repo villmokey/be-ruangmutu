@@ -6,6 +6,7 @@ namespace App\Service\QualityIndicator;
 
 use App\Models\Table\QualityIndicatorProfileTable;
 use App\Models\Table\QualityIndicatorProfileSignatureTable;
+use App\Models\Table\QualityIndicatorProfileDimensionTable;
 use App\Models\Table\FileTable;
 
 use App\Service\AppService;
@@ -19,17 +20,20 @@ class QualityIndicatorProfileService extends AppService implements AppServiceInt
     protected $fileUploadService;
     protected $fileTable;
     protected $signatureTable;
+    protected $dimensionTable;
 
     public function __construct(
         FileUploadService $fileUploadService,
         FileTable $fileTable,
         QualityIndicatorProfileSignatureTable $signatureTable,
+        QualityIndicatorProfileDimensionTable $dimensionTable,
         QualityIndicatorProfileTable $model
     )
     {
         $this->fileUploadService    =   $fileUploadService;
         $this->fileTable            =   $fileTable;
         $this->signatureTable       =   $signatureTable;
+        $this->dimensionTable       =   $dimensionTable;
         parent::__construct($model);
     }
 
@@ -41,6 +45,7 @@ class QualityIndicatorProfileService extends AppService implements AppServiceInt
                                 ->with('pic')
                                 ->with('document')
                                 ->with('signature.user')
+                                ->with('qualityDimension')
                                 ->when($search, function ($query, $search) {
                                     return $query->where('title','like','%'.$search.'%');
                                 })
@@ -60,6 +65,7 @@ class QualityIndicatorProfileService extends AppService implements AppServiceInt
                                 ->with('pic')
                                 ->with('document')
                                 ->with('signature.user')
+                                ->with('qualityDimension')
                                 ->when($search, function ($query, $search) {
                                     return $query->where('title','like','%'.$search.'%');
                                 })
@@ -80,6 +86,7 @@ class QualityIndicatorProfileService extends AppService implements AppServiceInt
                                 ->with('pic')
                                 ->with('document')
                                 ->with('signature.user')
+                                ->with('qualityDimension')
                                 ->find($id);
 
         return $this->sendSuccess($result);
@@ -117,9 +124,16 @@ class QualityIndicatorProfileService extends AppService implements AppServiceInt
 
             foreach($data['signature'] as $signatures) {
                 $this->signatureTable->newQuery()->create([
-                    'indicator_profile_id' => $qualityIndicatorProfile->id,
+                    'profile_id' => $qualityIndicatorProfile->id,
                     'user_id'                      => $signatures['user_id'],
                     'level'                        => $signatures['level'],
+                ]);
+            }
+
+            foreach($data['quality_dimension'] as $qualityDimension) {
+                $this->dimensionTable->newQuery()->create([
+                    'profile_id' => $qualityIndicatorProfile->id,
+                    'name'                      => $qualityDimension['name'],
                 ]);
             }
 

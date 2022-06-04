@@ -30,6 +30,11 @@ class QualityIndicatorProfileTable extends QualityIndicatorProfile
 
     public function signature()
     {
-        return $this->hasMany(QualityIndicatorProfileSignatureTable::class, 'indicator_profile_id');
+        return $this->hasMany(QualityIndicatorProfileSignatureTable::class, 'profile_id');
+    }
+
+    public function qualityDimension()
+    {
+        return $this->hasMany(QualityIndicatorProfileDimensionTable::class, 'profile_id');
     }
 }
