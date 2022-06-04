@@ -44,7 +44,7 @@ class QualityIndicatorProfileService extends AppService implements AppServiceInt
                                 ->with('subProgram')
                                 ->with('pic')
                                 ->with('document')
-                                ->with('signature.user')
+                                ->with('signature')
                                 ->with('qualityDimension')
                                 ->when($search, function ($query, $search) {
                                     return $query->where('title','like','%'.$search.'%');
@@ -64,7 +64,7 @@ class QualityIndicatorProfileService extends AppService implements AppServiceInt
                                 ->with('subProgram')
                                 ->with('pic')
                                 ->with('document')
-                                ->with('signature.user')
+                                ->with('signature')
                                 ->with('qualityDimension')
                                 ->when($search, function ($query, $search) {
                                     return $query->where('title','like','%'.$search.'%');
@@ -85,7 +85,7 @@ class QualityIndicatorProfileService extends AppService implements AppServiceInt
                                 ->with('subProgram')
                                 ->with('pic')
                                 ->with('document')
-                                ->with('signature.user')
+                                ->with('signature')
                                 ->with('qualityDimension')
                                 ->find($id);
 

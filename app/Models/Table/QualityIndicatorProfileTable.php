@@ -10,17 +10,17 @@ class QualityIndicatorProfileTable extends QualityIndicatorProfile
 {
     public function program()
     {
-        return $this->belongsTo(ProgramTable::class, 'program_id');
+        return $this->belongsTo(ProgramTable::class, 'program_id')->select('id', 'name');
     }
 
     public function subProgram()
     {
-        return $this->belongsTo(SubProgramTable::class, 'sub_program_id');
+        return $this->belongsTo(SubProgramTable::class, 'sub_program_id')->select('id', 'name');
     }
 
     public function pic()
     {
-        return $this->belongsTo(UserTable::class, 'pic_id');
+        return $this->belongsTo(UserTable::class, 'pic_id')->select('id', 'nip', 'name');
     }
 
     public function document()
@@ -30,11 +30,11 @@ class QualityIndicatorProfileTable extends QualityIndicatorProfile
 
     public function signature()
     {
-        return $this->hasMany(QualityIndicatorProfileSignatureTable::class, 'profile_id');
+        return $this->hasMany(QualityIndicatorProfileSignatureTable::class, 'profile_id')->with('user:id,nip,name')->select('id', 'profile_id', 'user_id', 'signed', 'level');
     }
 
     public function qualityDimension()
     {
-        return $this->hasMany(QualityIndicatorProfileDimensionTable::class, 'profile_id');
+        return $this->hasMany(QualityIndicatorProfileDimensionTable::class, 'profile_id')->select('id', 'name', 'profile_id');
     }
 }
