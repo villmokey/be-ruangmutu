@@ -5,15 +5,27 @@ namespace App\Service\QualityIndicator;
 
 
 use App\Models\Table\QualityIndicatorProfileTable;
+use App\Models\Table\FileTable;
+
 use App\Service\AppService;
 use App\Service\AppServiceInterface;
+use App\Service\FileUploadService;
+
 use Illuminate\Database\Eloquent\Model;
 
 class QualityIndicatorProfileService extends AppService implements AppServiceInterface
 {
+    protected $fileUploadService;
+    protected $fileTable;
 
-    public function __construct(QualityIndicatorProfileTable $model)
+    public function __construct(
+        FileUploadService $fileUploadService,
+        FileTable $fileTable,
+        QualityIndicatorProfileTable $model
+    )
     {
+        $this->fileUploadService    =   $fileUploadService;
+        $this->fileTable            =   $fileTable;
         parent::__construct($model);
     }
 
@@ -23,6 +35,7 @@ class QualityIndicatorProfileService extends AppService implements AppServiceInt
                                 ->with('program')
                                 ->with('subProgram')
                                 ->with('pic')
+                                ->with('document')
                                 ->when($search, function ($query, $search) {
                                     return $query->where('title','like','%'.$search.'%');
                                 })
@@ -40,6 +53,7 @@ class QualityIndicatorProfileService extends AppService implements AppServiceInt
                                 ->with('program')
                                 ->with('subProgram')
                                 ->with('pic')
+                                ->with('document')
                                 ->when($search, function ($query, $search) {
                                     return $query->where('title','like','%'.$search.'%');
                                 })
@@ -58,6 +72,7 @@ class QualityIndicatorProfileService extends AppService implements AppServiceInt
                                 ->with('program')
                                 ->with('subProgram')
                                 ->with('pic')
+                                ->with('document')
                                 ->find($id);
 
         return $this->sendSuccess($result);
@@ -74,15 +89,14 @@ class QualityIndicatorProfileService extends AppService implements AppServiceInt
                 'sub_program_id'            =>  $data['sub_program_id'],
                 'title'                     =>  $data['title'],
                 'indicator_selection_based' =>  $data['indicator_selection_based'],
-                'quality_dimension'         =>  $data['quality_dimension'],
                 'objective'                 =>  $data['objective'],
                 'operational_definition'    =>  $data['operational_definition'],
                 'indicator_type'            =>  $data['indicator_type'],
                 'measurement_status'        =>  $data['measurement_status'],
                 'numerator'                 =>  $data['numerator'],
                 'denominator'               =>  $data['denominator'],
-                'inclusion_criteria'        =>  $data['inclusion_criteria'],
-                'exclusion_criteria'        =>  $data['exclusion_criteria'],
+                'achievement_target'        =>  $data['achievement_target'],
+                'criteria'                  =>  $data['criteria'],
                 'measurement_formula'       =>  $data['measurement_formula'],
                 'data_collection_design'    =>  $data['data_collection_design'],
                 'data_source'               =>  $data['data_source'],
@@ -91,9 +105,16 @@ class QualityIndicatorProfileService extends AppService implements AppServiceInt
                 'data_collection_period'    =>  $data['data_collection_period'],
                 'data_analyst_period'       =>  $data['data_analyst_period'],
                 'data_presentation'         =>  $data['data_presentation'],
-                'data_collection_instrument'=>  $data['data_collection_instrument'],
                 'pic_id'                    =>  $data['pic_id'],
             ]);
+
+            if (!empty($data['document_id'])) {
+                $image = $this->fileTable->newQuery()->find($data['document_id']);
+                $image->update([
+                    'fileable_type' => get_class($qualityIndicatorProfile),
+                    'fileable_id'   => $qualityIndicatorProfile->id,
+                ]);
+            }
 
             \DB::commit(); // commit the changes
             return $this->sendSuccess($qualityIndicatorProfile);
@@ -106,6 +127,7 @@ class QualityIndicatorProfileService extends AppService implements AppServiceInt
     public function update($id, $data)
     {
         $qualityIndicatorProfile   =   $this->model->newQuery()->find($id);
+        $oldImage                  =   $qualityIndicatorProfile->document()->first();
 
         \DB::beginTransaction();
 
@@ -121,8 +143,8 @@ class QualityIndicatorProfileService extends AppService implements AppServiceInt
             $qualityIndicatorProfile->measurement_status    =   $data['measurement_status'];
             $qualityIndicatorProfile->numerator         =   $data['numerator'];
             $qualityIndicatorProfile->denominator       =   $data['denominator'];
-            $qualityIndicatorProfile->inclusion_criteria    =   $data['inclusion_criteria'];
-            $qualityIndicatorProfile->exclusion_criteria    =   $data['exclusion_criteria'];
+            $qualityIndicatorProfile->achievement_target   =  $data['achievement_target'];
+            $qualityIndicatorProfile->criteria    =   $data['criteria'];
             $qualityIndicatorProfile->measurement_formula   =   $data['measurement_formula'];
             $qualityIndicatorProfile->data_collection_design    =   $data['data_collection_design'];
             $qualityIndicatorProfile->data_source       =   $data['data_source'];
@@ -134,6 +156,18 @@ class QualityIndicatorProfileService extends AppService implements AppServiceInt
             $qualityIndicatorProfile->data_collection_instrument    =   $data['data_collection_instrument'];
             $qualityIndicatorProfile->pic_id            =   $data['pic_id'];
             $qualityIndicatorProfile->save();
+
+            if (!empty($data['document_id'])) {
+                if (!empty($oldImage)) {
+                    $oldImage->delete();
+                }
+                $image = $this->fileTable->newQuery()->find($data['document_id']);
+                $image->update([
+                    'fileable_type' => get_class($qualityIndicatorProfile),
+                    'fileable_id'   => $qualityIndicatorProfile->id,
+                ]);
+            }
+
 
             \DB::commit(); // commit the changes
             return $this->sendSuccess($qualityIndicatorProfile);
@@ -175,7 +209,7 @@ class QualityIndicatorProfileService extends AppService implements AppServiceInt
     public function getPaginatedQualityGoal($search = null, $year = null, $perPage = 15, $page = null)
     {
         $result  = $this->model->newQuery()
-                                ->select('title')
+                                ->select('id', 'title')
                                 ->when($search, function ($query, $search) {
                                     return $query->where('title','like','%'.$search.'%');
                                 })

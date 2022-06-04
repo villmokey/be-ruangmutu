@@ -22,4 +22,9 @@ class QualityIndicatorProfileTable extends QualityIndicatorProfile
     {
         return $this->belongsTo(UserTable::class, 'pic_id');
     }
+
+    public function document()
+    {
+        return $this->morphOne(FileTable::class, 'fileable');
+    }
 }
