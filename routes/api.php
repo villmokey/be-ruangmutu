@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\Master\Service\ServiceUnitController;
 use App\Http\Controllers\Api\Master\Program\ProgramController;
 use App\Http\Controllers\Api\Master\Program\SubProgramController;
 use App\Http\Controllers\Api\QualityIndicator\QualityIndicatorProfileController;
+use App\Http\Controllers\Api\QualityIndicator\QualityIndicatorController;
 use App\Http\Controllers\Api\Master\User\UserController;
 
 /*
@@ -63,6 +64,9 @@ Route::middleware('api')->prefix('v1')->group(function(){
 
     // Quality Goal
     Route::get('quality-goal', [QualityIndicatorProfileController::class,'qualityGoal']);
+
+    // Quality Indicator
+    Route::apiResource('quality-indicator', QualityIndicatorController::class);
 
     // User
     Route::apiResource('user', UserController::class);
