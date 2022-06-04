@@ -186,6 +186,14 @@ class QualityIndicatorProfileService extends AppService implements AppServiceInt
             $qualityIndicatorProfile->pic_id            =   $data['pic_id'];
             $qualityIndicatorProfile->save();
 
+            $this->dimensionTable->where('profile_id', $qualityIndicatorProfile->id)->delete();
+            foreach($data['quality_dimension'] as $qualityDimension) {
+                $this->dimensionTable->newQuery()->create([
+                    'profile_id'        => $qualityIndicatorProfile->id,
+                    'name'              => $qualityDimension['name'],
+                ]);
+            }
+
             if (!empty($data['document_id'])) {
                 if (!empty($oldImage)) {
                     $oldImage->delete();
