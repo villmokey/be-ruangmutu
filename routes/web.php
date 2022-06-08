@@ -16,3 +16,10 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return response()->json(['status' => 'ok']);
 });
+
+Route::get('jwt',function(){
+    Artisan::call("key:generate");
+    Artisan::call("jwt:secret");
+    Artisan::call("cache:clear");
+    Artisan::call("config:clear");
+});
