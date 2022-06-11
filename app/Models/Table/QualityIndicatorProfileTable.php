@@ -37,4 +37,24 @@ class QualityIndicatorProfileTable extends QualityIndicatorProfile
     {
         return $this->hasMany(QualityIndicatorProfileDimensionTable::class, 'profile_id')->select('id', 'name', 'profile_id');
     }
+
+    public function indicatorType()
+    {
+        return $this->hasMany(QualityIndicatorProfileTypeTable::class, 'profile_id')->select('id', 'name', 'profile_id');
+    }
+
+    public function dataFrequency()
+    {
+        return $this->hasMany(QualityIndicatorProfileDataFrequencyTable::class, 'profile_id')->select('id', 'name', 'profile_id');
+    }
+
+    public function dataPeriod()
+    {
+        return $this->hasMany(QualityIndicatorProfileDataPeriodTable::class, 'profile_id')->select('id', 'name', 'profile_id');
+    }
+
+    public function analystPeriod()
+    {
+        return $this->hasMany(QualityIndicatorProfileAnalystPeriodTable::class, 'profile_id')->select('id', 'name', 'profile_id');
+    }
 }

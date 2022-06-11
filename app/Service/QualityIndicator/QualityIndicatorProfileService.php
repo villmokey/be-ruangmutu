@@ -46,6 +46,10 @@ class QualityIndicatorProfileService extends AppService implements AppServiceInt
                                 ->with('document')
                                 ->with('signature')
                                 ->with('qualityDimension')
+                                ->with('indicatorType')
+                                ->with('dataFrequency')
+                                ->with('dataPeriod')
+                                ->with('analystPeriod')
                                 ->when($search, function ($query, $search) {
                                     return $query->where('title','like','%'.$search.'%');
                                 })
@@ -66,6 +70,10 @@ class QualityIndicatorProfileService extends AppService implements AppServiceInt
                                 ->with('document')
                                 ->with('signature')
                                 ->with('qualityDimension')
+                                ->with('indicatorType')
+                                ->with('dataFrequency')
+                                ->with('dataPeriod')
+                                ->with('analystPeriod')
                                 ->when($search, function ($query, $search) {
                                     return $query->where('title','like','%'.$search.'%');
                                 })
@@ -87,6 +95,10 @@ class QualityIndicatorProfileService extends AppService implements AppServiceInt
                                 ->with('document')
                                 ->with('signature')
                                 ->with('qualityDimension')
+                                ->with('indicatorType')
+                                ->with('dataFrequency')
+                                ->with('dataPeriod')
+                                ->with('analystPeriod')
                                 ->find($id);
 
         return $this->sendSuccess($result);
@@ -105,7 +117,6 @@ class QualityIndicatorProfileService extends AppService implements AppServiceInt
                 'indicator_selection_based' =>  $data['indicator_selection_based'],
                 'objective'                 =>  $data['objective'],
                 'operational_definition'    =>  $data['operational_definition'],
-                'indicator_type'            =>  $data['indicator_type'],
                 'measurement_status'        =>  $data['measurement_status'],
                 'numerator'                 =>  $data['numerator'],
                 'denominator'               =>  $data['denominator'],
@@ -115,9 +126,6 @@ class QualityIndicatorProfileService extends AppService implements AppServiceInt
                 'data_collection_design'    =>  $data['data_collection_design'],
                 'data_source'               =>  $data['data_source'],
                 'population'                =>  $data['population'],
-                'data_collection_frequency' =>  $data['data_collection_frequency'],
-                'data_collection_period'    =>  $data['data_collection_period'],
-                'data_analyst_period'       =>  $data['data_analyst_period'],
                 'data_presentation'         =>  $data['data_presentation'],
                 'pic_id'                    =>  $data['pic_id'],
             ]);
@@ -133,7 +141,35 @@ class QualityIndicatorProfileService extends AppService implements AppServiceInt
             foreach($data['quality_dimension'] as $qualityDimension) {
                 $this->dimensionTable->newQuery()->create([
                     'profile_id' => $qualityIndicatorProfile->id,
-                    'name'                      => $qualityDimension['name'],
+                    'name' => $qualityDimension['name'],
+                ]);
+            }
+
+            foreach($data['indicator_type'] as $indicatorType) {
+                $this->dimensionTable->newQuery()->create([
+                    'profile_id' => $qualityIndicatorProfile->id,
+                    'name' => $indicatorType['name'],
+                ]);
+            }
+
+            foreach($data['data_collection_frequency'] as $dataFrequency) {
+                $this->dimensionTable->newQuery()->create([
+                    'profile_id' => $qualityIndicatorProfile->id,
+                    'name' => $dataFrequency['name'],
+                ]);
+            }
+
+            foreach($data['data_collection_period'] as $dataPeriod) {
+                $this->dimensionTable->newQuery()->create([
+                    'profile_id' => $qualityIndicatorProfile->id,
+                    'name' => $dataPeriod['name'],
+                ]);
+            }
+
+            foreach($data['data_analyst_period'] as $analystPeriod) {
+                $this->dimensionTable->newQuery()->create([
+                    'profile_id' => $qualityIndicatorProfile->id,
+                    'name' => $analystPeriod['name'],
                 ]);
             }
 
@@ -168,7 +204,6 @@ class QualityIndicatorProfileService extends AppService implements AppServiceInt
             $qualityIndicatorProfile->quality_dimension =   $data['quality_dimension'];
             $qualityIndicatorProfile->objective         =   $data['objective'];
             $qualityIndicatorProfile->operational_definition =   $data['operational_definition'];
-            $qualityIndicatorProfile->indicator_type    =   $data['indicator_type'];
             $qualityIndicatorProfile->measurement_status    =   $data['measurement_status'];
             $qualityIndicatorProfile->numerator         =   $data['numerator'];
             $qualityIndicatorProfile->denominator       =   $data['denominator'];
@@ -178,9 +213,6 @@ class QualityIndicatorProfileService extends AppService implements AppServiceInt
             $qualityIndicatorProfile->data_collection_design    =   $data['data_collection_design'];
             $qualityIndicatorProfile->data_source       =   $data['data_source'];
             $qualityIndicatorProfile->population        =   $data['population'];
-            $qualityIndicatorProfile->data_collection_frequency   =   $data['data_collection_frequency'];
-            $qualityIndicatorProfile->data_collection_period    =   $data['data_collection_period'];
-            $qualityIndicatorProfile->data_analyst_period   =   $data['data_analyst_period'];
             $qualityIndicatorProfile->data_presentation  =   $data['data_presentation'];
             $qualityIndicatorProfile->data_collection_instrument    =   $data['data_collection_instrument'];
             $qualityIndicatorProfile->pic_id            =   $data['pic_id'];

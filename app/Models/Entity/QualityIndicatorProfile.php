@@ -21,7 +21,6 @@ class QualityIndicatorProfile extends AppModel
         'quality_dimension',
         'objective',
         'operational_definition',
-        'indicator_type',
         'measurement_status',
         'numerator',
         'denominator',
@@ -31,9 +30,6 @@ class QualityIndicatorProfile extends AppModel
         'data_collection_design',
         'data_source',
         'population',
-        'data_collection_frequency',
-        'data_collection_period',
-        'data_analyst_period',
         'data_presentation',
         'data_collection_instrument',
         'pic_id'
