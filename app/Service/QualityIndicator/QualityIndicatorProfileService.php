@@ -355,13 +355,13 @@ class QualityIndicatorProfileService extends AppService implements AppServiceInt
 
     public function createQrCode($id)
     {
-        $qualityIndicatorProfile = $this->model->newQuery()->find($id);
-        $image = \QrCode::format('png')
-                 ->size(200)->errorCorrection('H')
-                 ->generate('Quality Indicator Profile Service');
+        // $qualityIndicatorProfile = $this->model->newQuery()->find($id);
+        // $image = \QrCode::format('png')
+        //          ->size(200)->errorCorrection('H')
+        //          ->generate('Quality Indicator Profile Service');
 
-        $output_file = '/img/qr-code/img-' . time() . '.png';
-        Storage::disk('local')->put($output_file, $image);
+        // $output_file = '/img/qr-code/img-' . time() . '.png';
+        // Storage::disk('local')->put($output_file, $image);
 
         // $upload = $this->fileUploadService
         //     ->handleImage($image)
