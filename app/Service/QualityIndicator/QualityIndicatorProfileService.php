@@ -148,7 +148,9 @@ class QualityIndicatorProfileService extends AppService implements AppServiceInt
             ]);
 
             $this->relationStore($data, $qualityIndicatorProfile->id);
-            $this->createQrCode($qualityIndicatorProfile->id);
+
+            /** already implemented **/
+            // $this->createQrCode($qualityIndicatorProfile->id);
 
             if (!empty($data['document_id'])) {
                 $image = $this->fileTable->newQuery()->find($data['document_id']);
