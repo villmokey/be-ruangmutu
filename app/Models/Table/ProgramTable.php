@@ -12,4 +12,9 @@ class ProgramTable extends Program
     {
         return $this->hasMany(SubProgramTable::class, 'program_id');
     }
+
+    public function pic()
+    {
+        return $this->belongsTo(UserTable::class, 'pic_id');
+    }
 }

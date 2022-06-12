@@ -14,6 +14,7 @@ class Program extends AppModel
     protected $table    =   'programs';
 
     protected $fillable =   [
+        'pic_id',
         'name',
         'is_publish'
     ];

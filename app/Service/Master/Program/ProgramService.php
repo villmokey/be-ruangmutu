@@ -21,6 +21,7 @@ class ProgramService extends AppService implements AppServiceInterface
     {
         $result =   $this->model->newQuery()
                                 ->where('is_publish', true)
+                                ->with('pic')
                                 ->with('subPrograms')
                                 ->when($search, function ($query, $search) {
                                     return $query->where('name','like','%'.$search.'%');
@@ -34,6 +35,7 @@ class ProgramService extends AppService implements AppServiceInterface
     {
         $result  = $this->model->newQuery()
                                 ->where('is_publish', true)
+                                ->with('pic')
                                 ->with('subPrograms')
                                 ->when($search, function ($query, $search) {
                                     return $query->where('name','like','%'.$search.'%');
@@ -58,6 +60,7 @@ class ProgramService extends AppService implements AppServiceInterface
         try {
 
             $serviceUnit = $this->model->newQuery()->create([
+                'pic_id'  => $data['pic_id'],
                 'name'    =>  $data['name'],
             ]);
 
@@ -77,6 +80,7 @@ class ProgramService extends AppService implements AppServiceInterface
 
         try {
 
+            $serviceUnit->pic_id  =   $data['pic_id'];
             $serviceUnit->name    =   $data['name'];
             $serviceUnit->save();
 
