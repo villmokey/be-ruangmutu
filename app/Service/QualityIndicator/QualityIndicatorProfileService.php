@@ -7,6 +7,10 @@ namespace App\Service\QualityIndicator;
 use App\Models\Table\QualityIndicatorProfileTable;
 use App\Models\Table\QualityIndicatorProfileSignatureTable;
 use App\Models\Table\QualityIndicatorProfileDimensionTable;
+use App\Models\Table\QualityIndicatorProfileTypeTable;
+use App\Models\Table\QualityIndicatorProfileAnalystPeriodTable;
+use App\Models\Table\QualityIndicatorProfileDataPeriodTable;
+use App\Models\Table\QualityIndicatorProfileDataFrequencyTable;
 use App\Models\Table\FileTable;
 
 use App\Service\AppService;
@@ -14,6 +18,7 @@ use App\Service\AppServiceInterface;
 use App\Service\FileUploadService;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class QualityIndicatorProfileService extends AppService implements AppServiceInterface
 {
@@ -21,12 +26,20 @@ class QualityIndicatorProfileService extends AppService implements AppServiceInt
     protected $fileTable;
     protected $signatureTable;
     protected $dimensionTable;
+    protected $typeTable;
+    protected $analystPeriodTable;
+    protected $dataPeriodTable;
+    protected $dataFrequencyTable;
 
     public function __construct(
         FileUploadService $fileUploadService,
         FileTable $fileTable,
         QualityIndicatorProfileSignatureTable $signatureTable,
         QualityIndicatorProfileDimensionTable $dimensionTable,
+        QualityIndicatorProfileTypeTable $typeTable,
+        QualityIndicatorProfileAnalystPeriodTable $analystPeriodTable,
+        QualityIndicatorProfileDataPeriodTable $dataPeriodTable,
+        QualityIndicatorProfileDataFrequencyTable $dataFrequencyTable,
         QualityIndicatorProfileTable $model
     )
     {
@@ -34,6 +47,10 @@ class QualityIndicatorProfileService extends AppService implements AppServiceInt
         $this->fileTable            =   $fileTable;
         $this->signatureTable       =   $signatureTable;
         $this->dimensionTable       =   $dimensionTable;
+        $this->typeTable            =   $typeTable;
+        $this->analystPeriodTable   =   $analystPeriodTable;
+        $this->dataPeriodTable      =   $dataPeriodTable;
+        $this->dataFrequencyTable   =   $dataFrequencyTable;
         parent::__construct($model);
     }
 
@@ -130,48 +147,8 @@ class QualityIndicatorProfileService extends AppService implements AppServiceInt
                 'pic_id'                    =>  $data['pic_id'],
             ]);
 
-            foreach($data['signature'] as $signatures) {
-                $this->signatureTable->newQuery()->create([
-                    'profile_id' => $qualityIndicatorProfile->id,
-                    'user_id'                      => $signatures['user_id'],
-                    'level'                        => $signatures['level'],
-                ]);
-            }
-
-            foreach($data['quality_dimension'] as $qualityDimension) {
-                $this->dimensionTable->newQuery()->create([
-                    'profile_id' => $qualityIndicatorProfile->id,
-                    'name' => $qualityDimension['name'],
-                ]);
-            }
-
-            foreach($data['indicator_type'] as $indicatorType) {
-                $this->dimensionTable->newQuery()->create([
-                    'profile_id' => $qualityIndicatorProfile->id,
-                    'name' => $indicatorType['name'],
-                ]);
-            }
-
-            foreach($data['data_collection_frequency'] as $dataFrequency) {
-                $this->dimensionTable->newQuery()->create([
-                    'profile_id' => $qualityIndicatorProfile->id,
-                    'name' => $dataFrequency['name'],
-                ]);
-            }
-
-            foreach($data['data_collection_period'] as $dataPeriod) {
-                $this->dimensionTable->newQuery()->create([
-                    'profile_id' => $qualityIndicatorProfile->id,
-                    'name' => $dataPeriod['name'],
-                ]);
-            }
-
-            foreach($data['data_analyst_period'] as $analystPeriod) {
-                $this->dimensionTable->newQuery()->create([
-                    'profile_id' => $qualityIndicatorProfile->id,
-                    'name' => $analystPeriod['name'],
-                ]);
-            }
+            $this->relationStore($data, $qualityIndicatorProfile->id);
+            $this->createQrCode($qualityIndicatorProfile->id);
 
             if (!empty($data['document_id'])) {
                 $image = $this->fileTable->newQuery()->find($data['document_id']);
@@ -218,13 +195,7 @@ class QualityIndicatorProfileService extends AppService implements AppServiceInt
             $qualityIndicatorProfile->pic_id            =   $data['pic_id'];
             $qualityIndicatorProfile->save();
 
-            $this->dimensionTable->where('profile_id', $qualityIndicatorProfile->id)->delete();
-            foreach($data['quality_dimension'] as $qualityDimension) {
-                $this->dimensionTable->newQuery()->create([
-                    'profile_id'        => $qualityIndicatorProfile->id,
-                    'name'              => $qualityDimension['name'],
-                ]);
-            }
+            $this->relationUpdate($data, $qualityIndicatorProfile);
 
             if (!empty($data['document_id'])) {
                 if (!empty($oldImage)) {
@@ -289,5 +260,114 @@ class QualityIndicatorProfileService extends AppService implements AppServiceInt
                                 ->paginate((int)$perPage, ['*'], null, $page);
 
         return $this->sendSuccess($result);
+    }
+
+    private function relationStore($data, $id)
+    {
+        foreach($data['signature'] as $signatures) {
+            $this->signatureTable->newQuery()->create([
+                'profile_id'            => $id,
+                'user_id'               => $signatures['user_id'],
+                'level'                 => $signatures['level'],
+            ]);
+        }
+
+        foreach($data['quality_dimension'] as $qualityDimension) {
+            $this->dimensionTable->newQuery()->create([
+                'profile_id'            => $id,
+                'name'                  => $qualityDimension['name'],
+            ]);
+        }
+
+        foreach($data['indicator_type'] as $indicatorType) {
+            $this->typeTable->newQuery()->create([
+                'profile_id'        => $id,
+                'name'              => $indicatorType['name'],
+            ]);
+        }
+
+        foreach($data['data_collection_frequency'] as $dataFrequency) {
+            $this->dataFrequencyTable->newQuery()->create([
+                'profile_id'        => $id,
+                'name'              => $dataFrequency['name'],
+            ]);
+        }
+
+        foreach($data['data_collection_period'] as $dataPeriod) {
+            $this->dataPeriodTable->newQuery()->create([
+                'profile_id'        => $id,
+                'name'              => $dataPeriod['name'],
+            ]);
+        }
+
+        foreach($data['data_analyst_period'] as $analystPeriod) {
+            $this->analystPeriodTable->newQuery()->create([
+                'profile_id'        => $id,
+                'name'              => $analystPeriod['name'],
+            ]);
+        }
+    }
+
+    private function relationUpdate($data, $qualityIndicatorProfile)
+    {
+        $this->dimensionTable->where('profile_id', $qualityIndicatorProfile->id)->delete();
+        foreach($data['quality_dimension'] as $qualityDimension) {
+            $this->dimensionTable->newQuery()->create([
+                'profile_id'        => $qualityIndicatorProfile->id,
+                'name'              => $qualityDimension['name'],
+            ]);
+        }
+
+        $this->typeTable->where('profile_id', $qualityIndicatorProfile->id)->delete();
+        foreach($data['indicator_type'] as $indicatorType) {
+            $this->typeTable->newQuery()->create([
+                'profile_id'        => $id,
+                'name'              => $indicatorType['name'],
+            ]);
+        }
+
+        $this->dataFrequencyTable->where('profile_id', $qualityIndicatorProfile->id)->delete();
+        foreach($data['data_collection_frequency'] as $dataFrequency) {
+            $this->dataFrequencyTable->newQuery()->create([
+                'profile_id'        => $id,
+                'name'              => $dataFrequency['name'],
+            ]);
+        }
+
+        $this->dataPeriodTable->where('profile_id', $qualityIndicatorProfile->id)->delete();
+        foreach($data['data_collection_period'] as $dataPeriod) {
+            $this->dataPeriodTable->newQuery()->create([
+                'profile_id'        => $id,
+                'name'              => $dataPeriod['name'],
+            ]);
+        }
+
+        $this->analystPeriodTable->where('profile_id', $qualityIndicatorProfile->id)->delete();
+        foreach($data['data_analyst_period'] as $analystPeriod) {
+            $this->analystPeriodTable->newQuery()->create([
+                'profile_id'        => $id,
+                'name'              => $analystPeriod['name'],
+            ]);
+        }
+    }
+
+    public function createQrCode($id)
+    {
+        $qualityIndicatorProfile = $this->model->newQuery()->find($id);
+        $image = \QrCode::format('png')
+                 ->size(200)->errorCorrection('H')
+                 ->generate('Quality Indicator Profile Service');
+
+        $output_file = '/img/qr-code/img-' . time() . '.png';
+        Storage::disk('local')->put($output_file, $image);
+
+        // $upload = $this->fileUploadService
+        //     ->handleImage($image)
+        //     ->saveToDb('qr-code');
+
+        // $upload->update([
+        //     'fileable_type' => get_class($qualityIndicatorProfile),
+        //     'fileable_id'   => $qualityIndicatorProfile->id,
+        // ]);
     }
 }

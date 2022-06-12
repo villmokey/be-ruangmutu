@@ -11,7 +11,7 @@ class QualityIndicatorProfileType extends AppModel
 {
     use SoftDeletes;
 
-    protected $table    =   'quality_indicator_profiles';
+    protected $table    =   'quality_indicator_profile_types';
 
     protected $fillable =   [
         'profile_id',
