@@ -26,29 +26,25 @@ class UpdateUserRequest extends FormRequest
     public function rules()
     {
         return [
-            'nip'       =>  'required|string|max:255',
-            'name'      =>  'required|string|max:255',
-            'email'     =>  'required|string|email|max:255|unique:users',
-            'password'  =>  'required|string|min:6|confirmed',
-            'role_id'   =>  'required|integer|exists:roles,id',
+            'nip'       =>  'string|max:255',
+            'name'      =>  'string|max:255',
+            'email'     =>  'string|email|max:255|unique:users,email,'.$this->user,
+            'password'  =>  'string|min:6|confirmed',
+            'role_id'   =>  'integer|exists:roles,id',
         ];
     }
 
     public function messages()
     {
         return [
-            'nip.required'       =>  'NIP Tidak boleh kosong',
             'nip.string'         =>  'NIP Harus berupa string',
             'nip.max'            =>  'NIP Maksimal 255 karakter',
-            'name.required'      =>  'Nama Tidak boleh kosong',
             'name.string'        =>  'Nama Harus berupa string',
             'name.max'           =>  'Nama Maksimal 255 karakter',
-            'email.required'     =>  'Email Tidak boleh kosong',
             'email.string'       =>  'Email Harus berupa string',
             'email.email'        =>  'Email Harus berupa email',
             'email.max'          =>  'Email Maksimal 255 karakter',
             'email.unique'       =>  'Email sudah terdaftar',
-            'password.required'  =>  'Password Tidak boleh kosong',
             'password.string'    =>  'Password Harus berupa string',
             'password.min'       =>  'Password Minimal 6 karakter',
             'password.confirmed' =>  'Password tidak sama',

@@ -5,6 +5,7 @@ namespace App\Service\Master\User;
 
 use Illuminate\Support\Facades\Hash;
 
+use App\Models\Entity\User;
 use App\Models\Table\UserTable;
 use App\Service\AppService;
 use App\Service\AppServiceInterface;
@@ -12,10 +13,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class UserService extends AppService implements AppServiceInterface
 {
-
     public function __construct(UserTable $model)
     {
         parent::__construct($model);
+
     }
 
     public function getAll($search = null)
@@ -54,7 +55,7 @@ class UserService extends AppService implements AppServiceInterface
 
         try {
 
-            $user = $this->model->newQuery()->create([
+            $user = User::create([
                 'nip'       =>  $data['nip'],
                 'name'      =>  $data['name'],
                 'email'     =>  $data['email'],
@@ -73,7 +74,7 @@ class UserService extends AppService implements AppServiceInterface
 
     public function update($id, $data)
     {
-        $user   =   $this->model->newQuery()->find($id);
+        $user   =   User::find($id);
 
         \DB::beginTransaction();
 
