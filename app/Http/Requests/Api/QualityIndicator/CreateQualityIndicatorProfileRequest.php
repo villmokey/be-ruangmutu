@@ -42,7 +42,7 @@ class CreateQualityIndicatorProfileRequest extends FormRequest
             'data_source' =>  'required',
             'population' =>  'required',
             'data_presentation' =>  'required',
-            'data_collection_instrument' =>  'required',
+            // 'data_collection_instrument' =>  'required',
             'pic_id' =>  'required|exists:users,id',
             'created_by' =>  'required|exists:users,id',
             // 'signature.*.user_id' => 'required|exists:users,id',

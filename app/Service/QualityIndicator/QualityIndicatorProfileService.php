@@ -194,7 +194,6 @@ class QualityIndicatorProfileService extends AppService implements AppServiceInt
             $qualityIndicatorProfile->data_source       =   $data['data_source'];
             $qualityIndicatorProfile->population        =   $data['population'];
             $qualityIndicatorProfile->data_presentation  =   $data['data_presentation'];
-            $qualityIndicatorProfile->data_collection_instrument    =   $data['data_collection_instrument'];
             $qualityIndicatorProfile->pic_id            =   $data['pic_id'];
             $qualityIndicatorProfile->save();
 
