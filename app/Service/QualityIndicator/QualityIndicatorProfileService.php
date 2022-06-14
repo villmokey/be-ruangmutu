@@ -148,7 +148,8 @@ class QualityIndicatorProfileService extends AppService implements AppServiceInt
                 'population'                =>  $data['population'],
                 'data_presentation'         =>  $data['data_presentation'],
                 'pic_id'                    =>  $data['pic_id'],
-                'created_by'                =>  $data['created_by']
+                'created_by'                =>  $data['created_by'],
+                'assign_by'                 =>  $data['assign_by'],
             ]);
 
             $this->relationStore($data, $qualityIndicatorProfile->id);
@@ -195,6 +196,7 @@ class QualityIndicatorProfileService extends AppService implements AppServiceInt
             $qualityIndicatorProfile->population        =   $data['population'];
             $qualityIndicatorProfile->data_presentation  =   $data['data_presentation'];
             $qualityIndicatorProfile->pic_id            =   $data['pic_id'];
+            $qualityIndicatorProfile->assign_by            =   $data['assign_by'];
             $qualityIndicatorProfile->save();
 
             $this->relationUpdate($data, $qualityIndicatorProfile);
