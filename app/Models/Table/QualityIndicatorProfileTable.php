@@ -23,6 +23,11 @@ class QualityIndicatorProfileTable extends QualityIndicatorProfile
         return $this->belongsTo(UserTable::class, 'pic_id')->select('id', 'nip', 'name');
     }
 
+    public function createdBy()
+    {
+        return $this->belongsTo(UserTable::class, 'created_by')->select('id', 'nip', 'name');
+    }
+
     public function document()
     {
         return $this->morphOne(FileTable::class, 'fileable');

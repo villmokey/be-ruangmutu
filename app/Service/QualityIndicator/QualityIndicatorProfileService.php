@@ -60,6 +60,7 @@ class QualityIndicatorProfileService extends AppService implements AppServiceInt
                                 ->with('program')
                                 ->with('subProgram')
                                 ->with('pic')
+                                ->with('createdBy')
                                 ->with('document')
                                 ->with('signature')
                                 ->with('qualityDimension')
@@ -84,6 +85,7 @@ class QualityIndicatorProfileService extends AppService implements AppServiceInt
                                 ->with('program')
                                 ->with('subProgram')
                                 ->with('pic')
+                                ->with('createdBy')
                                 ->with('document')
                                 ->with('signature')
                                 ->with('qualityDimension')
@@ -109,6 +111,7 @@ class QualityIndicatorProfileService extends AppService implements AppServiceInt
                                 ->with('program')
                                 ->with('subProgram')
                                 ->with('pic')
+                                ->with('createdBy')
                                 ->with('document')
                                 ->with('signature')
                                 ->with('qualityDimension')
@@ -145,12 +148,10 @@ class QualityIndicatorProfileService extends AppService implements AppServiceInt
                 'population'                =>  $data['population'],
                 'data_presentation'         =>  $data['data_presentation'],
                 'pic_id'                    =>  $data['pic_id'],
+                'created_by'                =>  $data['created_by']
             ]);
 
             $this->relationStore($data, $qualityIndicatorProfile->id);
-
-            /** already implemented **/
-            // $this->createQrCode($qualityIndicatorProfile->id);
 
             if (!empty($data['document_id'])) {
                 $image = $this->fileTable->newQuery()->find($data['document_id']);
@@ -351,25 +352,5 @@ class QualityIndicatorProfileService extends AppService implements AppServiceInt
                 'name'              => $analystPeriod['name'],
             ]);
         }
-    }
-
-    public function createQrCode($id)
-    {
-        // $qualityIndicatorProfile = $this->model->newQuery()->find($id);
-        // $image = \QrCode::format('png')
-        //          ->size(200)->errorCorrection('H')
-        //          ->generate('Quality Indicator Profile Service');
-
-        // $output_file = '/img/qr-code/img-' . time() . '.png';
-        // Storage::disk('local')->put($output_file, $image);
-
-        // $upload = $this->fileUploadService
-        //     ->handleImage($image)
-        //     ->saveToDb('qr-code');
-
-        // $upload->update([
-        //     'fileable_type' => get_class($qualityIndicatorProfile),
-        //     'fileable_id'   => $qualityIndicatorProfile->id,
-        // ]);
     }
 }

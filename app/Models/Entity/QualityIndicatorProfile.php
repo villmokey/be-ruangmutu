@@ -32,6 +32,7 @@ class QualityIndicatorProfile extends AppModel
         'population',
         'data_presentation',
         'data_collection_instrument',
-        'pic_id'
+        'pic_id',
+        'created_by',
     ];
 }
