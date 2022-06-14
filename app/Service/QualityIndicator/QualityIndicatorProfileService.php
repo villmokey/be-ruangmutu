@@ -267,13 +267,13 @@ class QualityIndicatorProfileService extends AppService implements AppServiceInt
 
     private function relationStore($data, $id)
     {
-        foreach($data['signature'] as $signatures) {
-            $this->signatureTable->newQuery()->create([
-                'profile_id'            => $id,
-                'user_id'               => $signatures['user_id'],
-                'level'                 => $signatures['level'],
-            ]);
-        }
+        // foreach($data['signature'] as $signatures) {
+        //     $this->signatureTable->newQuery()->create([
+        //         'profile_id'            => $id,
+        //         'user_id'               => $signatures['user_id'],
+        //         'level'                 => $signatures['level'],
+        //     ]);
+        // }
 
         foreach($data['quality_dimension'] as $qualityDimension) {
             $this->dimensionTable->newQuery()->create([
