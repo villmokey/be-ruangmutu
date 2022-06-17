@@ -10,7 +10,7 @@ use App\Http\Controllers\Api\Master\Document\DocumentTypeController;
 use App\Http\Controllers\Api\Master\Service\ServiceUnitController;
 use App\Http\Controllers\Api\Master\Program\ProgramController;
 use App\Http\Controllers\Api\Master\Program\SubProgramController;
-use App\Http\Controllers\Api\Master\Program\IndicatorProfileController;
+use App\Http\Controllers\Api\Indicator\IndicatorProfileController;
 use App\Http\Controllers\Api\Indicator\IndicatorController;
 use App\Http\Controllers\Api\Master\User\UserController;
 
