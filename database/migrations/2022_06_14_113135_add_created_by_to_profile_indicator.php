@@ -13,13 +13,8 @@ class AddCreatedByToProfileIndicator extends Migration
      */
     public function up()
     {
-        Schema::table('quality_indicator_profiles', function (Blueprint $table) {
-            $table->unsignedBigInteger('created_by')->after('pic_id')->nullable();
-
-            $table->foreign('created_by')
-            ->references('id')
-            ->on('users')
-            ->onUpdate('cascade')->onDelete('restrict');
+        Schema::table('indicator_profiles', function (Blueprint $table) {
+            $table->string('created_by')->after('second_pic_id')->nullable();
         });
     }
 
@@ -30,7 +25,7 @@ class AddCreatedByToProfileIndicator extends Migration
      */
     public function down()
     {
-        Schema::table('quality_indicator_profiles', function (Blueprint $table) {
+        Schema::table('indicator_profiles', function (Blueprint $table) {
             $table->dropColumn('created_by');
         });
     }

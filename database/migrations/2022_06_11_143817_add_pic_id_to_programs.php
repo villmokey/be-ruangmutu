@@ -14,7 +14,7 @@ class AddPicIdToPrograms extends Migration
     public function up()
     {
         Schema::table('programs', function (Blueprint $table) {
-            $table->unsignedBigInteger('pic_id')->after('id')->nullable();
+            $table->uuid('pic_id')->after('id')->nullable();
 
             $table->foreign('pic_id')
             ->references('id')

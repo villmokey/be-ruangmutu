@@ -13,8 +13,8 @@ class CreateAssignByToProfileIndicator extends Migration
      */
     public function up()
     {
-        Schema::table('quality_indicator_profiles', function (Blueprint $table) {
-            $table->unsignedBigInteger('assign_by')->after('pic_id')->nullable();
+        Schema::table('indicator_profiles', function (Blueprint $table) {
+            $table->uuid('assign_by')->after('second_pic_id')->nullable();
 
             $table->foreign('assign_by')
             ->references('id')
@@ -30,7 +30,7 @@ class CreateAssignByToProfileIndicator extends Migration
      */
     public function down()
     {
-        Schema::table('quality_indicator_profiles', function (Blueprint $table) {
+        Schema::table('indicator_profiles', function (Blueprint $table) {
             $table->dropColumn('assign_by');
         });
     }

@@ -30,7 +30,7 @@ class CreateUserRequest extends FormRequest
             'name'      =>  'required|string|max:255',
             'email'     =>  'required|string|email|max:255|unique:users',
             'password'  =>  'required|string|min:6|confirmed',
-            'role_id'   =>  'required|integer|exists:roles,id',
+            'role_id'   =>  'required|string|exists:roles,id',
         ];
     }
 
@@ -53,7 +53,7 @@ class CreateUserRequest extends FormRequest
             'password.min'       =>  'Password Minimal 6 karakter',
             'password.confirmed' =>  'Password tidak sama',
             'role_id.required'   =>  'Role Tidak boleh kosong',
-            'role_id.integer'    =>  'Role Harus berupa integer',
+            'role_id.string'     =>  'Role Harus berupa string',
             'role_id.exists'     =>  'Role tidak ditemukan',
         ];
     }

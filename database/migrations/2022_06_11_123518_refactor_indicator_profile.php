@@ -13,7 +13,7 @@ class RefactorIndicatorProfile extends Migration
      */
     public function up()
     {
-        Schema::table('quality_indicator_profiles', function (Blueprint $table) {
+        Schema::table('indicator_profiles', function (Blueprint $table) {
             $table->dropColumn('indicator_type');
             $table->dropColumn('data_collection_frequency');
             $table->dropColumn('data_collection_period');
@@ -28,7 +28,7 @@ class RefactorIndicatorProfile extends Migration
      */
     public function down()
     {
-        Schema::table('quality_indicator_profiles', function (Blueprint $table) {
+        Schema::table('indicator_profiles', function (Blueprint $table) {
             $table->string('indicator_type');
             $table->string('data_collection_frequency');
             $table->string('data_collection_period');

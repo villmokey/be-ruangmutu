@@ -30,7 +30,7 @@ class UpdateUserRequest extends FormRequest
             'name'      =>  'string|max:255',
             'email'     =>  'string|email|max:255|unique:users,email,'.$this->user,
             'password'  =>  'string|min:6|confirmed',
-            'role_id'   =>  'integer|exists:roles,id',
+            'role_id'   =>  'string|exists:roles,id',
         ];
     }
 
@@ -49,7 +49,7 @@ class UpdateUserRequest extends FormRequest
             'password.min'       =>  'Password Minimal 6 karakter',
             'password.confirmed' =>  'Password tidak sama',
             'role_id.required'   =>  'Role Tidak boleh kosong',
-            'role_id.integer'    =>  'Role Harus berupa integer',
+            'role_id.string'     =>  'Role Harus berupa string',
             'role_id.exists'     =>  'Role tidak ditemukan',
         ];
     }

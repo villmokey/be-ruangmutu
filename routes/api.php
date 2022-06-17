@@ -10,8 +10,8 @@ use App\Http\Controllers\Api\Master\Document\DocumentTypeController;
 use App\Http\Controllers\Api\Master\Service\ServiceUnitController;
 use App\Http\Controllers\Api\Master\Program\ProgramController;
 use App\Http\Controllers\Api\Master\Program\SubProgramController;
-use App\Http\Controllers\Api\QualityIndicator\QualityIndicatorProfileController;
-use App\Http\Controllers\Api\QualityIndicator\QualityIndicatorController;
+use App\Http\Controllers\Api\Master\Program\IndicatorProfileController;
+use App\Http\Controllers\Api\Indicator\IndicatorController;
 use App\Http\Controllers\Api\Master\User\UserController;
 
 /*
@@ -47,10 +47,6 @@ Route::middleware('api')->prefix('v1')->group(function(){
     Route::apiResource('document-tag', DocumentTagController::class);
     Route::put('document-tag/{id}/status', [DocumentTagController::class,'updatePublish']);
 
-    // Service Unit
-    Route::apiResource('service-unit', ServiceUnitController::class);
-    Route::put('service-unit/{id}/status', [ServiceUnitController::class,'updatePublish']);
-
     // Program
     Route::apiResource('program', ProgramController::class);
     Route::put('program/{id}/status', [ProgramController::class,'updatePublish']);
@@ -60,13 +56,13 @@ Route::middleware('api')->prefix('v1')->group(function(){
     Route::put('sub-program/{id}/status', [SubProgramController::class,'updatePublish']);
 
     // Quality Indicator Profile
-    Route::apiResource('quality-indicator-profile', QualityIndicatorProfileController::class);
+    Route::apiResource('indicator-profile', IndicatorProfileController::class);
 
     // Quality Goal
-    Route::get('quality-goal', [QualityIndicatorProfileController::class,'qualityGoal']);
+    Route::get('quality-goal', [IndicatorProfileController::class,'qualityGoal']);
 
     // Quality Indicator
-    Route::apiResource('quality-indicator', QualityIndicatorController::class);
+    Route::apiResource('indicator', IndicatorController::class);
 
     // User
     Route::apiResource('user', UserController::class);

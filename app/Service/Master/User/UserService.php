@@ -6,6 +6,7 @@ namespace App\Service\Master\User;
 use Illuminate\Support\Facades\Hash;
 
 use App\Models\Entity\User;
+use App\Models\Entity\Role;
 use App\Models\Table\UserTable;
 use App\Service\AppService;
 use App\Service\AppServiceInterface;
@@ -62,7 +63,9 @@ class UserService extends AppService implements AppServiceInterface
                 'password'  =>  Hash::make($data['password']),
                 'status'    =>  'active',
             ]);
-            $user->assignRole($data['role_id']);
+
+            $role = Role::where('id', $data['role_id'])->first();
+            $user->assignRole($role->name);
 
             \DB::commit(); // commit the changes
             return $this->sendSuccess($user);
@@ -90,7 +93,8 @@ class UserService extends AppService implements AppServiceInterface
             $user->save();
 
             if (isset($data['role_id'])) {
-                $user->syncRoles($data['role_id']);
+                $role = Role::where('id', $data['role_id'])->first();
+                $user->syncRoles($role->name);
             }
 
             \DB::commit(); // commit the changes

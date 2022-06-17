@@ -2,10 +2,10 @@
 
 namespace App\Models\Entity;
 
-use Spatie\Permission\Models\Role as BaseRole;
+use Spatie\Permission\Models\Permission as BasePermission;
 use Illuminate\Support\Str;
 
-class Role extends BaseRole
+class Permission extends BasePermission
 {
     protected static function boot()
     {
@@ -39,4 +39,5 @@ class Role extends BaseRole
     protected $hidden = [
         'pivot'
     ];
+
 }

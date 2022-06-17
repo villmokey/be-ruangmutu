@@ -60,7 +60,7 @@ class ProgramService extends AppService implements AppServiceInterface
         try {
 
             $serviceUnit = $this->model->newQuery()->create([
-                'pic_id'  => $data['pic_id'],
+                'pic_id'  =>  $data['pic_id'] ?? null,
                 'name'    =>  $data['name'],
             ]);
 
@@ -80,7 +80,7 @@ class ProgramService extends AppService implements AppServiceInterface
 
         try {
 
-            $serviceUnit->pic_id  =   $data['pic_id'];
+            $serviceUnit->pic_id  =   $data['pic_id'] ?? null;
             $serviceUnit->name    =   $data['name'];
             $serviceUnit->save();
 
