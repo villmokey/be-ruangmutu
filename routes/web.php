@@ -16,7 +16,3 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return response()->json(['status' => 'ok']);
 });
-
-Route::get('run-seeder',function(){
-    Artisan::call("db:seed");
-});
