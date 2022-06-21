@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\Master\Program\SubProgramController;
 use App\Http\Controllers\Api\Indicator\IndicatorProfileController;
 use App\Http\Controllers\Api\Indicator\IndicatorController;
 use App\Http\Controllers\Api\Master\User\UserController;
+use App\Http\Controllers\Api\Document\DocumentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -66,6 +67,9 @@ Route::middleware('api')->prefix('v1')->group(function(){
 
     // User
     Route::apiResource('user', UserController::class);
+
+    // Document
+    Route::apiResource('document', DocumentController::class);
 
     // File Upload
     Route::post('/upload/image',[FileUploadController::class,'uploadImage']);
