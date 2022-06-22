@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\Indicator\IndicatorProfileController;
 use App\Http\Controllers\Api\Indicator\IndicatorController;
 use App\Http\Controllers\Api\Master\User\UserController;
 use App\Http\Controllers\Api\Document\DocumentController;
+use App\Http\Controllers\Api\Event\EventController;
 
 /*
 |--------------------------------------------------------------------------
@@ -70,6 +71,9 @@ Route::middleware('api')->prefix('v1')->group(function(){
 
     // Document
     Route::apiResource('document', DocumentController::class);
+
+    // Event
+    Route::apiResource('event', EventController::class);
 
     // File Upload
     Route::post('/upload/image',[FileUploadController::class,'uploadImage']);

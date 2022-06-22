@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Requests\Api\Document;
+namespace App\Http\Requests\Api\Event;
 
 use App\Http\Requests\InitialRequestValidation;
 use Illuminate\Foundation\Http\FormRequest;
 
-class CreateDocumentRequest extends FormRequest
+class CreateEventRequest extends FormRequest
 {
     use InitialRequestValidation;
     /**
@@ -27,9 +27,8 @@ class CreateDocumentRequest extends FormRequest
     {
         return [
             'name' => 'required',
-            'document_type_id' => 'required|exists:document_types,id',
-            'program_id' => 'required|exists:programs,id',
-            'document_id' => 'required|exists:files,id',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date',
             'document_related' => 'exists:documents,id',
         ];
     }
@@ -38,12 +37,8 @@ class CreateDocumentRequest extends FormRequest
     {
         return [
             'name.required'   => 'Nama Dokumen Tidak boleh kosong',
-            'document_type_id.required'   => 'Tipe Dokumen Tidak boleh kosong',
-            'document_type_id.exists'     => 'Tipe Dokumen Tidak ditemukan',
-            'program_id.required'   => 'Program Tidak boleh kosong',
-            'program_id.exists'     => 'Program Tidak ditemukan',
-            'document_id.required'   => 'File Tidak boleh kosong',
-            'document_id.exists'     => 'File Tidak ditemukan',
+            'start_date.required' => 'Tanggal Mulai Tidak boleh kosong',
+            'end_date.required' => 'Tanggal Selesai Tidak boleh kosong',
             'document_related.exists' => 'Dokumen terkait tidak ditemukan',
         ];
     }

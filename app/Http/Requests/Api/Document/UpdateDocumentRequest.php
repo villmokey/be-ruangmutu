@@ -29,6 +29,7 @@ class UpdateDocumentRequest extends FormRequest
             'name' => 'required',
             'document_type_id' => 'required|exists:document_types,id',
             'program_id' => 'required|exists:programs,id',
+            'document_related' => 'exists:documents,id',
         ];
     }
 
@@ -40,6 +41,7 @@ class UpdateDocumentRequest extends FormRequest
             'document_type_id.exists'     => 'Tipe Dokumen Tidak ditemukan',
             'program_id.required'   => 'Program Tidak boleh kosong',
             'program_id.exists'     => 'Program Tidak ditemukan',
+            'document_related.exists' => 'Dokumen terkait tidak ditemukan',
         ];
     }
 }
