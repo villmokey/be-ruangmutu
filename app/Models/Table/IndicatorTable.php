@@ -18,9 +18,9 @@ class IndicatorTable extends Indicator{
         return $this->belongsTo(SubProgramTable::class, 'sub_program_id')->select('id', 'name');
     }
 
-    public function qualityGoal()
+    public function profileIndicator()
     {
-        return $this->belongsTo(IndicatorProfileTable::class, 'quality_goal_id')->select('id', 'title');
+        return $this->belongsTo(IndicatorProfileTable::class, 'title')->select('id', 'title');
     }
 
     public function document()
@@ -31,6 +31,21 @@ class IndicatorTable extends Indicator{
     public function signature()
     {
         return $this->hasMany(IndicatorSignatureTable::class, 'indicator_id')->with('user:id,nip,name')->select('id', 'indicator_id', 'user_id', 'signed', 'level');
+    }
+
+    public function firstPic()
+    {
+        return $this->belongsTo(UserTable::class, 'first_pic_id')->select('id', 'nip', 'name');
+    }
+
+    public function secondPic()
+    {
+        return $this->belongsTo(UserTable::class, 'second_pic_id')->select('id', 'nip', 'name');
+    }
+
+    public function assignBy()
+    {
+        return $this->belongsTo(UserTable::class, 'assign_by')->select('id', 'nip', 'name');
     }
 
 }

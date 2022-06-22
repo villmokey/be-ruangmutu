@@ -67,7 +67,10 @@ class IndicatorService extends AppService implements AppServiceInterface
         $result = $this->model->newQuery()
                                 ->with('program')
                                 ->with('subProgram')
-                                ->with('qualityGoal')
+                                ->with('profileIndicator')
+                                ->with('firstPic')
+                                ->with('secondPic')
+                                ->with('assignBy')
                                 ->with('document')
                                 ->with('signature')
                                 ->find($id);
@@ -82,16 +85,21 @@ class IndicatorService extends AppService implements AppServiceInterface
         try {
 
             $indicator = $this->model->newQuery()->create([
+                'title'                     => $data['title'],
                 'program_id'                =>  $data['program_id'],
                 'sub_program_id'            =>  $data['sub_program_id'],
                 'month'                     =>  $data['month'],
-                'quality_goal_id'           =>  $data['quality_goal_id'],
+                'quality_goal'              =>  $data['quality_goal'],
                 'human'                     =>  $data['human'],
                 'tools'                     =>  $data['tools'],
                 'method'                    =>  $data['method'],
                 'policy'                    =>  $data['policy'],
                 'environment'               =>  $data['environment'],
                 'next_plan'                 =>  $data['next_plan'],
+                'first_pic_id'              =>  $data['first_pic_id'],
+                'second_pic_id'             =>  $data['second_pic_id'],
+                'created_by'                =>  $data['created_by'],
+                'assign_by'                 =>  $data['assign_by'],
             ]);
 
             foreach($data['signature'] as $signatures) {
@@ -136,7 +144,22 @@ class IndicatorService extends AppService implements AppServiceInterface
             $indicator->policy            =   $data['policy'];
             $indicator->environment       =   $data['environment'];
             $indicator->next_plan         =   $data['next_plan'];
+            $indicator->first_pic_id      =   $data['first_pic_id'];
+            $indicator->second_pic_id     =   $data['second_pic_id'];
+            $indicator->created_by        =   $data['created_by'];
+            $indicator->assign_by         =   $data['assign_by'];
             $indicator->save();
+
+            if(!empty($data['signature'])) {
+                $indicator->signature()->delete();
+                foreach($data['signature'] as $signatures) {
+                    $this->signatureTable->newQuery()->create([
+                        'indicator_id'                 => $indicator->id,
+                        'user_id'                      => $signatures['user_id'],
+                        'level'                        => $signatures['level'],
+                    ]);
+                }
+            }
 
             if (!empty($data['document_id'])) {
                 if (!empty($oldImage)) {

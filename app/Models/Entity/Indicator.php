@@ -14,15 +14,20 @@ class Indicator extends AppModel
     protected $table    =   'indicators';
 
     protected $fillable =   [
+        'title',
         'program_id',
         'sub_program_id',
         'month',
-        'quality_goal_id',
+        'quality_goal',
         'human',
         'tools',
         'method',
         'policy',
         'environment',
         'next_plan',
+        'first_pic_id',
+        'second_pic_id',
+        'created_by',
+        'assign_by',
     ];
 }
