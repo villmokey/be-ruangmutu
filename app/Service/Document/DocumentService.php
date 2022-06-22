@@ -30,27 +30,63 @@ class DocumentService extends AppService implements AppServiceInterface
         parent::__construct($model);
     }
 
-    public function getAll($search = null)
+    public function getAll($search = null,$year = null, $type = null, $program = null)
     {
         $result =   $this->model->newQuery()
                                 ->when($search, function ($query, $search) {
                                     return $query->where('name','like','%'.$search.'%');
                                 })
+                                ->when($year, function ($query, $year) {
+                                    return $query->whereYear('created_at', $year);
+                                })
+                                ->when($type, function ($query, $type) {
+                                    return $query->where('document_type_id', $type);
+                                })
+                                ->when($program, function ($query, $program) {
+                                    return $query->where('program_id', $program);
+                                })
                                 ->get();
 
-        return $this->sendSuccess($result);
+        $countAll       = $this->model->newQuery()->count();
+        $countSelected  = $result->count();
+        $countNew       = $this->model->newQuery()->whereMonth('created_at', date('m'))->count();
+
+        return $this->sendSuccess([
+            'countAll' => $countAll,
+            'countSelected' => $countSelected,
+            'countNew' => $countNew,
+            'data' => $result,
+        ]);
     }
 
-    public function getPaginated($search = null, $perPage = 15, $page = null)
+    public function getPaginated($search = null,$year = null, $type = null, $program = null, $perPage = 15, $page = null)
     {
         $result  = $this->model->newQuery()
                                 ->when($search, function ($query, $search) {
                                     return $query->where('name','like','%'.$search.'%');
                                 })
+                                ->when($year, function ($query, $year) {
+                                    return $query->whereYear('created_at', $year);
+                                })
+                                ->when($type, function ($query, $type) {
+                                    return $query->where('document_type_id', $type);
+                                })
+                                ->when($program, function ($query, $program) {
+                                    return $query->where('program_id', $program);
+                                })
                                 ->orderBy('created_at','DESC')
                                 ->paginate((int)$perPage, ['*'], null, $page);
 
-        return $this->sendSuccess($result);
+        $countAll       = $this->model->newQuery()->count();
+        $countSelected  = $result->count();
+        $countNew       = $this->model->newQuery()->whereMonth('created_at', date('m'))->count();
+
+        return $this->sendSuccess([
+            'countAll' => $countAll,
+            'countSelected' => $countSelected,
+            'countNew' => $countNew,
+            'data' => $result,
+        ]);
     }
 
     public function getById($id)
@@ -59,7 +95,7 @@ class DocumentService extends AppService implements AppServiceInterface
             ->with('file')
             ->with('documentType')
             ->with('program')
-            ->with('relatedFile')
+            ->with('relatedFile.related.file')
             ->find($id);
 
         return $this->sendSuccess($result);
@@ -81,8 +117,8 @@ class DocumentService extends AppService implements AppServiceInterface
             if (isset($data['document_related'])) {
                 foreach($data['document_related'] as $doc) {
                     $this->documentRelated->newQuery()->create([
-                        'document_id'            =>  $doc->id,
-                        'related_document_id'    =>  $doc['related_id'],
+                        'document_id'            =>  $document->id,
+                        'related_document_id'    =>  $doc,
                     ]);
                 }
             }

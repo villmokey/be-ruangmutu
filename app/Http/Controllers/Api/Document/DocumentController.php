@@ -29,11 +29,13 @@ class DocumentController extends ApiController
         $perPage        = $this->request->query('per_page', 15);
         $paginate       = $this->request->query('paginate', true);
         $year           = $this->request->query('year', null);
+        $type           = $this->request->query('type', null);
+        $program        = $this->request->query('program', null);
 
         if ($paginate == 'true' || $paginate == '1') {
-            $result = $this->documentService->getPaginated($search, $year, $perPage, $page);
+            $result = $this->documentService->getPaginated($search, $year, $type, $program, $perPage, $page);
         } else {
-            $result = $this->documentService->getAll($search, $year);
+            $result = $this->documentService->getAll($search, $year, $type, $program);
         }
 
         try {
