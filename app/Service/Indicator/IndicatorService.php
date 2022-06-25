@@ -33,7 +33,7 @@ class IndicatorService extends AppService implements AppServiceInterface
         parent::__construct($model);
     }
 
-    public function getAll($search = null, $year = null, $subProgram = null)
+    public function getAll($search = null, $year = null, $subProgram = null, $monthly = null)
     {
         $result =   $this->model->newQuery()
                                 ->when($search, function ($query, $search) {
@@ -47,10 +47,20 @@ class IndicatorService extends AppService implements AppServiceInterface
                                 })
                                 ->get();
 
+        if ($monthly) {
+            $monthly = $result->groupBy(function ($item) {
+                return $item->month;
+            })->map(function ($item) {
+                return $item->first();
+            });
+
+            return $this->sendSuccess($monthly);
+        }
+
         return $this->sendSuccess($result);
     }
 
-    public function getPaginated($search = null, $year = null, $subProgram = null, $perPage = 15, $page = null)
+    public function getPaginated($search = null, $year = null, $subProgram = null, $monthly = null, $perPage = 15, $page = null)
     {
         $result  = $this->model->newQuery()
                                 ->when($search, function ($query, $search) {

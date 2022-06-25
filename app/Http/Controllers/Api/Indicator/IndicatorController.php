@@ -30,11 +30,12 @@ class IndicatorController extends ApiController
         $paginate       = $this->request->query('paginate', true);
         $year           = $this->request->query('year', null);
         $subProgram     = $this->request->query('sub_program', null);
+        $monthly        = $this->request->query('monthly', null);
 
         if ($paginate == 'true' || $paginate == '1') {
-            $result = $this->indicatorService->getPaginated($search, $year, $subProgram, $perPage, $page);
+            $result = $this->indicatorService->getPaginated($search, $year, $subProgram, $monthly, $perPage, $page);
         } else {
-            $result = $this->indicatorService->getAll($search, $year, $subProgram);
+            $result = $this->indicatorService->getAll($search, $year, $subProgram, $monthly);
         }
 
         try {
