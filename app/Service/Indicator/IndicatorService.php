@@ -44,20 +44,34 @@ class IndicatorService extends AppService implements AppServiceInterface
                                 })
                                 ->when($subProgram, function ($query, $subProgram) {
                                     return $query->where('sub_program_id', $subProgram);
-                                })
-                                ->get();
+                                });
 
         if ($monthly) {
-            $monthly = $result->groupBy(function ($item) {
-                return $item->month;
+            $result = $result
+            ->select('indicators.*', 'sub_programs.name as sub_program_name', 'indicator_profiles.title as profile_name')
+            ->join('sub_programs', 'sub_programs.id', '=', 'indicators.sub_program_id')
+            ->join('indicator_profiles', 'indicator_profiles.id', '=', 'indicators.title')
+            ->get();
+
+            $monthly = $result
+            ->groupBy(function ($item) {
+                return $item->sub_program_name;
             })->map(function ($item) {
-                return $item->first();
+                return $item->groupBy(function ($item) {
+                    return $item->profile_name;
+                })->map(function ($item) {
+                    return $item->groupBy(function ($item) {
+                        return $item->month;
+                    });
+                });
             });
 
             return $this->sendSuccess($monthly);
-        }
+        } else {
+            $result = $result->get();
 
-        return $this->sendSuccess($result);
+            return $this->sendSuccess($result);
+        }
     }
 
     public function getPaginated($search = null, $year = null, $subProgram = null, $monthly = null, $perPage = 15, $page = null)
