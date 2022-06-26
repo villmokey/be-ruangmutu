@@ -54,7 +54,7 @@ class IndicatorProfileService extends AppService implements AppServiceInterface
         parent::__construct($model);
     }
 
-    public function getAll($search = null, $year = null)
+    public function getAll($search = null, $year = null, $subProgram = null)
     {
         $result =   $this->model->newQuery()
                                 ->when($search, function ($query, $search) {
@@ -63,12 +63,15 @@ class IndicatorProfileService extends AppService implements AppServiceInterface
                                 ->when($year, function ($query, $year) {
                                     return $query->whereYear('created_at', $year);
                                 })
+                                ->when($subProgram, function ($query, $subProgram) {
+                                    return $query->where('sub_program_id', $subProgram);
+                                })
                                 ->get();
 
         return $this->sendSuccess($result);
     }
 
-    public function getPaginated($search = null, $year = null, $perPage = 15, $page = null)
+    public function getPaginated($search = null, $year = null, $subProgram = null, $perPage = 15, $page = null)
     {
         $result  = $this->model->newQuery()
                                 ->when($search, function ($query, $search) {
@@ -76,6 +79,9 @@ class IndicatorProfileService extends AppService implements AppServiceInterface
                                 })
                                 ->when($year, function ($query, $year) {
                                     return $query->whereYear('created_at', $year);
+                                })
+                                ->when($subProgram, function ($query, $subProgram) {
+                                    return $query->where('sub_program_id', $subProgram);
                                 })
                                 ->orderBy('created_at','DESC')
                                 ->paginate((int)$perPage, ['*'], null, $page);
