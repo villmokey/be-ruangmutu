@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\Indicator\IndicatorProfileController;
 use App\Http\Controllers\Api\Indicator\IndicatorController;
 use App\Http\Controllers\Api\Master\User\UserController;
 use App\Http\Controllers\Api\Document\DocumentController;
+use App\Http\Controllers\Api\Dashboard\DashboardController;
 use App\Http\Controllers\Api\Event\EventController;
 
 /*
@@ -74,6 +75,9 @@ Route::middleware('api')->prefix('v1')->group(function(){
 
     // Event
     Route::apiResource('event', EventController::class);
+
+    // Dashboard
+    Route::get('dashboard/indicator', [DashboardController::class,'indicator']);
 
     // File Upload
     Route::post('/upload/image',[FileUploadController::class,'uploadImage']);
