@@ -17,6 +17,7 @@ class Indicator extends AppModel
         'title',
         'program_id',
         'sub_program_id',
+        'month_target',
         'month',
         'quality_goal',
         'human',

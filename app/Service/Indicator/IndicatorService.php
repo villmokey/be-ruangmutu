@@ -33,7 +33,7 @@ class IndicatorService extends AppService implements AppServiceInterface
         parent::__construct($model);
     }
 
-    public function getAll($search = null, $year = null, $subProgram = null, $monthly = null)
+    public function getAll($search = null, $year = null, $subProgram = null)
     {
         $result =   $this->model->newQuery()
                                 ->when($search, function ($query, $search) {
@@ -44,37 +44,13 @@ class IndicatorService extends AppService implements AppServiceInterface
                                 })
                                 ->when($subProgram, function ($query, $subProgram) {
                                     return $query->where('sub_program_id', $subProgram);
-                                });
+                                })
+                                ->get();
 
-        if ($monthly) {
-            $result = $result
-            ->select('indicators.*', 'sub_programs.name as sub_program_name', 'indicator_profiles.title as profile_name')
-            ->join('sub_programs', 'sub_programs.id', '=', 'indicators.sub_program_id')
-            ->join('indicator_profiles', 'indicator_profiles.id', '=', 'indicators.title')
-            ->get();
-
-            $monthly = $result
-            ->groupBy(function ($item) {
-                return $item->sub_program_name;
-            })->map(function ($item) {
-                return $item->groupBy(function ($item) {
-                    return $item->profile_name;
-                })->map(function ($item) {
-                    return $item->groupBy(function ($item) {
-                        return $item->month;
-                    });
-                });
-            });
-
-            return $this->sendSuccess($monthly);
-        } else {
-            $result = $result->get();
-
-            return $this->sendSuccess($result);
-        }
+        return $this->sendSuccess($result);
     }
 
-    public function getPaginated($search = null, $year = null, $subProgram = null, $monthly = null, $perPage = 15, $page = null)
+    public function getPaginated($search = null, $year = null, $subProgram = null, $perPage = 15, $page = null)
     {
         $result  = $this->model->newQuery()
                                 ->when($search, function ($query, $search) {
@@ -118,6 +94,7 @@ class IndicatorService extends AppService implements AppServiceInterface
                 'title'                     => $data['title'],
                 'program_id'                =>  $data['program_id'],
                 'sub_program_id'            =>  $data['sub_program_id'],
+                'month_target'              =>  $data['month_target'],
                 'month'                     =>  $data['month'],
                 'quality_goal'              =>  $data['quality_goal'],
                 'human'                     =>  $data['human'],
@@ -166,6 +143,7 @@ class IndicatorService extends AppService implements AppServiceInterface
         try {
             $indicator->program_id        =   $data['program_id'];
             $indicator->sub_program_id    =   $data['sub_program_id'];
+            $indicator->month_target      =   $data['month_target'];
             $indicator->month             =   $data['month'];
             $indicator->quality_goal_id   =   $data['quality_goal_id'];
             $indicator->human             =   $data['human'];
