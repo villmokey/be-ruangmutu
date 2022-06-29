@@ -104,7 +104,7 @@ class IndicatorService extends AppService implements AppServiceInterface
                 'environment'               =>  $data['environment'],
                 'next_plan'                 =>  $data['next_plan'],
                 'first_pic_id'              =>  $data['first_pic_id'],
-                'second_pic_id'             =>  $data['second_pic_id'],
+                'second_pic_id'             =>  $data['second_pic_id'] ?? null,
                 'created_by'                =>  $data['created_by'],
                 'assign_by'                 =>  $data['assign_by'],
             ]);
@@ -153,7 +153,7 @@ class IndicatorService extends AppService implements AppServiceInterface
             $indicator->environment       =   $data['environment'];
             $indicator->next_plan         =   $data['next_plan'];
             $indicator->first_pic_id      =   $data['first_pic_id'];
-            $indicator->second_pic_id     =   $data['second_pic_id'];
+            $indicator->second_pic_id     =   $data['second_pic_id'] ?? null;
             $indicator->created_by        =   $data['created_by'];
             $indicator->assign_by         =   $data['assign_by'];
             $indicator->save();
