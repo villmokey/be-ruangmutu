@@ -13,7 +13,7 @@ class AddStatusToIndicator extends Migration
      */
     public function up()
     {
-        Schema::table('indicator', function (Blueprint $table) {
+        Schema::table('indicators', function (Blueprint $table) {
             $table->string('status')->default('pending');
         });
     }
@@ -25,7 +25,7 @@ class AddStatusToIndicator extends Migration
      */
     public function down()
     {
-        Schema::table('indicator', function (Blueprint $table) {
+        Schema::table('indicators', function (Blueprint $table) {
             $table->dropColumn('status');
         });
     }
