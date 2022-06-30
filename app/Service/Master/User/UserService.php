@@ -7,15 +7,29 @@ use Illuminate\Support\Facades\Hash;
 
 use App\Models\Entity\User;
 use App\Models\Entity\Role;
+
 use App\Models\Table\UserTable;
+use App\Models\Table\FileTable;
+
 use App\Service\AppService;
 use App\Service\AppServiceInterface;
+use App\Service\FileUploadService;
+
 use Illuminate\Database\Eloquent\Model;
 
 class UserService extends AppService implements AppServiceInterface
 {
-    public function __construct(UserTable $model)
+    protected $fileUploadService;
+    protected $fileTable;
+
+    public function __construct(
+        FileUploadService $fileUploadService,
+        FileTable $fileTable,
+        UserTable $model
+    )
     {
+        $this->fileUploadService    =   $fileUploadService;
+        $this->fileTable            =   $fileTable;
         parent::__construct($model);
 
     }
@@ -45,7 +59,10 @@ class UserService extends AppService implements AppServiceInterface
 
     public function getById($id)
     {
-        $result = $this->model->newQuery()->with('pic')->find($id);
+        $result = $this->model->newQuery()
+        ->with('signature')
+        ->with('pic')
+        ->find($id);
 
         return $this->sendSuccess($result);
     }
@@ -66,6 +83,14 @@ class UserService extends AppService implements AppServiceInterface
 
             $role = Role::where('id', $data['role_id'])->first();
             $user->assignRole($role->name);
+
+            if (!empty($data['signature_id'])) {
+                $image = $this->fileTable->newQuery()->find($data['signature_id']);
+                $image->update([
+                    'fileable_type' => get_class($user),
+                    'fileable_id'   => $user->id,
+                ]);
+            }
 
             \DB::commit(); // commit the changes
             return $this->sendSuccess($user);
@@ -95,6 +120,14 @@ class UserService extends AppService implements AppServiceInterface
             if (isset($data['role_id'])) {
                 $role = Role::where('id', $data['role_id'])->first();
                 $user->syncRoles($role->name);
+            }
+
+            if (!empty($data['signature_id'])) {
+                $image = $this->fileTable->newQuery()->find($data['signature_id']);
+                $image->update([
+                    'fileable_type' => get_class($user),
+                    'fileable_id'   => $user->id,
+                ]);
             }
 
             \DB::commit(); // commit the changes
