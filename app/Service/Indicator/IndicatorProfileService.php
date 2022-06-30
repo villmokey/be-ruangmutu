@@ -391,6 +391,11 @@ class IndicatorProfileService extends AppService implements AppServiceInterface
                 $signature->update([
                     'signed' => 1,
                 ]);
+                if ($indicatorProfile->signature()->where('signed', 0)->count() == 0) {
+                    $indicatorProfile->update([
+                        'status' => 'approved',
+                    ]);
+                }
             }
             \DB::commit(); // commit the changes
             return $this->sendSuccess($indicatorProfile);

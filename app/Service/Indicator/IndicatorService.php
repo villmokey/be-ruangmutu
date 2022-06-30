@@ -230,6 +230,11 @@ class IndicatorService extends AppService implements AppServiceInterface
                 $signature->update([
                     'signed' => 1,
                 ]);
+                if ($indicator->signature()->where('signed', 0)->count() == 0) {
+                    $indicator->update([
+                        'status' => 'approved',
+                    ]);
+                }
             }
             \DB::commit(); // commit the changes
             return $this->sendSuccess($indicator);
