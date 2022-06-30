@@ -136,4 +136,19 @@ class IndicatorProfileController extends ApiController
             return $this->sendError($exception->getMessage(),"",500);
         }
     }
+
+    public function getSignature($id): \Illuminate\Http\JsonResponse
+    {
+        $result = $this->indicatorProfileService->getSignature($id);
+
+        try {
+            if ($result->success) {
+                return $this->sendSuccess($result->data, $result->message, $result->code);
+            }
+
+            return $this->sendError($result->data, $result->message, $result->code);
+        } catch (Exception $exception) {
+            return $this->sendError($exception->getMessage(),"",500);
+        }
+    }
 }

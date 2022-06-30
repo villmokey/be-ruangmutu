@@ -203,4 +203,16 @@ class IndicatorService extends AppService implements AppServiceInterface
         }
     }
 
+    public function getSignature($id)
+    {
+        $result = $this->model->newQuery()
+                                ->whereHas('signature', function($query) use ($id) {
+                                    $query->where('user_id', $id);
+                                })
+                                ->with('signature')
+                                ->get();
+
+        return $this->sendSuccess($result);
+    }
+
 }
