@@ -151,4 +151,21 @@ class IndicatorProfileController extends ApiController
             return $this->sendError($exception->getMessage(),"",500);
         }
     }
+
+    public function changeStatus($id, Request $request): \Illuminate\Http\JsonResponse
+    {
+        $input  =   $request->all();
+        $result =   $this->indicatorProfileService->changeStatus($id,$input);
+
+        try {
+            if ($result->success) {
+                $response = $result->data;
+                return $this->sendSuccess($response, $result->message, $result->code);
+            }
+
+            return $this->sendError($result->data, $result->message, $result->code);
+        } catch (\Exception $exception) {
+            return $this->sendError($exception->getMessage(),"",500);
+        }
+    }
 }

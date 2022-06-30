@@ -375,4 +375,30 @@ class IndicatorProfileService extends AppService implements AppServiceInterface
 
         return $this->sendSuccess($result);
     }
+
+    public function changeStatus($id, $data)
+    {
+        $indicatorProfile   =   $this->model->newQuery()->find($id);
+
+        \DB::beginTransaction();
+        try {
+            if (isset($data['status']) == 'rejected') {
+                $indicatorProfile->update([
+                    'status' => 'rejected',
+                ]);
+            } else {
+                $signature = $indicatorProfile->signature()->where('user_id', $data['user_id'])->first();
+                $signature->update([
+                    'signed' => 1,
+                ]);
+            }
+            \DB::commit(); // commit the changes
+            return $this->sendSuccess($indicatorProfile);
+        } catch (\Exception $exception) {
+            \DB::rollBack(); // rollback the changes
+            return $this->sendError(null, $this->debug ? $exception->getMessage() : null);
+        }
+
+        return $this->sendSuccess($indicator);
+    }
 }

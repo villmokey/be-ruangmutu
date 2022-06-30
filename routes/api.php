@@ -61,6 +61,7 @@ Route::middleware('api')->prefix('v1')->group(function(){
     // Quality Indicator Profile
     Route::apiResource('indicator-profile', IndicatorProfileController::class);
     Route::get('indicator-profile/{id}/signature', [IndicatorProfileController::class,'getSignature']);
+    Route::post('indicator-profile/{id}/status', [IndicatorProfileController::class,'changeStatus']);
 
     // Quality Goal
     Route::get('quality-goal', [IndicatorProfileController::class,'qualityGoal']);
@@ -68,6 +69,7 @@ Route::middleware('api')->prefix('v1')->group(function(){
     // Quality Indicator
     Route::apiResource('indicator', IndicatorController::class);
     Route::get('indicator/{id}/signature', [IndicatorController::class,'getSignature']);
+    Route::post('indicator/{id}/status', [IndicatorController::class,'changeStatus']);
 
     // User
     Route::apiResource('user', UserController::class);

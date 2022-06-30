@@ -30,5 +30,6 @@ class Indicator extends AppModel
         'second_pic_id',
         'created_by',
         'assign_by',
+        'status',
     ];
 }

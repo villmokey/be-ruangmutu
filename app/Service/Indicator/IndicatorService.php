@@ -215,4 +215,29 @@ class IndicatorService extends AppService implements AppServiceInterface
         return $this->sendSuccess($result);
     }
 
+    public function changeStatus($id, $data)
+    {
+        $indicator   =   $this->model->newQuery()->find($id);
+
+        \DB::beginTransaction();
+        try {
+            if (isset($data['status']) == 'rejected') {
+                $indicator->update([
+                    'status' => 'rejected',
+                ]);
+            } else {
+                $signature = $indicator->signature()->where('user_id', $data['user_id'])->first();
+                $signature->update([
+                    'signed' => 1,
+                ]);
+            }
+            \DB::commit(); // commit the changes
+            return $this->sendSuccess($indicator);
+        } catch (\Exception $exception) {
+            \DB::rollBack(); // rollback the changes
+            return $this->sendError(null, $this->debug ? $exception->getMessage() : null);
+        }
+
+        return $this->sendSuccess($indicator);
+    }
 }
