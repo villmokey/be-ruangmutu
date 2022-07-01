@@ -40,7 +40,7 @@ class IndicatorProfileTable extends IndicatorProfile
 
     public function signature()
     {
-        return $this->hasMany(IndicatorProfileSignatureTable::class, 'indicator_profile_id')->with('user:id,nip,name')->select('id', 'indicator_profile_id', 'user_id', 'signed', 'level');
+        return $this->hasMany(IndicatorProfileSignatureTable::class, 'indicator_profile_id')->with('user:id,nip,name')->select('id', 'indicator_profile_id', 'user_id', 'signed', 'level', 'signed_at');
     }
 
     public function qualityDimension()
