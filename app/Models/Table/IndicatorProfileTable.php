@@ -67,4 +67,9 @@ class IndicatorProfileTable extends IndicatorProfile
     {
         return $this->hasMany(IndicatorProfileAnalystPeriodTable::class, 'indicator_profile_id')->select('id', 'name', 'indicator_profile_id');
     }
+
+    public function indicator()
+    {
+        return $this->hasMany(IndicatorTable::class, 'title', 'id');
+    }
 }

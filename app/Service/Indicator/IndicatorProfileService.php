@@ -370,6 +370,7 @@ class IndicatorProfileService extends AppService implements AppServiceInterface
                                 ->whereHas('signature', function($query) use ($id) {
                                     $query->where('user_id', $id);
                                 })
+                                ->with('subProgram')
                                 ->with('signature')
                                 ->get();
 
@@ -384,16 +385,17 @@ class IndicatorProfileService extends AppService implements AppServiceInterface
         try {
             if (isset($data['status']) == 'rejected') {
                 $indicatorProfile->update([
-                    'status' => 'rejected',
+                    'status' => -1,
                 ]);
             } else {
                 $signature = $indicatorProfile->signature()->where('user_id', $data['user_id'])->first();
                 $signature->update([
                     'signed' => 1,
+                    'signed_at' => date('Y-m-d H:i:s'),
                 ]);
                 if ($indicatorProfile->signature()->where('signed', 0)->count() == 0) {
                     $indicatorProfile->update([
-                        'status' => 'approved',
+                        'status' => 3,
                     ]);
                 }
             }

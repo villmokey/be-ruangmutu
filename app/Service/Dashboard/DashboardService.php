@@ -35,6 +35,7 @@ class DashboardService extends AppService
                                     DB::RAW('EXTRACT(YEAR FROM created_at) as year'),
                                 )
                                 ->with('subProgram')
+                                ->has('indicator')
                                 ->get();
 
         foreach($result as $key => $value) {

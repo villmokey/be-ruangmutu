@@ -47,5 +47,4 @@ class IndicatorTable extends Indicator{
     {
         return $this->belongsTo(UserTable::class, 'assign_by')->select('id', 'nip', 'name');
     }
-
 }

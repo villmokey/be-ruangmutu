@@ -18,5 +18,6 @@ class IndicatorSignature extends AppModel
         'user_id',
         'level',
         'signed',
+        'signed_at',
     ];
 }
