@@ -52,9 +52,14 @@ class File extends AppModel
         'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
 
+    protected $appends = ['file_link'];
 
     public function fileable()
     {
         return $this->morphTo();
+    }
+
+    public function getFileLinkAttribute () {
+        return \Storage::disk('minio')->temporaryUrl($this->file_path, \Carbon\Carbon::now()->addMinutes(5));
     }
 }

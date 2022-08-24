@@ -18,9 +18,9 @@ class DocumentTable extends Document
         return $this->belongsTo(DocumentTypeTable::class);
     }
 
-    public function program()
+    public function related_program()
     {
-        return $this->belongsTo(ProgramTable::class);
+        return $this->hasMany(DocumentProgramTable::class, 'document_id');
     }
 
     public function relatedFile()

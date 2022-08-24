@@ -11,13 +11,13 @@ use Illuminate\Http\Request;
 
 class EventController extends ApiController
 {
-    protected $documentService;
+    protected $eventService;
 
     public function __construct(
-        EventService $documentService,
-        Request $request)
-    {
-        $this->documentService    =   $documentService;
+        EventService $eventService,
+        Request $request
+    ) {
+        $this->eventService    =   $eventService;
         parent::__construct($request);
         $this->middleware('auth:api', ['except' => ['index', 'show']]);
     }
@@ -29,11 +29,12 @@ class EventController extends ApiController
         $perPage        = $this->request->query('per_page', 15);
         $paginate       = $this->request->query('paginate', true);
         $year           = $this->request->query('year', null);
+        $month          = $this->request->query('month', null);
 
         if ($paginate == 'true' || $paginate == '1') {
-            $result = $this->documentService->getPaginated($search, $year, $perPage, $page);
+            $result = $this->eventService->getPaginated($search, $year, $perPage, $page);
         } else {
-            $result = $this->documentService->getAll($search, $year);
+            $result = $this->eventService->getAll($search, $year, $month);
         }
 
         try {
@@ -42,16 +43,15 @@ class EventController extends ApiController
             }
 
             return $this->sendError($result->data, $result->message, $result->code);
-        } catch (Exception $exception) {
-            return $this->sendError($exception->getMessage(),"",500);
+        } catch (\Exception $exception) {
+            return $this->sendError($exception->getMessage(), "", 500);
         }
     }
 
     public function store(CreateEventRequest $request): \Illuminate\Http\JsonResponse
     {
         $input  =   $request->all();
-        $result =   $this->documentService->create($input);
-
+        $result =   $this->eventService->create($input);
         try {
             if ($result->success) {
                 $response = $result->data;
@@ -60,14 +60,14 @@ class EventController extends ApiController
 
             return $this->sendError($result->data, $result->message, $result->code);
         } catch (\Exception $exception) {
-            return $this->sendError($exception->getMessage(),"",500);
+            return $this->sendError($exception->getMessage(), "", 500);
         }
     }
 
     public function update($id, UpdateEventRequest $request): \Illuminate\Http\JsonResponse
     {
         $input  =   $request->all();
-        $result =   $this->documentService->update($id,$input);
+        $result =   $this->eventService->update($id, $input);
 
         try {
             if ($result->success) {
@@ -77,13 +77,13 @@ class EventController extends ApiController
 
             return $this->sendError($result->data, $result->message, $result->code);
         } catch (\Exception $exception) {
-            return $this->sendError($exception->getMessage(),"",500);
+            return $this->sendError($exception->getMessage(), "", 500);
         }
     }
 
     public function destroy($id): \Illuminate\Http\JsonResponse
     {
-        $result =   $this->documentService->delete($id);
+        $result =   $this->eventService->delete($id);
         try {
             if ($result->success) {
                 $response = $result->data;
@@ -92,13 +92,13 @@ class EventController extends ApiController
 
             return $this->sendError($result->data, $result->message, $result->code);
         } catch (\Exception $exception) {
-            return $this->sendError($exception->getMessage(),"",500);
+            return $this->sendError($exception->getMessage(), "", 500);
         }
     }
 
     public function show($id): \Illuminate\Http\JsonResponse
     {
-        $result = $this->documentService->getById($id);
+        $result = $this->eventService->getById($id);
 
         try {
             if ($result->success) {
@@ -106,8 +106,23 @@ class EventController extends ApiController
             }
 
             return $this->sendError($result->data, $result->message, $result->code);
-        } catch (Exception $exception) {
-            return $this->sendError($exception->getMessage(),"",500);
+        } catch (\Exception $exception) {
+            return $this->sendError($exception->getMessage(), "", 500);
+        }
+    }
+
+    public function realized($id): \Illuminate\Http\JsonResponse
+    {
+        $result = $this->eventService->makeRealized($id);
+
+        try {
+            if ($result->success) {
+                return $this->sendSuccess($result->data, $result->message, $result->code);
+            }
+
+            return $this->sendError($result->data, $result->message, $result->code);
+        } catch (\Exception $exception) {
+            return $this->sendError($exception->getMessage(), "", 500);
         }
     }
 }

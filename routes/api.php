@@ -79,6 +79,7 @@ Route::middleware('api')->prefix('v1')->group(function(){
 
     // Event
     Route::apiResource('event', EventController::class);
+    Route::put('event/realize/{id}', [EventController::class, 'realized']);
 
     // Dashboard
     Route::get('dashboard/indicator', [DashboardController::class,'indicator']);

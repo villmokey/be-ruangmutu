@@ -12,4 +12,8 @@ class FileTable extends File
     {
         return $this->morphTo();
     }
+
+    public function getHalooAttribute () {
+        return 'HALOOO-'. $this->file_dir;
+    }
 }

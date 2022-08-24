@@ -28,8 +28,7 @@ class CreateDocumentRequest extends FormRequest
         return [
             'name' => 'required',
             'document_type_id' => 'required|exists:document_types,id',
-            'program_id' => 'required|exists:programs,id',
-            'document_id' => 'required|exists:files,id',
+            'file_id' => 'required|exists:files,id',
             'document_related' => 'exists:documents,id',
         ];
     }
@@ -40,10 +39,8 @@ class CreateDocumentRequest extends FormRequest
             'name.required'   => 'Nama Dokumen Tidak boleh kosong',
             'document_type_id.required'   => 'Tipe Dokumen Tidak boleh kosong',
             'document_type_id.exists'     => 'Tipe Dokumen Tidak ditemukan',
-            'program_id.required'   => 'Program Tidak boleh kosong',
-            'program_id.exists'     => 'Program Tidak ditemukan',
-            'document_id.required'   => 'File Tidak boleh kosong',
-            'document_id.exists'     => 'File Tidak ditemukan',
+            'file_id.required'   => 'File Tidak boleh kosong',
+            'file_id.exists'     => 'File Tidak ditemukan',
             'document_related.exists' => 'Dokumen terkait tidak ditemukan',
         ];
     }

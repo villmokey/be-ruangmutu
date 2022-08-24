@@ -7,18 +7,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Document extends AppModel
+class DocumentProgram extends AppModel
 {
-    use SoftDeletes;
-
-    protected $table    =   'documents';
+    protected $table    =   'document_programs';
 
     protected $fillable =   [
-        'name',
-        'slug',
-        'document_type_id',
-        'document_number',
-        'publish_date',
-        'is_credential'
+        'document_id',
+        'program_id'
     ];
 }

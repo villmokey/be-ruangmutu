@@ -30,10 +30,20 @@ class DocumentController extends ApiController
         $paginate       = $this->request->query('paginate', true);
         $year           = $this->request->query('year', null);
         $type           = $this->request->query('type', null);
-        $program        = $this->request->query('program', null);
+        $sort           = $this->request->query('sort', 'DESC');
+        $sortBy         = $this->request->query('sort_by', 'created_at');
+        $program        = $this->request->query('programs', null);
+
+        $programs = [];
+        if($program !== null) {
+            $explodeProgram = explode(',', $program);
+            if(count($explodeProgram) > 0) {
+                $programs = $explodeProgram;
+            }
+        }
 
         if ($paginate == 'true' || $paginate == '1') {
-            $result = $this->documentService->getPaginated($search, $year, $type, $program, $perPage, $page);
+            $result = $this->documentService->getPaginated($search, $year, $type, $programs, $perPage, $page, $sortBy, $sort);
         } else {
             $result = $this->documentService->getAll($search, $year, $type, $program);
         }

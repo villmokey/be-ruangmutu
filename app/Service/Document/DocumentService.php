@@ -7,6 +7,7 @@ namespace App\Service\Document;
 use App\Models\Table\FileTable;
 use App\Models\Table\DocumentTable;
 use App\Models\Table\DocumentRelatedTable;
+use App\Models\Table\DocumentProgramTable;
 
 use App\Service\AppService;
 use App\Service\AppServiceInterface;
@@ -18,15 +19,18 @@ class DocumentService extends AppService implements AppServiceInterface
 {
     protected $fileTable;
     protected $documentRelated;
+    protected $programRelated;
 
     public function __construct(
         DocumentTable $model,
         FileTable $fileTable,
-        DocumentRelatedTable $documentRelated
+        DocumentRelatedTable $documentRelated,
+        DocumentProgramTable $programRelated
     )
     {
         $this->fileTable = $fileTable;
         $this->documentRelated = $documentRelated;
+        $this->programRelated = $programRelated;
         parent::__construct($model);
     }
 
@@ -59,9 +63,9 @@ class DocumentService extends AppService implements AppServiceInterface
         ]);
     }
 
-    public function getPaginated($search = null,$year = null, $type = null, $program = null, $perPage = 15, $page = null)
+    public function getPaginated($search = null,$year = null, $type = null, $programs = [], $perPage = 15, $page = null, $sortBy = 'created_at', $sort = 'DESC')
     {
-        $result  = $this->model->newQuery()
+        $result  = $this->model->newQuery()->with(['related_program.program', 'documentType', 'file'])
                                 ->when($search, function ($query, $search) {
                                     return $query->where('name','like','%'.$search.'%');
                                 })
@@ -71,10 +75,14 @@ class DocumentService extends AppService implements AppServiceInterface
                                 ->when($type, function ($query, $type) {
                                     return $query->where('document_type_id', $type);
                                 })
-                                ->when($program, function ($query, $program) {
-                                    return $query->where('program_id', $program);
+                                ->when($programs, function ($query, $programs) {
+                                    $query->whereHas('related_program.program', function($q) use ($programs) {
+                                        $q->whereIn('id', $programs);
+                                    });
                                 })
-                                ->orderBy('created_at','DESC')
+                                ->when($sort && $sortBy, function ($query) use ($sort, $sortBy) {
+                                    $query->orderBy($sortBy, $sort);
+                                })
                                 ->paginate((int)$perPage, ['*'], null, $page);
 
         $countAll       = $this->model->newQuery()->count();
@@ -94,8 +102,8 @@ class DocumentService extends AppService implements AppServiceInterface
         $result = $this->model->newQuery()
             ->with('file')
             ->with('documentType')
-            ->with('program')
             ->with('relatedFile.related.file')
+            ->with('related_program.program')
             ->find($id);
 
         return $this->sendSuccess($result);
@@ -111,7 +119,9 @@ class DocumentService extends AppService implements AppServiceInterface
                 'name'              =>  $data['name'],
                 'slug'              =>  Str::slug($data['name']),
                 'document_type_id'  =>  $data['document_type_id'],
-                'program_id'        =>  $data['program_id'],
+                'document_number'   =>  $data['document_number'],
+                'publish_date'      =>  $data['publish_date'],
+                'is_confidential'   =>  $data['is_confidential'],
             ]);
 
             if (isset($data['document_related'])) {
@@ -123,8 +133,17 @@ class DocumentService extends AppService implements AppServiceInterface
                 }
             }
 
-            if (!empty($data['document_id'])) {
-                $image = $this->fileTable->newQuery()->find($data['document_id']);
+            if (isset($data['program_related'])) {
+                foreach($data['program_related'] as $program) {
+                    $this->programRelated->newQuery()->create([
+                        'document_id'            =>  $document->id,
+                        'program_id'             =>  $program,
+                    ]);
+                }
+            }
+
+            if (!empty($data['file_id'])) {
+                $image = $this->fileTable->newQuery()->find($data['file_id']);
                 $image->update([
                     'fileable_type' => get_class($document),
                     'fileable_id'   => $document->id,

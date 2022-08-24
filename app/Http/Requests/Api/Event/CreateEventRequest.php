@@ -29,17 +29,16 @@ class CreateEventRequest extends FormRequest
             'name' => 'required',
             'start_date' => 'required|date',
             'end_date' => 'required|date',
-            'document_related' => 'exists:documents,id',
+            'description' => 'required|string'
         ];
     }
 
     public function messages()
     {
         return [
-            'name.required'   => 'Nama Dokumen Tidak boleh kosong',
+            'name.required'   => 'Nama Kegiatan Tidak boleh kosong',
             'start_date.required' => 'Tanggal Mulai Tidak boleh kosong',
-            'end_date.required' => 'Tanggal Selesai Tidak boleh kosong',
-            'document_related.exists' => 'Dokumen terkait tidak ditemukan',
+            'end_date.required' => 'Tanggal Selesai Tidak boleh kosong'
         ];
     }
 }

@@ -31,6 +31,7 @@ class DashboardService extends AppService
                                 ->select(
                                     'id',
                                     'title',
+                                    'achievement_target',
                                     'sub_program_id',
                                     DB::RAW('EXTRACT(YEAR FROM created_at) as year'),
                                 )

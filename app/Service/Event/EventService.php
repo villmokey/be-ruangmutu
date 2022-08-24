@@ -7,6 +7,7 @@ namespace App\Service\Event;
 use App\Models\Table\FileTable;
 use App\Models\Table\EventTable;
 use App\Models\Table\EventDocumentTable;
+use App\Models\Table\EventProgramTable;
 
 use App\Service\AppService;
 use App\Service\AppServiceInterface;
@@ -18,43 +19,53 @@ class EventService extends AppService implements AppServiceInterface
 {
     protected $fileTable;
     protected $eventDocument;
+    protected $eventProgram;
 
     public function __construct(
         EventTable $model,
         FileTable $fileTable,
-        EventDocumentTable $eventDocument
-    )
-    {
+        EventDocumentTable $eventDocument,
+        EventProgramTable $eventProgram
+    ) {
         $this->fileTable = $fileTable;
         $this->eventDocument = $eventDocument;
+        $this->eventProgram = $eventProgram;
         parent::__construct($model);
     }
 
-    public function getAll($search = null,$year = null)
+    public function getAll($search = null, $year = null, $month = null)
     {
-        $result =   $this->model->newQuery()
-                                ->when($search, function ($query, $search) {
-                                    return $query->where('name','like','%'.$search.'%');
-                                })
-                                ->when($year, function ($query, $year) {
-                                    return $query->whereYear('created_at', $year);
-                                })
-                                ->get();
+        $result =   $this->model->newQuery()->with(['relatedProgram.program', 'user', 'relatedFile.related.file', 'program', 'otherFiles'])
+            ->when($search, function ($query, $search) {
+                return $query->where('name', 'like', '%' . $search . '%');
+            })
+            ->when($month, function ($query, $month) {
+                return $query->where('created_at','like', '%'.$month.'%');
+            })
+            ->when($year, function ($query, $year) {
+                return $query->whereYear('created_at', $year);
+            });
+            
+            if($year && $month && $month != 'ALL') {
+                $result->where('created_at','like', $year . '-' .$month.'%');
+            }
+            
+            $result->orderBy('created_at', 'DESC');
 
-        return $this->sendSuccess($result);
+        return $this->sendSuccess($result->get());
     }
 
     public function getPaginated($search = null, $year = null, $perPage = 15, $page = null)
     {
-        $result  = $this->model->newQuery()
-                                ->when($search, function ($query, $search) {
-                                    return $query->where('name','like','%'.$search.'%');
-                                })
-                                ->when($year, function ($query, $year) {
-                                    return $query->whereYear('created_at', $year);
-                                })
-                                ->orderBy('created_at','DESC')
-                                ->paginate((int)$perPage, ['*'], null, $page);
+        $result  = $this->model->newQuery()->with(['relatedProgram.program', 'user', 'relatedFile'])
+            ->when($search, function ($query, $search) {
+                return $query->where('name', 'like', '%' . $search . '%');
+            })
+            ->when($year, function ($query, $year) {
+                return $query->whereYear('created_at', $year);
+            })
+            ->orderBy('created_at', 'DESC')
+            ->paginate((int)$perPage, ['*'], null, $page);
 
         return $this->sendSuccess($result);
     }
@@ -79,14 +90,40 @@ class EventService extends AppService implements AppServiceInterface
                 'slug'              =>  Str::slug($data['name']),
                 'start_date'        =>  $data['start_date'],
                 'end_date'          =>  $data['end_date'],
+                'description'       =>  $data['description'],
+                'program_id'        =>  $data['program_id'] ?? null,
+                'created_id'        =>  \Auth::user()->id
             ]);
 
             if (isset($data['document_related'])) {
-                foreach($data['document_related'] as $doc) {
+                foreach ($data['document_related'] as $doc) {
                     $this->eventDocument->newQuery()->create([
                         'event_id'            =>  $document->id,
                         'document_id'    =>  $doc,
                     ]);
+                }
+            }
+
+            if (isset($data['related_program'])) {
+                if (!empty($data['related_program'])) {
+                    foreach ($data['related_program'] as $prog) {
+                        $this->eventProgram->newQuery()->create([
+                            'event_id'     => $document->id,
+                            'program_id'   => $prog
+                        ]);
+                    }
+                }
+            }
+
+            if (isset($data['event_files'])) {
+                if (!empty($data['event_files'])) {
+                    foreach ($data['event_files'] as $file) {
+                        $fileRow = $this->fileTable->newQuery()->find($file);
+                        $fileRow->update([
+                            'fileable_type' => get_class($document),
+                            'fileable_id'   => $document->id,
+                        ]);
+                    }
                 }
             }
 
@@ -131,5 +168,19 @@ class EventService extends AppService implements AppServiceInterface
             \DB::rollBack(); // rollback the changes
             return $this->sendError(null, $this->debug ? $exception->getMessage() : null);
         }
+    }
+    
+    public function makeRealized($id) {
+        $read   =   $this->model->newQuery()->find($id);
+        try {
+            $read->is_realized = true;
+            $read->update();
+            \DB::commit(); // commit the changes
+            return $this->sendSuccess($read);
+        } catch (\Exception $exception) {
+            \DB::rollBack(); // rollback the changes
+            return $this->sendError(null, $this->debug ? $exception->getMessage() : null);
+        }
+
     }
 }

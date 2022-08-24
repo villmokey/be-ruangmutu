@@ -17,6 +17,10 @@ class Event extends AppModel
         'name',
         'slug',
         'start_date',
-        'end_date'
+        'end_date',
+        'description',
+        'is_realized',
+        'created_id',
+        'program_id'
     ];
 }
