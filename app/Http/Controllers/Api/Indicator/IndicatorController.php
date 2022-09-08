@@ -137,9 +137,9 @@ class IndicatorController extends ApiController
         }
     }
 
-    public function getSignature($id): \Illuminate\Http\JsonResponse
+    public function getSignature($id, Request $request): \Illuminate\Http\JsonResponse
     {
-        $result = $this->indicatorService->getSignature($id);
+        $result = $this->indicatorService->getSignature($id, $request);
 
         try {
             if ($result->success) {

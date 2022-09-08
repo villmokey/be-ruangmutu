@@ -24,7 +24,22 @@ class DashboardController extends ApiController
 
     public function indicator(Request $request): \Illuminate\Http\JsonResponse
     {
-        $result = $this->dashboardService->dashboard();
+        $input = $request;
+        $result = $this->dashboardService->dashboard($input);
+
+        try {
+            if ($result->success) {
+                return $this->sendSuccess($result->data, $result->message, $result->code);
+            }
+
+            return $this->sendError($result->data, $result->message, $result->code);
+        } catch (Exception $exception) {
+            return $this->sendError($exception->getMessage(),"",500);
+        }
+    }
+
+    public function cardlist(Request $request) {
+        $result = $this->dashboardService->indicatorDataList($request);
 
         try {
             if ($result->success) {

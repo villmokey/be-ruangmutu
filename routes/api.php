@@ -59,7 +59,10 @@ Route::middleware('api')->prefix('v1')->group(function(){
     Route::put('sub-program/{id}/status', [SubProgramController::class,'updatePublish']);
 
     // Quality Indicator Profile
+    Route::get('indicator-aprroval/info', [IndicatorProfileController::class,'getApprovalInformation'])->name('getApprovalInformation');
     Route::apiResource('indicator-profile', IndicatorProfileController::class);
+    Route::get('indicator-profile/generate/{id}', [IndicatorProfileController::class,'generateProfileIndicator'])->name('generateProfileIndicator');
+    Route::get('indicator-profile/chart/{id}', [IndicatorProfileController::class,'getChartDataById']);
     Route::get('indicator-profile/{id}/signature', [IndicatorProfileController::class,'getSignature']);
     Route::post('indicator-profile/{id}/status', [IndicatorProfileController::class,'changeStatus']);
 
@@ -83,6 +86,7 @@ Route::middleware('api')->prefix('v1')->group(function(){
 
     // Dashboard
     Route::get('dashboard/indicator', [DashboardController::class,'indicator']);
+    Route::get('dashboard/indicator/cardlist', [DashboardController::class,'cardlist']);
 
     // File Upload
     Route::post('/upload/image',[FileUploadController::class,'uploadImage']);

@@ -20,7 +20,7 @@ class UserSeeder extends Seeder
     {
         $admin = User::create([
             'id' => "00000000-0000-1111-1111-000000000011",
-            'name' => 'admin',
+            'name' => 'Anton Admin',
             'email' => 'admin@imut.id',
             'email_verified_at' => now(),
             'password' => Hash::make('Secret123!'),
@@ -32,7 +32,7 @@ class UserSeeder extends Seeder
 
         $staff = User::create([
             'id' => "00000000-0000-1111-1111-000000000012",
-            'name' => 'staff',
+            'name' => 'Sarah Staff',
             'email' => 'staff@imut.id',
             'email_verified_at' => now(),
             'password' => Hash::make('Secret123!'),
@@ -44,7 +44,7 @@ class UserSeeder extends Seeder
 
         $staff = User::create([
             'id' => "00000000-0000-1111-1111-000000000013",
-            'name' => 'guest',
+            'name' => 'Galih Guest',
             'email' => 'guest@imut.id',
             'email_verified_at' => now(),
             'password' => Hash::make('Secret123!'),

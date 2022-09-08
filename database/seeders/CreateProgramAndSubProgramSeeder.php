@@ -19,6 +19,7 @@ class CreateProgramAndSubProgramSeeder extends Seeder
         // Admen Progam and Sub Program
         $admen = Program::create([
             'name' => 'Admen',
+            'color' => '#afeeee',
         ]);
 
         SubProgram::create([
@@ -45,6 +46,7 @@ class CreateProgramAndSubProgramSeeder extends Seeder
         // UKM Progam and Sub Program
         $ukm = Program::create([
             'name' => 'UKM',
+            'color' => '#edd7b0'
         ]);
 
         SubProgram::create([
@@ -63,6 +65,7 @@ class CreateProgramAndSubProgramSeeder extends Seeder
         // UKP Progam and Sub Program
         $ukp = Program::create([
             'name' => 'UKP',
+            'color' => '#cef266'
         ]);
 
         SubProgram::create([

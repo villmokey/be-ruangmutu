@@ -203,8 +203,12 @@ class IndicatorService extends AppService implements AppServiceInterface
         }
     }
 
-    public function getSignature($id)
+    public function getSignature($id, $input)
     {
+        $program_id = $input->get('program_id', null);
+        $year = $input->get('year', null);
+        $status = $input->get('status', null);
+
         $result = $this->model->newQuery()
                                 ->whereHas('signature', function($query) use ($id) {
                                     $query->where('user_id', $id);
@@ -212,6 +216,15 @@ class IndicatorService extends AppService implements AppServiceInterface
                                 ->with('profileIndicator')
                                 ->with('subProgram')
                                 ->with('signature')
+                                ->when($program_id, function ($query, $program_id) {
+                                    return $query->whereIn('program_id', explode(',', $program_id));
+                                })
+                                ->when($status, function ($query, $status) {
+                                    return $query->where('status', $status === 'signed' ? '>' : '=', 0);
+                                })
+                                ->when($year, function ($query, $year) {
+                                    return $query->whereYear('created_at', $year);
+                                })
                                 ->get();
 
         return $this->sendSuccess($result);

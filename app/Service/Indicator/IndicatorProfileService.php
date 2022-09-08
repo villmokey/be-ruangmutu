@@ -12,6 +12,7 @@ use App\Models\Table\IndicatorProfileAnalystPeriodTable;
 use App\Models\Table\IndicatorProfileDataPeriodTable;
 use App\Models\Table\IndicatorProfileDataFrequencyTable;
 use App\Models\Table\FileTable;
+use App\Models\Table\IndicatorTable;
 
 use App\Service\AppService;
 use App\Service\AppServiceInterface;
@@ -30,10 +31,12 @@ class IndicatorProfileService extends AppService implements AppServiceInterface
     protected $analystPeriodTable;
     protected $dataPeriodTable;
     protected $dataFrequencyTable;
+    protected $indicator;
 
     public function __construct(
         FileUploadService $fileUploadService,
         FileTable $fileTable,
+        IndicatorTable $indicator,
         IndicatorProfileSignatureTable $signatureTable,
         IndicatorProfileDimensionTable $dimensionTable,
         IndicatorProfileTypeTable $typeTable,
@@ -51,6 +54,7 @@ class IndicatorProfileService extends AppService implements AppServiceInterface
         $this->analystPeriodTable   =   $analystPeriodTable;
         $this->dataPeriodTable      =   $dataPeriodTable;
         $this->dataFrequencyTable   =   $dataFrequencyTable;
+        $this->indicator            =   $indicator;
         parent::__construct($model);
     }
 
@@ -364,15 +368,69 @@ class IndicatorProfileService extends AppService implements AppServiceInterface
         }
     }
 
-    public function getSignature($id)
+    public function getSignature($id, $input)
     {
+        $program_id = $input->get('program_id', null);
+        $year = $input->get('year', null);
+        $status = $input->get('status', null);
+
         $result = $this->model->newQuery()
                                 ->whereHas('signature', function($query) use ($id) {
                                     $query->where('user_id', $id);
                                 })
                                 ->with('subProgram')
                                 ->with('signature')
+                                ->when($program_id, function ($query) use ($program_id) {
+                                    return $query->whereIn('program_id', explode(',', $program_id));
+                                })
+                                ->when($status, function ($query) use ($status) {
+                                    return $query->where('status', $status === 'signed' ? '>' : '=', 0);
+                                })
+                                ->when($year, function ($query) use ($year) {
+                                    return $query->whereYear('created_at', $year);
+                                })
                                 ->get();
+
+        return $this->sendSuccess($result);
+    }
+
+    public function getApprovalInformation() {
+        $profile['approval']        = $this->model->newQuery()->count();
+
+        $profile['approved']        = $this->model->newQuery()
+                                        ->where('status', 3)->count();
+
+        $profile['new_approval']    = $this->model->newQuery()
+                                        ->where('status', 0)->count();
+        $ind['approval']            = $this->indicator->newQuery()->count();
+        $ind['approved']            = $this->indicator->newQuery()
+                                        ->where('status', 3)->count();
+        $ind['new_approval']        = $this->indicator->newQuery()
+                                        ->where('status', 0)->count();
+        
+        $result['approval']         = $profile['approval'] + $ind['approval'];
+        $result['approved']         = $profile['approved'] + $ind['approved'];
+        $result['new_approval']     = $profile['new_approval'] + $ind['new_approval'];
+
+        return $this->sendSuccess($result);
+    }
+
+    public function getChartDataById ($id) {
+        $indicatorProfile   =   $this->model->newQuery()->find($id);
+
+        $result['profile_target'] = 0;
+        $result['data'] = [];
+
+        if($indicatorProfile) {
+            $result['profile_target'] = $indicatorProfile->achievement_target;
+
+            foreach($indicatorProfile->indicator as $profile) {
+                $result['data'][] = [
+                    'month' => $profile->month,
+                    'value' => $profile->month_target
+                ];
+            }
+        }
 
         return $this->sendSuccess($result);
     }

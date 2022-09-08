@@ -24,6 +24,7 @@ class DocumentTypeService extends AppService implements AppServiceInterface
                                 ->when($search, function ($query, $search) {
                                     return $query->where('name','like','%'.$search.'%');
                                 })
+                                ->orderBy('name', 'DESC')
                                 ->get();
 
         return $this->sendSuccess($result);
