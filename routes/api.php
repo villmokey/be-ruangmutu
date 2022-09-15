@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\Indicator\IndicatorController;
 use App\Http\Controllers\Api\Master\User\UserController;
 use App\Http\Controllers\Api\Document\DocumentController;
 use App\Http\Controllers\Api\Dashboard\DashboardController;
+use App\Http\Controllers\Api\OperationalStandard\OperationalStandardController;
 use App\Http\Controllers\Api\Event\EventController;
 
 /*
@@ -83,6 +84,9 @@ Route::middleware('api')->prefix('v1')->group(function(){
     // Event
     Route::apiResource('event', EventController::class);
     Route::put('event/realize/{id}', [EventController::class, 'realized']);
+    
+    // OperationalStandard
+    Route::apiResource('operational-standard', OperationalStandardController::class);
 
     // Dashboard
     Route::get('dashboard/indicator', [DashboardController::class,'indicator']);

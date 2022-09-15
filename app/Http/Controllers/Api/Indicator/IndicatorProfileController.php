@@ -301,7 +301,7 @@ class IndicatorProfileController extends ApiController
                     ]
                   ];
 
-              $qrCode = QrCode::merge('https://www.seeklogo.net/wp-content/uploads/2016/09/facebook-icon-preview-1.png', .3, true)->size(60)->generate('Make me into a QrCode!');
+              $qrCode = QrCode::size(60)->generate(env('FRONTEND_URL', 'http://localhost:3000') . '/view-file/indicator-profile/' . $id);
             //   $qrCode = QrCode::format('png')->merge('https://www.seeklogo.net/wp-content/uploads/2016/09/facebook-icon-preview-1.png', .3, true)->size(200)->generate('http://www.simplesoftware.io');
               $result = $this->indicatorProfileService->getById($id);
             try {

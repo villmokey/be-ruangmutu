@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>{{ $data->title ?? 'Profile Indikator Mutu' }}</title>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .container {
+            padding: 0 20px;
+        }
+
+        .text-1 {
+            color: #5A7D7C;
+            font-size: 18px;
+            font-weight: bold;
+            line-height: 10px;
+        }
+
+        .italic {
+            font-style: italic;
+        }
+
+        .text-2 {
+            color: #5A7D7C;
+            font-size: 12px;
+            font-weight: bold;
+            line-height: 22px;
+            margin: 2px 0;
+        }
+
+        .header {
+            text-align: center;
+        }
+
+        .row {
+            display: flex !important;
+        }
+
+        .row .col {
+            flex: 1;
+            padding: 10px
+        }
+
+        input[type="checkbox"] {
+            vertical-align: middle;
+        }
+
+
+        .box {
+            background: #FFFFFF;
+            border: 2px solid #6A9695;
+            padding: 5px;
+            font-size: 12px;
+        }
+
+        .qr-box {
+            height: 60px;
+            width: 60px;
+            padding: 3px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid black;
+            margin-bottom: 10px;
+        }
+
+        .header-line {
+            margin: 0 0 10px 0;
+        }
+
+        hr {
+            color: #6A9695;
+        }
+
+        .footer-line {
+            margin: 10px 0 0 0;
+        }
+
+        .d-flex {
+            display: flex;
+        }
+
+        .p-none {
+            padding: 0;
+        }
+
+        .m-none {
+            margin: 0;
+        }
+
+        .f-12 {
+            font-size: 12px;
+        }
+
+        .text-bg {
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+            background: #6A9695;
+            padding: 8px 6px;
+        }
+
+        .column-left {
+            padding: 0 10px 0 0;
+        }
+
+        .column-right {
+            padding: 0 0 0 10px;
+        }
+
+        label {
+            font-size: 12px;
+            color: #6A9695;
+            align-items: center;
+        }
+
+        @page {
+            margin: 100px 25px 130px 25px;
+        }
+
+        header {
+            position: fixed;
+            top: -60px;
+            left: 0px;
+            right: 0px;
+            height: 50px;
+
+        }
+
+        footer {
+            position: fixed;
+            bottom: -40px;
+            left: 0px;
+            right: 0px;
+            height: 50px;
+        }
+
+        input[type=checkbox] {
+            flex: 1;
+        }
+
+        label {
+            display: flex;
+            align-items: center;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div>
+            <img src="https://via.placeholder.com/150" style="width: 120px; height: 30px;margin: 0 0 -3px -5px;" />
+        </div>
+        <hr class="header-line" />
+    </header>
+    <footer>
+        <div class="qr-box" id="qrcode-2">
+            <img src="data:image/png;base64, {!! $qrcode !!}">
+        </div>
+        <hr class="footer-line" style="margin: 0 0 !important" />
+        <table width='100%'>
+            <tr>
+                <td>
+                    <div class="d-flex italic" style="flex-direction: column; color: black;">
+                        <p class="p-none m-none f-12">Dilarang menduplikat dokumen tanpa izin Manajemen Mutu</p>
+                        <p class="p-none m-none f-12">Puskesmas Kecamatan Gambir</p>
+                    </div>
+                </td>
+                <td>
+                    <div class="text-bg " style="text-align: center;">
+                        PUSKESMAS KECAMATAN GAMBIR
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </footer>
+    <main>
+        <div class="container">
+            <table width="100%">
+                <thead>
+                    <tr>
+                        <td rowspan="5">
+                            <div class="box">
+                                <img src="https://via.placeholder.com/150" />
+                            </div>
+                        </td>
+                        <td colspan="3">
+                            <div class="box">NAMA SOP</div>
+                        </td>
+                        <td rowspan="5">
+                            <div class="box">
+                                <img src="https://via.placeholder.com/150" />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td rowspan="4">
+                            <div class="box" style="writing-mode: tb; text-orientation: upright;">
+                                SOP
+                            </div>
+                        </td>
+                        <td>
+                            <div class="box">No Dokumen</div>
+                        </td>
+                        <td>
+                            <div class="box">SOP/1/2022</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="box">
+                                No Revisi
+                            </div>
+                        </td>
+                        <td>
+                            <div class="box">SOP/REV/2022</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="box">Tanggal Terbit</div>
+                        </td>
+                        <td>
+                            <div class="box">2020-02-21</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="box">Halaman</div>
+                        </td>
+                        <td>
+                            <div style="display: flex; align-items: center;">
+                                <div class="box">
+                                    1
+                                </div>
+                                Dari
+                                <div class="box">
+                                    10
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </main>
+</body>
+
+</html>
+
+<!-- <div class="d-flex" style="justify-content: space-between; align-items: center;">
+    <div class="d-flex italic" style="flex-direction: column;">
+        <p class="p-none m-none f-12">Dilarang menduplikat dokumen tanpa izin Manajemen Mutu</p>
+        <p class="p-none m-none f-12">Puskesmas Kecamatan Gambir</p>
+    </div>
+    <div class="d-flex" style="align-items: center">
+        <p class="p-none m-none f-12" style="margin-right: 10px;">Halaman 1 dari 5</p>
+        <div class="text-bg">
+            PUSKESMAS KECAMATAN GAMBIR
+        </div>
+
+    </div>
+</div> -->
