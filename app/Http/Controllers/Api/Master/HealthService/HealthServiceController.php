@@ -1,23 +1,25 @@
 <?php
 
-namespace App\Http\Controllers\Api\Master\Program;
+namespace App\Http\Controllers\Api\Master\HealthService;
 
 use App\Http\Controllers\ApiController;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\Master\Program\CreateSubProgramRequest;
-use App\Http\Requests\Api\Master\Program\UpdateSubProgramRequest;
-use App\Service\Master\Program\SubProgramService;
+use App\Http\Modals\Entity\HealthService;
+use App\Http\Requests\Api\Master\HealthService\CreateHealthServiceRequest;
+use App\Http\Requests\Api\Master\User\UpdateUserRequest;
+use App\Service\Master\HealthService\HealthServiceService;
 use Illuminate\Http\Request;
 
-class SubProgramController extends ApiController
+class HealthServiceController extends ApiController
 {
-    protected $subProgramService;
+    protected $healthService;
 
     public function __construct(
-        SubProgramService $subProgramService,
-        Request $request)
+        HealthServiceService $healthService,
+        Request $request
+    )
     {
-        $this->subProgramService    =   $subProgramService;
+        $this->healthService    =   $healthService;
         parent::__construct($request);
         $this->middleware('auth:api', ['except' => ['index', 'show']]);
     }
@@ -28,12 +30,11 @@ class SubProgramController extends ApiController
         $page           = $this->request->query('page', null);
         $perPage        = $this->request->query('per_page', 15);
         $paginate       = $this->request->query('paginate', true);
-        $filter         = $this->request->query('filter', null);
 
         if ($paginate == 'true' || $paginate == '1') {
-            $result = $this->subProgramService->getPaginated($search, $perPage, $page, $filter);
+            $result = $this->healthService->getPaginated($search, $perPage, $page);
         } else {
-            $result = $this->subProgramService->getAll($search);
+            $result = $this->healthService->getAll($search);
         }
 
         try {
@@ -47,10 +48,10 @@ class SubProgramController extends ApiController
         }
     }
 
-    public function store(CreateSubProgramRequest $request): \Illuminate\Http\JsonResponse
+    public function store(CreateHealthServiceRequest $request): \Illuminate\Http\JsonResponse
     {
         $input  =   $request->all();
-        $result =   $this->subProgramService->create($input);
+        $result =   $this->healthService->create($input);
 
         try {
             if ($result->success) {
@@ -64,10 +65,27 @@ class SubProgramController extends ApiController
         }
     }
 
-    public function update($id, UpdateSubProgramRequest $request): \Illuminate\Http\JsonResponse
+    public function assignServiceUnit(Request $request): \Illuminate\Http\JsonResponse
     {
         $input  =   $request->all();
-        $result =   $this->subProgramService->update($id,$input);
+        $result =   $this->healthService->assignServiceUnit($input);
+        
+        try {
+            if ($result->success) {
+                $response = $result->data;
+                return $this->sendSuccess($response, $result->message, $result->code);
+            }
+
+            return $this->sendError($result->data, $result->message, $result->code);
+        } catch (\Exception $exception) {
+            return $this->sendError($exception->getMessage(),"",500);
+        }
+    }
+
+    public function update($id, UpdateUserRequest $request): \Illuminate\Http\JsonResponse
+    {
+        $input  =   $request->all();
+        $result =   $this->healthService->update($id,$input);
 
         try {
             if ($result->success) {
@@ -83,7 +101,7 @@ class SubProgramController extends ApiController
 
     public function destroy($id): \Illuminate\Http\JsonResponse
     {
-        $result =   $this->subProgramService->delete($id);
+        $result =   $this->healthService->delete($id);
         try {
             if ($result->success) {
                 $response = $result->data;
@@ -98,7 +116,7 @@ class SubProgramController extends ApiController
 
     public function show($id): \Illuminate\Http\JsonResponse
     {
-        $result = $this->subProgramService->getById($id);
+        $result = $this->healthService->getById($id);
 
         try {
             if ($result->success) {
@@ -107,22 +125,6 @@ class SubProgramController extends ApiController
 
             return $this->sendError($result->data, $result->message, $result->code);
         } catch (Exception $exception) {
-            return $this->sendError($exception->getMessage(),"",500);
-        }
-    }
-
-    public function updatePublish($id): \Illuminate\Http\JsonResponse
-    {
-        $result =   $this->subProgramService->updatePublish($id);
-
-        try {
-            if ($result->success) {
-                $response = $result->data;
-                return $this->sendSuccess($response, $result->message, $result->code);
-            }
-
-            return $this->sendError($result->data, $result->message, $result->code);
-        } catch (\Exception $exception) {
             return $this->sendError($exception->getMessage(),"",500);
         }
     }

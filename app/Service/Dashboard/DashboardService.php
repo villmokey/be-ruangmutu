@@ -30,9 +30,10 @@ class DashboardService extends AppService
         $unreached = 0;
         $year = $input->get('year', null);
         $program_id = $input->get('program_id', null);
+        $type = $input->get('type', 'quality');
 
-        $total = $this->indicator->newQuery()->count();
-        $queryUnreached = $this->model->newQuery()->with(['indicator'])->get();
+        $total = $this->indicator->newQuery()->where('type', $type)->count();
+        $queryUnreached = $this->model->newQuery()->with(['indicator'])->where('type', $type)->get();
 
         foreach ($queryUnreached as $item) {
             if(count($item->indicator) > 0) {
@@ -45,8 +46,12 @@ class DashboardService extends AppService
         }
 
 
-        $selected = $this->indicator->newQuery()->when($program_id, function ($query) use($program_id) {
+        $selected = $this->indicator->newQuery()
+                    ->when($program_id, function ($query) use($program_id) {
                         return $query->where('program_id', $program_id);
+                    })
+                    ->when($type, function ($query) use($type) {
+                        return $query->where('type', $type);
                     })
                     ->when($year, function ($query) use($year) {
                         return $query->where('created_at', 'LIKE', $year . '%');
@@ -65,6 +70,9 @@ class DashboardService extends AppService
                                 ->has('indicator')
                                 ->when($program_id, function ($query) use($program_id) {
                                     return $query->whereIn('program_id', explode(',', $program_id));
+                                })
+                                ->when($type, function ($query) use($type) {
+                                    return $query->whereIn('type', explode(',', $type));
                                 })
                                 ->when($year, function ($query) use($year) {
                                     return $query->where('created_at', 'LIKE', $year . '%');
@@ -87,6 +95,7 @@ class DashboardService extends AppService
                 )
             ->where('title', $value->id)
             ->where('sub_program_id', $value->sub_program_id)
+            // ->where('type', $value->type)
             ->join('sub_programs', 'sub_programs.id', '=', 'indicators.sub_program_id')
             ->get()
             ->toArray();
@@ -103,14 +112,18 @@ class DashboardService extends AppService
     public function indicatorDataList($input) {
         $year = $input->get('year', null);
         $program_id = $input->get('program_id', null);
+        $document_type = $input->get('document_type', null);
         $type = $input->get('type', null);
 
         $results = [];
-        if(!$type || $type === 'indicator') {
+        if(!$document_type || $document_type === 'indicator') {
             $indicators = $this->indicator->newQuery()
                                     ->with(['profileIndicator','program', 'subProgram'])                        
                                     ->when($program_id, function ($query) use($program_id) {
                                         return $query->whereIn('program_id', explode(',', $program_id));
+                                    })
+                                    ->when($type, function ($query) use($type) {
+                                        return $query->where('type', $type);
                                     })
                                     ->when($year, function ($query) use($year) {
                                         return $query->where('created_at', 'LIKE', $year . '%');
@@ -129,7 +142,7 @@ class DashboardService extends AppService
             
         }
         
-        if (!$type || $type === 'indicator_profile') {
+        if (!$document_type || $document_type === 'indicator_profile') {
             $profiles = $this->model->newQuery()
             ->with(['program', 'subProgram'])                        
                                     ->when($program_id, function ($query) use($program_id) {
@@ -137,6 +150,9 @@ class DashboardService extends AppService
                                     })
                                     ->when($year, function ($query) use($year) {
                                         return $query->where('created_at', 'LIKE', $year . '%');
+                                    })
+                                    ->when($type, function ($query) use($type) {
+                                        return $query->where('type', $type);
                                     })->get();
             
             foreach ($profiles as $ind) {

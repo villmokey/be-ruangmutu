@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Requests\Api\Master\Program;
+namespace App\Http\Requests\Api\Master\HealthService;
 
 use App\Http\Requests\InitialRequestValidation;
 use Illuminate\Foundation\Http\FormRequest;
 
-class CreateProgramRequest extends FormRequest
+class CreateHealthServiceRequest extends FormRequest
 {
     use InitialRequestValidation;
     /**
@@ -26,17 +26,15 @@ class CreateProgramRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' =>  'required|unique:programs',
-            'color' => 'required'
+            'name'      =>  'required|string|max:100|unique:health_services',
         ];
     }
 
     public function messages()
     {
         return [
-            'name.required'     =>  'Nama Program tidak boleh kosong',
-            'name.unique'     =>  'Nama Program telah ditambahkan sebelumnya',
-            'color.required'     =>  'Inisial warna tidak boleh kosong',
+            'name.required'       =>  'Nama layanan kesehatan tidak boleh kosong',
+            'name.unique'         =>  'Layanan kesehatan telah ditambahkan sebelumnya',
         ];
     }
 }

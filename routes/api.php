@@ -7,7 +7,8 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Api\Utils\FileUploadController;
 use App\Http\Controllers\Api\Master\Document\DocumentTagController;
 use App\Http\Controllers\Api\Master\Document\DocumentTypeController;
-use App\Http\Controllers\Api\Master\Service\ServiceUnitController;
+use App\Http\Controllers\Api\Master\ServiceUnit\ServiceUnitController;
+use App\Http\Controllers\Api\Master\HealthService\HealthServiceController;
 use App\Http\Controllers\Api\Master\Program\ProgramController;
 use App\Http\Controllers\Api\Master\Program\SubProgramController;
 use App\Http\Controllers\Api\Indicator\IndicatorProfileController;
@@ -80,6 +81,13 @@ Route::middleware('api')->prefix('v1')->group(function(){
 
     // Document
     Route::apiResource('document', DocumentController::class);
+
+    // Health Service
+    Route::apiResource('health-service', HealthServiceController::class);
+    Route::post('health-service/assign-unit', [HealthServiceController::class, 'assignServiceUnit']);
+
+    //  Unit
+    Route::apiResource('service-unit', ServiceUnitController::class);
 
     // Event
     Route::apiResource('event', EventController::class);

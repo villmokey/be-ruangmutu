@@ -30,13 +30,16 @@ class SubProgramService extends AppService implements AppServiceInterface
         return $this->sendSuccess($result);
     }
 
-    public function getPaginated($search = null, $perPage = 15, $page = null)
+    public function getPaginated($search = null, $perPage = 15, $page = null, $filter = null)
     {
         $result  = $this->model->newQuery()
                                 ->where('is_publish', true)
                                 ->with('program')
                                 ->when($search, function ($query, $search) {
                                     return $query->where('name','like','%'.$search.'%');
+                                })
+                                ->when($filter, function ($query, $filter) {
+                                    return $query->where('program_id', $filter);
                                 })
                                 ->orderBy('created_at','DESC')
                                 ->paginate((int)$perPage, ['*'], null, $page);

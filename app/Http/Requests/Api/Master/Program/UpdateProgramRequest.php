@@ -27,6 +27,7 @@ class UpdateProgramRequest extends FormRequest
     {
         return [
             'name' =>  'required',
+            'color' =>  'required',
         ];
     }
 
@@ -34,6 +35,7 @@ class UpdateProgramRequest extends FormRequest
     {
         return [
             'name.required'     =>  'Nama Program Tidak boleh kosong',
+            'color.required'     =>  'Inisial warna Tidak boleh kosong',
         ];
     }
 }

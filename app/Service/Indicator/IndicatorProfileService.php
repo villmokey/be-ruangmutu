@@ -58,11 +58,14 @@ class IndicatorProfileService extends AppService implements AppServiceInterface
         parent::__construct($model);
     }
 
-    public function getAll($search = null, $year = null, $subProgram = null)
+    public function getAll($search = null, $year = null, $subProgram = null, $type = null)
     {
         $result =   $this->model->newQuery()
                                 ->when($search, function ($query, $search) {
                                     return $query->where('title','like','%'.$search.'%');
+                                })
+                                ->when($type, function ($query, $type) {
+                                    return $query->where('type', $type);
                                 })
                                 ->when($year, function ($query, $year) {
                                     return $query->whereYear('created_at', $year);
@@ -75,11 +78,14 @@ class IndicatorProfileService extends AppService implements AppServiceInterface
         return $this->sendSuccess($result);
     }
 
-    public function getPaginated($search = null, $year = null, $subProgram = null, $perPage = 15, $page = null)
+    public function getPaginated($search = null, $year = null, $subProgram = null, $perPage = 15, $page = null, $type = null)
     {
         $result  = $this->model->newQuery()
                                 ->when($search, function ($query, $search) {
                                     return $query->where('title','like','%'.$search.'%');
+                                })
+                                ->when($type, function ($query, $type) {
+                                    return $query->where('type', $type);
                                 })
                                 ->when($year, function ($query, $year) {
                                     return $query->whereYear('created_at', $year);
@@ -140,6 +146,7 @@ class IndicatorProfileService extends AppService implements AppServiceInterface
                 'second_pic_id'             =>  $data['second_pic_id'] ?? null,
                 'created_by'                =>  $data['created_by'],
                 'assign_by'                 =>  $data['assign_by'],
+                'type'                      =>  $data['type'],
             ]);
 
             $this->relationStore($data, $indicatorProfile->id);
@@ -373,6 +380,7 @@ class IndicatorProfileService extends AppService implements AppServiceInterface
         $program_id = $input->get('program_id', null);
         $year = $input->get('year', null);
         $status = $input->get('status', null);
+        $type = $input->get('type', null);
 
         $result = $this->model->newQuery()
                                 ->whereHas('signature', function($query) use ($id) {
@@ -385,6 +393,9 @@ class IndicatorProfileService extends AppService implements AppServiceInterface
                                 })
                                 ->when($status, function ($query) use ($status) {
                                     return $query->where('status', $status === 'signed' ? '>' : '=', 0);
+                                })
+                                ->when($type, function ($query) use ($type) {
+                                    return $query->where('type', $type);
                                 })
                                 ->when($year, function ($query) use ($year) {
                                     return $query->whereYear('created_at', $year);

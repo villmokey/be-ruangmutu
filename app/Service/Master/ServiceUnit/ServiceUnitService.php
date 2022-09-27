@@ -1,28 +1,36 @@
 <?php
 
 
-namespace App\Service\Master\Program;
+namespace App\Service\Master\ServiceUnit;
 
+use Illuminate\Support\Facades\Hash;
 
-use App\Models\Table\ProgramTable;
+use App\Models\Entity\User;
+use App\Models\Entity\Role;
+use App\Models\Entity\ServiceUnit;
+
+use App\Models\Table\ServiceUnitTable;
+use App\Models\Table\FileTable;
+
 use App\Service\AppService;
 use App\Service\AppServiceInterface;
+use App\Service\FileUploadService;
+
 use Illuminate\Database\Eloquent\Model;
 
-class ProgramService extends AppService implements AppServiceInterface
+class ServiceUnitService extends AppService implements AppServiceInterface
 {
-
-    public function __construct(ProgramTable $model)
+    public function __construct(
+        ServiceUnitTable $model
+    )
     {
         parent::__construct($model);
+
     }
 
     public function getAll($search = null)
     {
         $result =   $this->model->newQuery()
-                                ->where('is_publish', true)
-                                ->with('pic')
-                                ->with('subPrograms')
                                 ->when($search, function ($query, $search) {
                                     return $query->where('name','like','%'.$search.'%');
                                 })
@@ -34,9 +42,6 @@ class ProgramService extends AppService implements AppServiceInterface
     public function getPaginated($search = null, $perPage = 15, $page = null)
     {
         $result  = $this->model->newQuery()
-                                ->where('is_publish', true)
-                                ->with('pic')
-                                ->with('subPrograms')
                                 ->when($search, function ($query, $search) {
                                     return $query->where('name','like','%'.$search.'%');
                                 })
@@ -48,7 +53,7 @@ class ProgramService extends AppService implements AppServiceInterface
 
     public function getById($id)
     {
-        $result = $this->model->newQuery()->with('subPrograms')->find($id);
+        $result = $this->model->newQuery()->find($id);
 
         return $this->sendSuccess($result);
     }
@@ -58,15 +63,13 @@ class ProgramService extends AppService implements AppServiceInterface
         \DB::beginTransaction();
 
         try {
-
-            $serviceUnit = $this->model->newQuery()->create([
-                'pic_id'  =>  $data['pic_id'] ?? null,
-                'name'    =>  $data['name'],
-                'color'    =>  $data['color'],
+            $unit = ServiceUnit::create([
+                'name'       =>  $data['name'],
+                'created_id' => \Auth::user()->id
             ]);
 
             \DB::commit(); // commit the changes
-            return $this->sendSuccess($serviceUnit);
+            return $this->sendSuccess($unit);
         } catch (\Exception $exception) {
             \DB::rollBack(); // rollback the changes
             return $this->sendError(null, $this->debug ? $exception->getMessage() : null);
@@ -75,19 +78,17 @@ class ProgramService extends AppService implements AppServiceInterface
 
     public function update($id, $data)
     {
-        $serviceUnit   =   $this->model->newQuery()->find($id);
+        $health  =  ServiceUnit::find($id);
 
         \DB::beginTransaction();
 
         try {
 
-            $serviceUnit->pic_id  =   $data['pic_id'] ?? null;
-            $serviceUnit->name    =   $data['name'];
-            $serviceUnit->color   =   $data['color'];
-            $serviceUnit->save();
+            $health->name          =   $data['name'];
+            $health->save();
 
             \DB::commit(); // commit the changes
-            return $this->sendSuccess($serviceUnit);
+            return $this->sendSuccess($health);
         } catch (\Exception $exception) {
             \DB::rollBack(); // rollback the changes
             return $this->sendError(null, $this->debug ? $exception->getMessage() : null);
@@ -101,24 +102,6 @@ class ProgramService extends AppService implements AppServiceInterface
             $read->delete();
             \DB::commit(); // commit the changes
             return $this->sendSuccess($read);
-        } catch (\Exception $exception) {
-            \DB::rollBack(); // rollback the changes
-            return $this->sendError(null, $this->debug ? $exception->getMessage() : null);
-        }
-    }
-
-    public function updatePublish($id)
-    {
-        $serviceUnit = $this->model->newQuery()->find($id);
-
-        \DB::beginTransaction();
-
-        try {
-            $serviceUnit->is_publish = $serviceUnit->is_publish ? false : true;
-            $serviceUnit->save();
-
-            \DB::commit(); // commit the changes
-            return $this->sendSuccess($serviceUnit);
         } catch (\Exception $exception) {
             \DB::rollBack(); // rollback the changes
             return $this->sendError(null, $this->debug ? $exception->getMessage() : null);

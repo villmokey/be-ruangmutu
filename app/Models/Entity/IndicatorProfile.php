@@ -37,5 +37,6 @@ class IndicatorProfile extends AppModel
         'created_by',
         'assign_by',
         'status',
+        'type'
     ];
 }

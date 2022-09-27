@@ -26,11 +26,11 @@ class UpdateUserRequest extends FormRequest
     public function rules()
     {
         return [
-            'nip'       =>  'string|max:255',
-            'name'      =>  'string|max:255',
-            'email'     =>  'string|email|max:255|unique:users,email,'.$this->user,
+            'nip'       =>  'required|string|max:255',
+            'name'      =>  'required|string|max:255',
+            'email'     =>  'required|string|email|max:255|unique:users,email,'.$this->user,
             'password'  =>  'string|min:6|confirmed',
-            'role_id'   =>  'string|exists:roles,id',
+            'role_id'   =>  'required|string|exists:roles,id',
         ];
     }
 

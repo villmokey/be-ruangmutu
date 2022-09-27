@@ -35,11 +35,12 @@ class IndicatorProfileController extends ApiController
         $paginate       = $this->request->query('paginate', true);
         $year           = $this->request->query('year', null);
         $subProgram     = $this->request->query('sub_program', null);
+        $type           = $this->request->query('type', 'quality');
 
         if ($paginate == 'true' || $paginate == '1') {
-            $result = $this->indicatorProfileService->getPaginated($search, $year, $subProgram, $perPage, $page);
+            $result = $this->indicatorProfileService->getPaginated($search, $year, $subProgram, $perPage, $page, $type);
         } else {
-            $result = $this->indicatorProfileService->getAll($search, $year, $subProgram);
+            $result = $this->indicatorProfileService->getAll($search, $year, $subProgram, $type);
         }
 
         try {

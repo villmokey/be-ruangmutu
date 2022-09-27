@@ -16,6 +16,7 @@ class Program extends AppModel
     protected $fillable =   [
         'pic_id',
         'name',
-        'is_publish'
+        'is_publish',
+        'color'
     ];
 }

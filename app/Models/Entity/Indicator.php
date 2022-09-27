@@ -31,5 +31,6 @@ class Indicator extends AppModel
         'created_by',
         'assign_by',
         'status',
+        'type'
     ];
 }
