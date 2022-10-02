@@ -17,4 +17,9 @@ class UserTable extends User
     {
         return $this->hasOne(ProgramTable::class, 'pic_id');
     }
+
+    public function position()
+    {
+        return $this->belongsTo(PositionTable::class, 'position_id');
+    }
 }

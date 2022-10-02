@@ -72,8 +72,7 @@ class UserService extends AppService implements AppServiceInterface
         \DB::beginTransaction();
 
         try {
-
-            $user = User::create([
+            $user = $this->model->newQuery()->create([
                 'nip'       =>  $data['nip'],
                 'name'      =>  $data['name'],
                 'email'     =>  $data['email'],
@@ -81,8 +80,12 @@ class UserService extends AppService implements AppServiceInterface
                 'status'    =>  'active',
             ]);
 
-            $role = Role::where('id', $data['role_id'])->first();
-            $user->assignRole($role->name);
+            if(isset($data['role_id'])) {
+                $staged = User::find($user->id);
+                $role = Role::where('id', $data['role_id'])->first();
+                $staged->assignRole($role->name);
+            }
+            // $user->assignRole($role->name);
 
             if (!empty($data['signature_id'])) {
                 $image = $this->fileTable->newQuery()->find($data['signature_id']);

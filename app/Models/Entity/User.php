@@ -22,6 +22,8 @@ class User extends AppAuthenticatable
         'password',
         'nip',
         'status',
+        'position_id',
+        'signature_id'
     ];
 
     /**

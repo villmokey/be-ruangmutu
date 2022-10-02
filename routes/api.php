@@ -18,6 +18,8 @@ use App\Http\Controllers\Api\Document\DocumentController;
 use App\Http\Controllers\Api\Dashboard\DashboardController;
 use App\Http\Controllers\Api\OperationalStandard\OperationalStandardController;
 use App\Http\Controllers\Api\Event\EventController;
+use App\Http\Controllers\Api\Master\Position\PositionController;
+use App\Http\Controllers\Api\Master\User\RoleController;
 
 /*
 |--------------------------------------------------------------------------
@@ -78,6 +80,7 @@ Route::middleware('api')->prefix('v1')->group(function(){
 
     // User
     Route::apiResource('user', UserController::class);
+    Route::get('role', [RoleController::class, 'index']);
 
     // Document
     Route::apiResource('document', DocumentController::class);
@@ -88,6 +91,9 @@ Route::middleware('api')->prefix('v1')->group(function(){
 
     //  Unit
     Route::apiResource('service-unit', ServiceUnitController::class);
+    
+    //  Unit
+    Route::apiResource('position', PositionController::class);
 
     // Event
     Route::apiResource('event', EventController::class);

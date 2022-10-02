@@ -30,7 +30,8 @@ class IndicatorTable extends Indicator{
 
     public function signature()
     {
-        return $this->hasMany(IndicatorSignatureTable::class, 'indicator_id')->with('user:id,nip,name')->select('id', 'indicator_id', 'user_id', 'signed', 'level', 'signed_at');
+        return $this->hasMany(IndicatorSignatureTable::class, 'indicator_id')->with(['user:id,nip,name,position_id','user.position:id,name', 'user.signature'])->select('id', 'indicator_id', 'user_id', 'signed', 'level', 'signed_at');
+
     }
 
     public function firstPic()

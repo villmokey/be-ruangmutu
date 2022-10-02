@@ -60,6 +60,10 @@ class File extends AppModel
     }
 
     public function getFileLinkAttribute () {
-        return \Storage::disk('minio')->temporaryUrl($this->file_path, \Carbon\Carbon::now()->addMinutes(5));
+        if(env('UPLOAD_STORAGE') && env('UPLOAD_STORAGE') === 'minio') {
+            return \Storage::disk('minio')->temporaryUrl($this->file_path, \Carbon\Carbon::now()->addMinutes(5));
+        }else {
+            return \Storage::disk('public')->url($this->file_path);
+        }
     }
 }
