@@ -10,10 +10,13 @@ use App\Models\Table\DocumentRelatedTable;
 use App\Models\Table\DocumentProgramTable;
 
 use App\Service\AppService;
+use App\Service\FileUploadService;
 use App\Service\AppServiceInterface;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+
+use setasign\Fpdi\Fpdi;
 
 class DocumentService extends AppService implements AppServiceInterface
 {
@@ -111,6 +114,116 @@ class DocumentService extends AppService implements AppServiceInterface
 
     public function create($data)
     {
+
+        \DB::beginTransaction();
+
+        try {
+
+            $document = $this->model->newQuery()->create([
+                'name'              =>  $data['name'],
+                'slug'              =>  Str::slug($data['name']),
+                'document_type_id'  =>  $data['document_type_id'],
+                'document_number'   =>  $data['document_number'],
+                'publish_date'      =>  $data['publish_date'],
+                'is_confidential'   =>  $data['is_confidential'],
+            ]);
+
+            if (isset($data['document_related'])) {
+                foreach($data['document_related'] as $doc) {
+                    $this->documentRelated->newQuery()->create([
+                        'document_id'            =>  $document->id,
+                        'related_document_id'    =>  $doc,
+                    ]);
+                }
+            }
+
+            if (isset($data['program_related'])) {
+                foreach($data['program_related'] as $program) {
+                    $this->programRelated->newQuery()->create([
+                        'document_id'            =>  $document->id,
+                        'program_id'             =>  $program,
+                    ]);
+                }
+            }
+
+            if (!empty($data['file_id'])) {
+                
+                $fileOriginData = $this->fileTable->newQuery()->find($data['file_id']);
+                
+                if($fileOriginData) {
+
+                    $filePathOrigin = $fileOriginData->file_path;
+
+                    try {
+                        // Source file and watermark config 
+                        $originalFile = 'storage/'.$filePathOrigin; 
+                        $generateQR = \QrCode::format('png')->size(120)->merge('/public/images/square_ruang_mutu.png', .3)->errorCorrection('H')->generate(
+                            config('app.frontend_url') . '/view-file/doc/' . $document->id); 
+
+                        $disk = env('UPLOAD_STORAGE', 'public');
+        
+                        $temporaryPath = 'uploads/temporary/';
+                        $temporaryName = uniqid().'-'. time() . '.png';
+        
+                        $makeImage = \App\Service\OperationalStandard\OperationalStandardService::fromBase64(base64_encode($generateQR), $temporaryName);
+                        $makeImage->storeAs($temporaryPath, $temporaryName, ['disk' => $disk]);
+                        $text_image = 'storage/'.$temporaryPath.$temporaryName;
+                        $pdf = new Fpdi(); 
+        
+                        if(file_exists(public_path($originalFile))){ 
+                            $pagecount = $pdf->setSourceFile($originalFile); 
+                        }else{ 
+                            return $this->sendError(null,  'Terjadi kesalahan, silahkan ulangi beberapa saat');
+                        } 
+         
+                        for($i=1;$i<=$pagecount;$i++){ 
+                            $tpl = $pdf->importPage($i); 
+                            $size = $pdf->getTemplateSize($tpl); 
+                            $pdf->addPage(); 
+                            $pdf->useTemplate($tpl, 1, 1, $size['width'], $size['height'], TRUE); 
+                            
+                            $xxx_final = ($size['width']-35); 
+                            $yyy_final = ($size['height']-275); 
+                            $pdf->Image($text_image, $xxx_final, $yyy_final, 0, 0, 'png'); 
+                        } 
+        
+                        // Remove qrcode and temporary file From Storage
+                        \Storage::disk($disk)->delete($temporaryPath.$temporaryName);
+                        \Storage::disk($disk)->delete($filePathOrigin);
+                        $fileOriginData->delete();
+        
+                        $newPdfName = FileUploadService::generateNewName() . '.pdf';
+                        $makeNewPdf = \App\Service\OperationalStandard\OperationalStandardService::fromBase64(base64_encode($pdf->Output('S', $newPdfName)), $newPdfName);
+
+                        $props = FileUploadService::directProcessFile($makeNewPdf);
+
+                        $props['disk'] = $disk;
+                        $props['group'] = 'document_files';
+                        $props['fileable_id'] = $document->id;
+                        $props['fileable_type'] = get_class($document);
+
+                        $finalSave = FileUploadService::directSaveToDb($props);
+            
+                    } catch (\Exception $e) {
+                        // return $e->getMessage();
+                        return $this->sendError(null,   $e->getMessage() ?? null);
+
+                    }
+                }
+            }
+
+
+            \DB::commit(); // commit the changes
+            return $this->sendSuccess($document);
+        } catch (\Exception $exception) {
+            \DB::rollBack(); // rollback the changes
+            return $this->sendError(null, $this->debug ? $exception->getMessage() : null);
+        }
+    }
+
+    public function backendCreate($data)
+    {
+
         \DB::beginTransaction();
 
         try {

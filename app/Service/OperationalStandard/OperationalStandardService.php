@@ -7,6 +7,7 @@ namespace App\Service\OperationalStandard;
 use App\Models\Table\OperationalStandardTable;
 use App\Models\Table\OperationalStandardUnitTable;
 use App\Models\Table\OperationalStandardHistoryTable;
+use App\Models\Table\DocumentTypeTable;
 use App\Models\Table\ProgramTable;
 use App\Models\Table\FileTable;
 use App\Service\Document\DocumentService;
@@ -28,6 +29,7 @@ class OperationalStandardService extends AppService implements AppServiceInterfa
     protected $program;
     protected $documentService;
     protected $uploadService;
+    protected $docTypeTable;
 
     public function __construct(
         OperationalStandardTable $model,
@@ -37,13 +39,15 @@ class OperationalStandardService extends AppService implements AppServiceInterfa
         FileTable $fileTable,
         DocumentService $documentService,
         FileUploadService $uploadService,
+        DocumentTypeTable $docTypeTable,
     ) {
         $this->opsUnit = $opsUnit;
-        $this->fileTable = $fileTable;
         $this->opsHistory = $opsHistory;
+        $this->fileTable = $fileTable;
         $this->documentService = $documentService;
         $this->program = $program;
         $this->uploadService = $uploadService;
+        $this->docTypeTable = $docTypeTable;
         parent::__construct($model);
     }
 
@@ -143,7 +147,7 @@ class OperationalStandardService extends AppService implements AppServiceInterfa
                 ]);
             }
 
-            if($r = $this->saveToDocuments($data, $image)){
+            if($this->saveToDocuments($data, $image)){
                 \DB::commit(); // commit the changes
                 return $this->sendSuccess($document);
             }else {
@@ -196,42 +200,54 @@ class OperationalStandardService extends AppService implements AppServiceInterfa
         \DB::beginTransaction();
 
         try {
+
+            $docType = $this->docTypeTable->newQuery()->where('name', 'SOP')->first();
+
+            if(!$docType) {
+                $docType = $this->docTypeTable->create([
+                    'name' => 'SOP'
+                ]);
+            }
+
             $params = [
                 'name'              =>  $data['name'],
                 'slug'              =>  Str::slug($data['name']),
-                'document_type_id'  =>  '599b8dd5-b329-4f02-b893-5437e898c26d',
+                'document_type_id'  =>  $docType->id,
                 'document_number'   =>  $data['document_number'],
                 'publish_date'      =>  $data['released_date'],
                 'is_confidential'   =>  'true',
             ];
     
-            $doc = $this->documentService->create($params);
+            $doc = $this->documentService->backendCreate($params);
             
             $flowImage = '';
+
             if($flowDiagram) {
-                $flowImage = base64_encode(\Storage::disk(env('UPLOAD_STORAGE', 'local'))->get($flowDiagram['file_path']));
+                $flowImage = base64_encode(\Storage::disk(env('UPLOAD_STORAGE', 'public'))->get($flowDiagram['file_path']));
             }
-try {
-    //code...
-    $props['data'] = $data;
-    $props['data']['flow_image'] = $flowImage;
-    $props['data']['programs'] = $this->program->newQuery()->select(['name'])->whereIn('id', explode(',' ,$data['related_program']))->get();
-} catch (\Exception $x) {
-    dd($x);
-}
+
             try {
-                //code...
-                $qrCode = \QrCode::size(60)->generate(env('FRONTEND_URL', 'http://localhost:3000') . '/view-file/sop/' . $doc->data->id);
+                $props['data'] = $data;
+                $props['data']['flow_image'] = $flowImage;
+                $props['data']['programs'] = $this->program->newQuery()->select(['name'])->whereIn('id', explode(',' ,$data['related_program']))->get();
+           
+            } catch (\Exception $x) {
+                dd($x);
+            }
+            try {
+                $qrCode = \QrCode::format('png')->size(60)->merge('/public/images/square_ruang_mutu.png', .3)->generate(env('FRONTEND_URL', 'http://localhost:3000') . '/view-file/sop/' . $doc->data->id);
                 $props['qrcode'] = base64_encode($qrCode);
-                $pdf = \PDF::loadView('print.sop', $props);        
-                $file_name = $params['slug'].'.pdf';
+                
+                $pdf = \PDF::loadView('print.sop', $props);
+                $file_name = $params['slug'].'.pdf';    
                 $file = $pdf->output();
                 $makeFile = $this->fromBase64(base64_encode($file), $file_name);
             } catch (\Exception $ex) {
                 dd($ex);
             }
+
             $upload = $this->uploadService->handleFile($makeFile)->saveToDb('operational_standard');
-            
+           
             if($upload && $upload->id) {
                 try {
                     $image = $this->fileTable->newQuery()->find($upload->id);
@@ -254,7 +270,7 @@ try {
         }        
     }
 
-    public function fromBase64(string $base64File, string $fname): UploadedFile
+    public static function fromBase64(string $base64File, string $fname): UploadedFile
     {
         try {
             //code...

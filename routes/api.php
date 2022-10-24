@@ -18,6 +18,8 @@ use App\Http\Controllers\Api\Document\DocumentController;
 use App\Http\Controllers\Api\Dashboard\DashboardController;
 use App\Http\Controllers\Api\OperationalStandard\OperationalStandardController;
 use App\Http\Controllers\Api\Event\EventController;
+use App\Http\Controllers\Api\Satisfaction\SatisfactionController;
+use App\Http\Controllers\Api\CustomerComplaint\CustomerComplaintController;
 use App\Http\Controllers\Api\Master\Position\PositionController;
 use App\Http\Controllers\Api\Master\User\RoleController;
 
@@ -92,9 +94,18 @@ Route::middleware('api')->prefix('v1')->group(function(){
     //  Unit
     Route::apiResource('service-unit', ServiceUnitController::class);
     
-    //  Unit
+    //  Position
     Route::apiResource('position', PositionController::class);
-
+    
+    //  Position
+    Route::get('satisfaction/chart', [SatisfactionController::class, 'chart']);
+    Route::get('satisfaction/info', [SatisfactionController::class, 'information']);
+    Route::apiResource('satisfaction', SatisfactionController::class);
+    
+    //  Complaint
+    Route::put('complaint/update-info/{id}', [CustomerComplaintController::class, 'updateInfo']);
+    Route::apiResource('complaint', CustomerComplaintController::class);
+    
     // Event
     Route::apiResource('event', EventController::class);
     Route::put('event/realize/{id}', [EventController::class, 'realized']);
@@ -103,6 +114,12 @@ Route::middleware('api')->prefix('v1')->group(function(){
     Route::apiResource('operational-standard', OperationalStandardController::class);
 
     // Dashboard
+    Route::get('dashboard/recap/indicator', [DashboardController::class,'recapIndicator']);
+    Route::get('dashboard/recap/performance', [DashboardController::class,'recapPerformance']);
+    Route::get('dashboard/recap/satisfaction', [DashboardController::class,'recapSatisfaction']);
+    Route::get('dashboard/recap/complaint', [DashboardController::class,'recapComplaint']);
+    Route::get('dashboard/event/information', [DashboardController::class,'eventInfo']);
+    Route::get('dashboard/document/information', [DashboardController::class,'documentInfo']);
     Route::get('dashboard/indicator', [DashboardController::class,'indicator']);
     Route::get('dashboard/indicator/cardlist', [DashboardController::class,'cardlist']);
 

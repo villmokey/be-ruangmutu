@@ -32,6 +32,7 @@ class HealthServiceService extends AppService implements AppServiceInterface
     public function getAll($search = null)
     {
         $result =   $this->model->newQuery()
+                                ->with(['units.service'])
                                 ->when($search, function ($query, $search) {
                                     return $query->where('name','like','%'.$search.'%');
                                 })

@@ -13,6 +13,11 @@ class UserTable extends User
         return $this->morphOne(FileTable::class, 'fileable');
     }
 
+    public function role()
+    {
+        return $this->belongsTo(RoleTable::class);
+    }
+
     public function pic()
     {
         return $this->hasOne(ProgramTable::class, 'pic_id');

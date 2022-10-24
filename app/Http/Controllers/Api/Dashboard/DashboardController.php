@@ -51,4 +51,92 @@ class DashboardController extends ApiController
             return $this->sendError($exception->getMessage(),"",500);
         }
     }
+
+    public function recapIndicator(Request $request) {
+        $year = $this->request->query('year', null);
+        $result = $this->dashboardService->recapIndicator($year);
+
+        try {
+            if ($result->success) {
+                return $this->sendSuccess($result->data, $result->message, $result->code);
+            }
+
+            return $this->sendError($result->data, $result->message, $result->code);
+        } catch (Exception $exception) {
+            return $this->sendError($exception->getMessage(),"",500);
+        }
+    }
+
+    public function recapComplaint(Request $request) {
+        $year = $this->request->query('year', null);
+        $result = $this->dashboardService->recapComplaint($year);
+
+        try {
+            if ($result->success) {
+                return $this->sendSuccess($result->data, $result->message, $result->code);
+            }
+
+            return $this->sendError($result->data, $result->message, $result->code);
+        } catch (Exception $exception) {
+            return $this->sendError($exception->getMessage(),"",500);
+        }
+    }
+
+    public function recapSatisfaction(Request $request) {
+        $year = $this->request->query('year', null);
+        $result = $this->dashboardService->recapSatisfaction($year);
+
+        try {
+            if ($result->success) {
+                return $this->sendSuccess($result->data, $result->message, $result->code);
+            }
+
+            return $this->sendError($result->data, $result->message, $result->code);
+        } catch (Exception $exception) {
+            return $this->sendError($exception->getMessage(),"",500);
+        }
+    }
+    
+    public function recapPerformance(Request $request) {
+        $year = $this->request->query('year', null);
+        $result = $this->dashboardService->recapPerformance($year);
+
+        try {
+            if ($result->success) {
+                return $this->sendSuccess($result->data, $result->message, $result->code);
+            }
+
+            return $this->sendError($result->data, $result->message, $result->code);
+        } catch (Exception $exception) {
+            return $this->sendError($exception->getMessage(),"",500);
+        }
+    }
+    
+    public function eventInfo(Request $request) {
+        $result = $this->dashboardService->eventInfo($request);
+
+        try {
+            if ($result->success) {
+                return $this->sendSuccess($result->data, $result->message, $result->code);
+            }
+
+            return $this->sendError($result->data, $result->message, $result->code);
+        } catch (Exception $exception) {
+            return $this->sendError($exception->getMessage(),"",500);
+        }
+    }
+
+    public function documentInfo(Request $request) {
+        $result = $this->dashboardService->documentInfo($request);
+
+        try {
+            if ($result->success) {
+                return $this->sendSuccess($result->data, $result->message, $result->code);
+            }
+
+            return $this->sendError($result->data, $result->message, $result->code);
+        } catch (Exception $exception) {
+            return $this->sendError($exception->getMessage(),"",500);
+        }
+    }
 }

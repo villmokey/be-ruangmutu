@@ -12,6 +12,8 @@ use Illuminate\Support\Str;
 use Intervention\Image\Facades\Image;
 use Carbon\Carbon;
 
+use setasign\Fpdi\Fpdi;
+
 
 class FileUploadService extends AppService
 {
@@ -168,8 +170,55 @@ class FileUploadService extends AppService
         $this->fileName       = $this->generateNewName()  . ".{$this->realExtension}";
         $this->filePath       = $file->storeAs($this->fileDirectory, $this->fileName, ['disk' => $this->disk]);
     }
+    
+    public static function directProcessFile(UploadedFile $file)
+    {
+        $result = [
+            'real_name'         => $file->getClientOriginalName(),
+            'real_extension'    => $file->getClientOriginalExtension(),
+            'real_size'         => $file->getSize(),
+            'mime_type'         => $file->getMimeType(),
+        ];
 
-    protected function generateNewName(string $prefix = null, string $suffix = null)
+        $result['file_dir']        = "uploads/" . date('Y') . "/" . date('m');
+        $result['file_name']       = Str::uuid()->toString()  . "." . $result['real_extension'];
+        $result['file_path']       = $file->storeAs($result['file_dir'], $result['file_name'], ['disk' => env('UPLOAD_STORAGE', 'public')]);
+
+        return $result;
+    }
+
+    public static function directSaveToDb($params)
+    {
+        DB::beginTransaction();
+
+        try {
+            // get storage visibility
+            $getVisibility = Storage::disk($params['disk'])->getVisibility($params['file_path']);
+
+            $fileRecord = File::create([
+                'group'         => $params['group'],
+                'visibility'    => $getVisibility,
+                'real_name'     => $params['real_name'],
+                'extension'     => $params['real_extension'],
+                'fileable_id'   => $params['fileable_id'],
+                'fileable_type' => $params['fileable_type'],
+                'size'          => $params['real_size'],
+                'mime_type'     => $params['mime_type'],
+                'file_dir'      => $params['file_dir'],
+                'file_name'     => $params['file_name'],
+                'file_path'     => $params['file_path'],
+            ]);
+
+            DB::commit();
+            return $fileRecord;
+        } catch (\Exception $exception) {
+            DB::rollBack();
+
+            return $exception->getMessage();
+        }
+    }
+
+    public static function generateNewName(string $prefix = null, string $suffix = null)
     {
         $prefix_ = (!empty($prefix)) ? trim("{$prefix}_") : null;
         $_suffix = (!empty($prefix)) ? trim("_{$suffix}") : null;

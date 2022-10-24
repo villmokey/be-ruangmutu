@@ -5,6 +5,10 @@ namespace App\Service\Dashboard;
 
 use App\Models\Table\IndicatorProfileTable;
 use App\Models\Table\IndicatorTable;
+use App\Models\Table\PerformanceTable;
+use App\Models\Table\HealthServiceTable;
+use App\Models\Table\SatisfactionTable;
+use App\Models\Table\DocumentTable;
 
 use App\Service\AppService;
 
@@ -15,13 +19,22 @@ use Illuminate\Support\Facades\DB;
 class DashboardService extends AppService
 {
     protected $indicator;
+    protected $healthServiceTable;
+    protected $satisfactionTable;
+    protected $documentTable;
 
     public function __construct(
         IndicatorTable $indicator,
-        IndicatorProfileTable $model
+        IndicatorProfileTable $model,
+        HealthServiceTable $healthServiceTable,
+        SatisfactionTable $satisfactionTable,
+        DocumentTable $documentTable
     )
     {
-        $this->indicator        = $indicator;
+        $this->indicator            = $indicator;
+        $this->healthServiceTable   = $healthServiceTable;
+        $this->satisfactionTable    = $satisfactionTable;
+        $this->documentTable        = $documentTable;
         parent::__construct($model);
     }
 
@@ -170,5 +183,255 @@ class DashboardService extends AppService
         return $this->sendSuccess($results);
     }
 
+    public function recapIndicator($year = null)
+    {
+        $year = $year ?? date('Y');
+        $queries = \DB::select("SELECT 
+                        i.month,
+                        CAST(CASE
+                                WHEN month = 'januari' THEN 1
+                                WHEN month = 'februari' THEN 2
+                                WHEN month = 'maret' THEN 3
+                                WHEN month = 'april' THEN 4
+                                WHEN month = 'mei' THEN 5
+                                WHEN month = 'juni' THEN 6
+                                WHEN month = 'juli' THEN 7
+                                WHEN month = 'agustus' THEN 8
+                                WHEN month = 'september' THEN 9
+                                WHEN month = 'oktober' THEN 10
+                                WHEN month = 'november' THEN 11
+                                WHEN month = 'desember' THEN 12
+                                ELSE month
+                            END as SIGNED) as month_number,
+                        i.month_target
+                        from indicators i 
+                        where type = 'quality'
+                        and YEAR(created_at) = :year
+                        order by month_number ASC
+                        ", ['year' => $year]);
 
+        $calculates = [];
+        $results = [];
+
+        if($queries && count($queries) > 0) {
+            foreach ($queries as $key => $value) {
+                if($key > 0) {
+                    if($queries[$key-1]->month === $value->month) {
+                        $calculates[$key-1]['indicator_total']   += 1;
+                        $calculates[$key-1]['total']            += $value->month_target;
+                    }else {
+                        array_push($calculates, [
+                            'month'             => $value->month,
+                            'month_number'      => $value->month_number,
+                            'month_target'      => $value->month_target,
+                            'total'             => $value->month_target,
+                            'indicator_total'   => 1,
+                        ]);
+                    }
+                } else {
+                    array_push($calculates, [
+                        'month'             => $value->month,
+                        'month_number'      => $value->month_number,
+                        'month_target'      => $value->month_target,
+                        'total'             => $value->month_target,
+                        'indicator_total'   => 1,
+                    ]);
+                }
+            }
+        
+            if($calculates && count($calculates) > 0) {
+                foreach ($calculates as $value) {
+                    $results[] = [
+                        'month'             => $value['month'],
+                        'month_number'      => $value['month_number'],
+                        'indicator_total'   => $value['indicator_total'],
+                        'average'           => $value['total'] / $value['indicator_total'],
+                    ];
+                }
+            }
+        }
+
+        return $this->sendSuccess(['year' => $year, 'results' => $results]);
+    }
+
+    public function recapPerformance($year = null) 
+    {
+        $year = $year ?? date('Y');
+        $queries = \DB::select("SELECT 
+                        i.month,
+                        CAST(CASE
+                                WHEN month = 'januari' THEN 1
+                                WHEN month = 'februari' THEN 2
+                                WHEN month = 'maret' THEN 3
+                                WHEN month = 'april' THEN 4
+                                WHEN month = 'mei' THEN 5
+                                WHEN month = 'juni' THEN 6
+                                WHEN month = 'juli' THEN 7
+                                WHEN month = 'agustus' THEN 8
+                                WHEN month = 'september' THEN 9
+                                WHEN month = 'oktober' THEN 10
+                                WHEN month = 'november' THEN 11
+                                WHEN month = 'desember' THEN 12
+                                ELSE month
+                            END as SIGNED) as month_number,
+                        i.month_target
+                        from indicators i 
+                        where type = 'performance'
+                        and YEAR(created_at) = :year
+                        order by month_number ASC
+                        ", ['year' => $year]);
+
+        $calculates = [];
+        $results = [];
+
+        if($queries && count($queries) > 0) {
+            foreach ($queries as $key => $value) {
+                if($key > 0) {
+                    if($queries[$key-1]->month === $value->month) {
+                        $calculates[$key-1]['indicator_total']   += 1;
+                        $calculates[$key-1]['total']            += $value->month_target;
+                    }else {
+                        array_push($calculates, [
+                            'month'             => $value->month,
+                            'month_number'      => $value->month_number,
+                            'month_target'      => $value->month_target,
+                            'total'             => $value->month_target,
+                            'indicator_total'   => 1,
+                        ]);
+                    }
+                } else {
+                    array_push($calculates, [
+                        'month'             => $value->month,
+                        'month_number'      => $value->month_number,
+                        'month_target'      => $value->month_target,
+                        'total'             => $value->month_target,
+                        'indicator_total'   => 1,
+                    ]);
+                }
+            }
+        
+            if($calculates && count($calculates) > 0) {
+                foreach ($calculates as $value) {
+                    $results[] = [
+                        'month'             => $value['month'],
+                        'month_number'      => $value['month_number'],
+                        'indicator_total'   => $value['indicator_total'],
+                        'average'           => $value['total'] / $value['indicator_total'],
+                    ];
+                }
+            }
+        }
+
+        return $this->sendSuccess(['year' => $year, 'results' => $results]);
+    }
+
+    public function recapComplaint($year = null) {
+        $year = $year ?? date('Y');
+        
+        $queries = \DB::select("SELECT
+                                    extract(month from complaint_date) as month,
+                                    case when status = 'DONE' then count(status) else 0 end as done,
+                                    case when status = 'PENDING' then count(status) else 0 end as pending
+                                from customer_complaints cc 
+                                where YEAR(complaint_date) = :year
+                                group by status, month
+                                order by month asc", ['year' => $year]);
+        
+        $calculates = [];
+        $results = [];
+
+        if($queries && count($queries) > 0) {
+            foreach ($queries as $key => $value) {
+                if($key > 0) {
+                    if($queries[$key-1]->month === $value->month) {
+                        $calculates[$key-1]['done']              += $value->done;
+                        $calculates[$key-1]['pending']           += $value->pending;
+                    }else {
+                        array_push($calculates, [
+                            'month'             => $value->month,
+                            'done'              => $value->done,
+                            'pending'           => $value->pending,
+                        ]);
+                    }
+                } else {
+                    array_push($calculates, [
+                        'month'             => $value->month,
+                        'done'              => $value->done,
+                        'pending'           => $value->pending,
+                    ]);
+                }
+            }
+        
+            if($calculates && count($calculates) > 0) {
+                foreach ($calculates as $value) {
+                    $results[] = [
+                        'month'             => $value['month'],
+                        'done'              => $value['done'],
+                        'pending'           => $value['pending'],
+                    ];
+                }
+            }
+        }
+
+        return $this->sendSuccess(['year' => $year, 'results' => $results]);
+    }
+
+    public function recapSatisfaction($year = null) 
+    {
+        $year = $year ?? date('Y');
+
+        $services = $this->healthServiceTable->get();
+        $results = [];
+        foreach ($services as $service) {
+            $findMe = $this->satisfactionTable->newQuery()
+                                                ->with(['satisfactionDetail'])
+                                                ->where('health_service_id', $service->id)
+                                                ->whereYear('created_at', $year)
+                                                ->orderBy(\DB::raw('CAST(month as SIGNED)'), 'ASC')
+                                                ->get();
+            if(count($findMe)) {
+                $results[] = [
+                    'health_service'        => $service->name,
+                    'year'                  => date('Y'),
+                    'result'                => $findMe
+                ];
+            }
+        }
+
+        return $this->sendSuccess($results);
+    }
+
+    public function eventInfo()
+    {
+        try {
+            $upcoming = \DB::select("SELECT * FROM events e WHERE start_date > CURDATE() limit 5");
+            $realized = \DB::select("SELECT * FROM events e WHERE start_date < CURDATE() AND is_realized = true limit 5");
+    
+            $result = [
+                'realized'  => $realized,
+                'upcoming'    => $upcoming
+            ];
+    
+            return $this->sendSuccess($result);
+        } catch (\Exception $e) {
+            return $this->sendError([], 'Belum ada data');
+        }
+    }
+
+    public function documentInfo()
+    {
+        try {
+            $total = $this->documentTable->newQuery()->count();
+            $thisYear = $this->documentTable->newQuery()->whereYear('created_at', date('Y'))->count();
+    
+            $result = [
+                'total'         => $total,
+                'this_year'     => $thisYear
+            ];
+    
+            return $this->sendSuccess($result);
+        } catch (\Exception $e) {
+            return $this->sendError([], 'Belum ada data');
+        }
+    }
 }
