@@ -64,7 +64,7 @@ class CustomerComplaintService extends AppService implements AppServiceInterface
         return $this->sendSuccess($result);
     }
 
-    public function getPaginated($search = null, $year = null, $perPage = 15, $page = null, $type = null)
+    public function getPaginated($search = null, $year = null, $perPage = 15, $page = null, $sort_by = 'created_at', $sort = 'desc', $type = null)
     {
         $isNotAdmin = !\Auth::user()->hasAnyRole('Super Admin');
         $result  = $this->model->newQuery()
@@ -78,7 +78,7 @@ class CustomerComplaintService extends AppService implements AppServiceInterface
                                 ->when($isNotAdmin, function ($query, $year) {
                                     return $query->where('is_public', true);
                                 })
-                                ->orderBy('created_at','DESC')
+                                ->orderBy($sort_by, $sort)
                                 ->paginate((int)$perPage, ['*'], null, $page);
 
         return $this->sendSuccess($result);

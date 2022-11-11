@@ -28,7 +28,7 @@ class CustomerComplaintController extends ApiController
         $page           = $this->request->query('page', null);
         $perPage        = $this->request->query('per_page', 15);
         $paginate       = $this->request->query('paginate', true);
-        $sort           = $this->request->query('sort', 'DESC');
+        $sort           = $this->request->query('sort', 'desc');
         $sortBy         = $this->request->query('sort_by', 'created_at');
         $program        = $this->request->query('programs', null);
 
