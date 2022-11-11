@@ -28,7 +28,7 @@ class UserSeeder extends Seeder
             'updated_at' => now(),
         ]);
 
-        $admin->assignRole('admin');
+        $admin->assignRole('Super Admin');
 
         $staff = User::create([
             'id' => "00000000-0000-1111-1111-000000000012",
@@ -40,7 +40,7 @@ class UserSeeder extends Seeder
             'updated_at' => now(),
         ]);
 
-        $staff->assignRole('staff');
+        $staff->assignRole('Admin');
 
         $staff = User::create([
             'id' => "00000000-0000-1111-1111-000000000013",
@@ -52,6 +52,6 @@ class UserSeeder extends Seeder
             'updated_at' => now(),
         ]);
 
-        $staff->assignRole('guest');
+        $staff->assignRole('User');
     }
 }

@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>{{ $data->title ?? 'Profile Indikator Mutu' }}</title>
+    <title>Indikator</title>
     <style>
         body {
             font-family: Arial, Helvetica, sans-serif;
@@ -131,7 +131,7 @@
         }
 
         @page {
-            margin: 100px 25px 200px 25px;
+            margin: 100px 25px 140px 25px;
         }
 
         header {
@@ -145,10 +145,10 @@
 
         footer {
             position: fixed;
-            bottom: -40px;
+            bottom: -30px;
             left: 0px;
             right: 0px;
-            height: 130px;
+            height: 140px;
         }
 
         input[type=checkbox] {
@@ -159,6 +159,16 @@
             display: flex;
             align-items: center;
         }
+
+        .map-data td {
+            width: 50%;
+        }
+
+        .chart-image {
+            margin: 10px 0;
+            width: 40%;
+        }
+
     </style>
 </head>
 
@@ -195,10 +205,33 @@
         <div class="container">
             <div class="header">
                 <img src="{{ public_path('images/logo-puskes-gambir.png') }}" style="width: 50px; height: 50px;" />
-                <p class="text-1">PROFIL INDIKATOR {{$data->type === 'quality' ? 'MUTU' : 'KINERJA'}}</p>
+                {{-- <p class="text-1">INDIKATOR {{$data->type === 'quality' ? 'MUTU' : 'KINERJA'}}</p> --}}
+                <p class="text-1">INDIKATOR KINERJA</p>
                 <p class="text-1">PUSKESMAS KECAMATAN GAMBIR</p>
             </div>
-            <table width="100%">
+            <table class="map-data" width="100%">
+                <tr>
+                    <td>
+                        <div class="wrapper">
+                            <p class="text-2">
+                                PROFIL INDIKATOR
+                            </p>
+                            <div class="box">
+                                {{$data->profileIndicator && $data->profileIndicator->title ? $data->profileIndicator->title : '-'}}
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="wrapper">
+                            <p class="text-2">
+                                BULAN
+                            </p>
+                            <div class="box" style="text-transform: uppercase;">
+                                {{$data->month}}
+                            </div>
+                        </div>
+                    </td>
+                </tr>
                 <tr>
                     <td>
                         <div class="wrapper">
@@ -206,17 +239,17 @@
                                 PROGRAM MUTU
                             </p>
                             <div class="box">
-                                {{ $data->program->name }}
+                                {{$data->program && $data->program->name ? $data->program->name : '-'}}
                             </div>
                         </div>
                     </td>
                     <td>
                         <div class="wrapper">
                             <p class="text-2">
-                                KRITERIA INKLUSI & EKSKLUSI
+                                SASARAN MUTU
                             </p>
                             <div class="box">
-                                {{ $data->criteria }}
+                                {{$data->quality_goal}}
                             </div>
                         </div>
                     </td>
@@ -228,17 +261,35 @@
                                 SUB PROGRAM
                             </p>
                             <div class="box">
-                                {{ $data->sub_program->id ?? '-' }}
+                                {{$data->subProgram && $data->subProgram->name ? $data->subProgram->name : '-'}}
+                            </div>
+                        </div>
+                    </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="text-align: center;">
+                        <img class="chart-image" src="data:image/png;base64, {!! $chart_image !!}">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="wrapper">
+                            <p class="text-2">
+                                MANUSIA
+                            </p>
+                            <div class="box">
+                                {{$data->human}}
                             </div>
                         </div>
                     </td>
                     <td>
                         <div class="wrapper">
                             <p class="text-2">
-                                FORMULA PENGUKURAN
+                                KEBIJAKAN
                             </p>
                             <div class="box">
-                                {{ $data->measurement_formula }}
+                                {{$data->policy}}
                             </div>
                         </div>
                     </td>
@@ -247,41 +298,20 @@
                     <td>
                         <div class="wrapper">
                             <p class="text-2">
-                                JUDUL INDIKATOR
+                                ALAT
                             </p>
                             <div class="box">
-                                {{ $data->title }}
+                                {{$data->tools}}
                             </div>
                         </div>
                     </td>
                     <td>
                         <div class="wrapper">
                             <p class="text-2">
-                                PENGUMPULAN DATA
+                                LINGKUNGAN
                             </p>
                             <div class="box">
-                                {{ $data->data_collection_design }}
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td> <div class="wrapper">
-                        <p class="text-2">
-                                DASAR PEMILIHAN INDIKATOR
-                            </p>
-                            <div class="box">
-                                {{ $data->indicator_selection_based }}
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="wrapper">
-                            <p class="text-2">
-                                SUMBER DATA
-                            </p>
-                            <div class="box">
-                                {{ $data->data_source }}
+                                {{$data->environment}}
                             </div>
                         </div>
                     </td>
@@ -290,196 +320,37 @@
                     <td>
                         <div class="wrapper">
                             <p class="text-2">
-                                TARGET CAPAIAN
+                                METODE
                             </p>
                             <div class="box">
-                                {{ $data->achievement_target }}
+                                {{$data->method}}
                             </div>
                         </div>
                     </td>
                     <td>
                         <div class="wrapper">
                             <p class="text-2">
-                                PENYAJIAN DATA
+                                RENCANA TINDAK LANJUT
                             </p>
                             <div class="box">
-                                {{ $data->data_presentation }}
+                                {{$data->next_plan}}
                             </div>
                         </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <div class="wrapper">
-                            <p class="text-2">
-                                TUJUAN
-                            </p>
-                            <div class="box">
-                                {{ $data->objective }}
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="wrapper">
-                            <p class="text-2">
-                                STATUS PENGUKURAN
-                            </p>
-                            <div class="box">
-                                {{ $data->measurement_status }}
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <div class="wrapper">
-                            <p class="text-2">
-                                DIMENSI MUTU
-                            </p>
-                            <div class="box">
-                                @foreach ($list_dimension as $item)
-                                    <label>
-                                        <input id="{{ $item['value'] }}" type="checkbox"
-                                            {{ $item['value'] === 'Manfaat' ? 'checked' : '' }} />
-                                        {{ $item['value'] }}
-                                    </label>
-                                @endforeach
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="wrapper">
-                            <p class="text-2">
-                                POPULASI ATAU SAMPEL
-                            </p>
-                            <div class="box">
-                                {{ $data->population }}
-                            </div>
-                        </div>
-                        <div class="wrapper">
-                            <p class="text-2">
-                                NUMERATOR
-                            </p>
-                            <div class="box">
-                                {{ $data->numerator }}
-                            </div>
-                        </div>
-                        <div class="wrapper">
-                            <p class="text-2">
-                                DENOMINATOR
-                            </p>
-                            <div class="box">
-                                {{ $data->denominator }}
-                            </div>
-                        </div>
-                        <div class="wrapper">
-                            <p class="text-2">
-                                DEFINISI OPERASIONAL
-                            </p>
-                            <div class="box">
-                                {{ $data->operational_definition }}
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <div class="wrapper">
-                            <p class="text-2">
-                                PERIODE WAKTU PELAPORAN
-                            </p>
-                            <div class="box">
-                                @foreach ($list_reports as $item)
-                                    <label>
-                                        <input type="checkbox"
-                                            {{ $item['value'] === 'Tahunan' ? 'checked' : '' }} />
-                                        {{ $item['value'] }}
-                                    </label>
-                                @endforeach
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="wrapper">
-                            <p class="text-2">
-                                FREKUENSI PENGUMPULAN DATA
-                            </p>
-                            <div class="box">
-                                @foreach ($list_frequently as $item)
-                                    <label>
-                                        <input type="checkbox"
-                                            {{ $item['value'] === 'Mingguan' ? 'checked' : '' }} />
-                                        {{ $item['value'] }}
-                                    </label>
-                                @endforeach
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <div class="wrapper">
-                            <p class="text-2">
-                                TIPE INDIKATOR
-                            </p>
-                            <div class="box">
-                                @foreach ($list_indicator_options as $item)
-                                    <div>
-                                        <label>
-                                            <input type="checkbox"
-                                                {{ $item['value'] === 'Output' ? 'checked' : '' }} />
-                                            {{ $item['value'] }}
-                                        </label>
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="wrapper">
-                            <p class="text-2">
-                                PERIODE ANALISIS
-                            </p>
-                            <div class="box">
-                                @foreach ($list_reports as $item)
-                                    <label>
-                                        <input type="checkbox"
-                                            {{ $item['value'] === 'Triwulan' ? 'checked' : '' }} />
-                                        {{ $item['value'] }}
-                                    </label>
-                                @endforeach
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <div class="wrapper">
-                            <p class="text-2">
-                                PENANGGUNG JAWAB INDIKATOR
-                            </p>
-                            <div class="box">
-                                {{ $data->created_by }}
-                            </div>
-                        </div>
-                    </td>
-                    <td>
                     </td>
                 </tr>
                 <tr>
                     <td>
                        <p class="p-generate">Digenerate Pada: {{date('d F Y H:m:s')}}</p>
                     </td>
-                    <td>
-                    </td>
+                    <td></td>
                 </tr>
             </table>
+
             <table width='100%'>
                 @if ($data && count($data->signature) > 0)
                 
                 <tr>
                     @foreach ($data->signature as $item)
-                    {{print_r($data->signature)}}
                         <td width="50%" style="text-align: center">
                             {{-- <p class="text-2">Penanggung Jawab</p> --}}
                             <p class="text-2">
@@ -508,24 +379,3 @@
     </main>
 </body>
 </html>
-
-        {{-- <tr>
-            <td width="50%" style="text-align: center">
-                <p class="text-2">
-                    Ketua Puskesmas Gambir
-                </p>
-                <img style="width: 200px;" src="{{ public_path('images/sample-ttd-1.png') }}" />
-                <p class="text-2">
-                    {{ 'dr. Ratna Sari, MKM' }}
-                </p>
-            </td>
-            <td width="50%" style="text-align: center">
-                <p class="text-2">
-                    Penanggung Jawab, Humas
-                </p>
-                <img style="width: 200px;" src="{{ public_path('images/sample-ttd-1.png') }}" />
-                <p class="text-2">
-                    {{ 'Visi Gita Nurlaini, Psi' }}
-                </p>
-            </td>
-        </tr> --}}

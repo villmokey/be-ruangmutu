@@ -5,15 +5,18 @@ namespace App\Service\Master\Document;
 
 
 use App\Models\Table\DocumentTypeTable;
+use App\Models\Table\FileTable;
 use App\Service\AppService;
 use App\Service\AppServiceInterface;
 use Illuminate\Database\Eloquent\Model;
 
 class DocumentTypeService extends AppService implements AppServiceInterface
 {
+    protected $fileTable;
 
-    public function __construct(DocumentTypeTable $model)
+    public function __construct(DocumentTypeTable $model, FileTable $fileTable)
     {
+        $this->fileTable = $fileTable;
         parent::__construct($model);
     }
 
@@ -60,6 +63,14 @@ class DocumentTypeService extends AppService implements AppServiceInterface
                 'name'    =>  $data['name'],
             ]);
 
+            if (!empty($data['thumbnail'])) {
+                $image = $this->fileTable->newQuery()->find($data['thumbnail']);
+                $image->update([
+                    'fileable_type' => get_class($documentType),
+                    'fileable_id'   => $documentType->id,
+                ]);
+            }
+
             \DB::commit(); // commit the changes
             return $this->sendSuccess($documentType);
         } catch (\Exception $exception) {
@@ -78,6 +89,16 @@ class DocumentTypeService extends AppService implements AppServiceInterface
 
             $documentType->name    =   $data['name'];
             $documentType->save();
+
+            if (!empty($data['thumbnail'])) {
+                $this->fileTable->newQuery()->where('fileable_id', $documentType->id)->delete();
+                
+                $image = $this->fileTable->newQuery()->find($data['thumbnail']);
+                $image->update([
+                    'fileable_type' => get_class($documentType),
+                    'fileable_id'   => $documentType->id,
+                ]);
+            }
 
             \DB::commit(); // commit the changes
             return $this->sendSuccess($documentType);

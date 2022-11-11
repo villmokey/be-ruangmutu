@@ -78,6 +78,7 @@ Route::middleware('api')->prefix('v1')->group(function(){
     // Quality Indicator
     Route::apiResource('indicator', IndicatorController::class);
     Route::get('indicator/{id}/signature', [IndicatorController::class,'getSignature']);
+    Route::get('indicator/{id}/{chartFileId}/generate', [IndicatorController::class,'generateIndicator']);
     Route::post('indicator/{id}/status', [IndicatorController::class,'changeStatus']);
 
     // User

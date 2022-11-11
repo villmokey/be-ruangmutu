@@ -9,20 +9,35 @@ use App\Http\Requests\Api\Indicator\UpdateIndicatorProfileRequest;
 use App\Service\Indicator\IndicatorProfileService;
 use Illuminate\Http\Request;
 use App\Service\FileUploadService;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use App\Models\Table\DocumentTable;
+use App\Models\Table\FileTable;
+use App\Models\Table\DocumentTypeTable;
+
+use Illuminate\Http\UploadedFile;
+use Illuminate\Http\File;
 
 class IndicatorProfileController extends ApiController
 {
     protected $indicatorProfileService;
     protected $fileUploadService;
+    protected $documentTable;
+    protected $fileTable;
+    protected $documentTypeTable;
 
     public function __construct(
         IndicatorProfileService $indicatorProfileService,
         FileUploadService $fileUploadService,
+        DocumentTable $documentTable,
+        FileTable $fileTable,
+        DocumentTypeTable $documentTypeTable,
         Request $request)
     {
         $this->indicatorProfileService    =   $indicatorProfileService;
         $this->fileUploadService    =   $fileUploadService;
+        $this->documentTable        =   $documentTable;
+        $this->fileTable            =   $fileTable;
+        $this->documentTypeTable    =   $documentTypeTable;
+
         parent::__construct($request);
         $this->middleware('auth:api', ['except' => ['index', 'show', 'generateProfileIndicator']]);
     }
@@ -211,6 +226,7 @@ class IndicatorProfileController extends ApiController
 
     public function generateProfileIndicator($id) {
         if($id) {
+
             $listFrequently = [
               [
                 'label'=> 'Harian',
@@ -227,86 +243,109 @@ class IndicatorProfileController extends ApiController
               [
                 'label'=> 'Tahunan',
                 'value'=> 'Tahunan',
-              ]];
-
-              $dimensiMutuOptions = [
+              ]
+            ];
+            $dimensiMutuOptions = [
+            [
+                'label' => 'Kelayakan',
+                'value' => 'Kelayakan',
+            ],
+            [
+                'label' => 'Ketepatan Waktu',
+                'value' => 'Ketepatan Waktu',
+            ],
+            [
+                'label' => 'Manfaat',
+                'value' => 'Manfaat',
+            ],
+            [
+                'label' => 'Ketersiadaan',
+                'value' => 'Ketersiadaan',
+            ],
+            [
+                'label' => 'Keselamatan',
+                'value' => 'Keselamatan',
+            ],
+            [
+                'label' => 'Efisiensi',
+                'value' => 'Efisiensi',
+            ],
+            [
+                'label' => 'Efektivias',
+                'value' => 'Efektivias',
+            ],
+            [
+                'label' => 'Kesinambungan',
+                'value' => 'Kesinambungan',
+            ]
+            ];
+            $tipeIndikatorOptions = [
                 [
-                  'label' => 'Kelayakan',
-                  'value' => 'Kelayakan',
+                'label'=> 'Input',
+                'value'=> 'Input',
                 ],
                 [
-                  'label' => 'Ketepatan Waktu',
-                  'value' => 'Ketepatan Waktu',
+                'label'=> 'Proses',
+                'value'=> 'Proses',
                 ],
                 [
-                  'label' => 'Manfaat',
-                  'value' => 'Manfaat',
+                'label'=> 'Output',
+                'value'=> 'Output',
                 ],
                 [
-                  'label' => 'Ketersiadaan',
-                  'value' => 'Ketersiadaan',
-                ],
-                [
-                  'label' => 'Keselamatan',
-                  'value' => 'Keselamatan',
-                ],
-                [
-                  'label' => 'Efisiensi',
-                  'value' => 'Efisiensi',
-                ],
-                [
-                  'label' => 'Efektivias',
-                  'value' => 'Efektivias',
-                ],
-                [
-                  'label' => 'Kesinambungan',
-                  'value' => 'Kesinambungan',
+                'label'=> 'Outcome',
+                'value'=> 'Outcome',
                 ]
-              ];
+            ];
 
-              $tipeIndikatorOptions = [
-                    [
-                    'label'=> 'Input',
-                    'value'=> 'Input',
-                    ],
-                    [
-                    'label'=> 'Proses',
-                    'value'=> 'Proses',
-                    ],
-                    [
-                    'label'=> 'Output',
-                    'value'=> 'Output',
-                    ],
-                    [
-                    'label'=> 'Outcome',
-                    'value'=> 'Outcome',
-                    ]
-                ];
-
-                $periodeWaktuPelaporanOptions = [
-                    [
-                      'label'=> 'Bulanan',
-                      'value'=> 'Bulanan',
-                    ],
-                    [
-                      'label'=> 'Triwulan',
-                      'value'=> 'Triwulan',
-                    ],
-                    [
-                      'label'=> 'Semester',
-                      'value'=> 'Semester',
-                    ],
-                    [
-                      'label'=> 'Tahunan',
-                      'value'=> 'Tahunan',
-                    ]
-                  ];
-
-              $qrCode = QrCode::size(60)->generate(env('FRONTEND_URL', 'http://localhost:3000') . '/view-file/indicator-profile/' . $id);
-            //   $qrCode = QrCode::format('png')->merge('https://www.seeklogo.net/wp-content/uploads/2016/09/facebook-icon-preview-1.png', .3, true)->size(200)->generate('http://www.simplesoftware.io');
-              $result = $this->indicatorProfileService->getById($id);
+            $periodeWaktuPelaporanOptions = [
+                [
+                    'label'=> 'Bulanan',
+                    'value'=> 'Bulanan',
+                ],
+                [
+                    'label'=> 'Triwulan',
+                    'value'=> 'Triwulan',
+                ],
+                [
+                    'label'=> 'Semester',
+                    'value'=> 'Semester',
+                ],
+                [
+                    'label'=> 'Tahunan',
+                    'value'=> 'Tahunan',
+                ]
+            ];
+        
+            $result = $this->indicatorProfileService->getById($id);
+            
             try {
+                \DB::beginTransaction();
                 if ($result->success && $result->data) {
+
+                    $profile = $result->data;
+
+                    $docType = $this->documentTypeTable->newQuery()->where('name', $profile->type === 'quality' ? 'Profil Indikator Mutu' : 'Profile Indikator Kinerja')->first();
+
+                    if(!$docType) {
+                        $docType = $this->documentTypeTable->create([
+                            'name' => $profile->type === 'quality' ? 'Profil Indikator Mutu' : 'Profile Indikator Kinerja'
+                        ]);
+                    }
+
+                    $document = $this->documentTable->newQuery()->create([
+                        'name'              =>  $profile->title,
+                        'slug'              =>  \Str::slug($profile->title),
+                        'document_type_id'  =>  $docType->id,
+                        'document_number'   =>  null,
+                        'publish_date'      =>  date('Y-m-d'),
+                        'is_confidential'   =>  false,
+                    ]);
+
+                    $qrCode = \QrCode::format('png')->size(120)->merge('/public/images/square_ruang_mutu.png', .3)->errorCorrection('H')->generate(
+                        config('app.frontend_url') . '/view-file/doc/' . $document->id);
+
+
                     $props['data'] = $result->data;
                     $props['list_frequently'] = $listFrequently;
                     $props['list_dimension'] = $dimensiMutuOptions;
@@ -315,8 +354,29 @@ class IndicatorProfileController extends ApiController
                     $props['qr_image'] = base64_encode($qrCode);
 
                     $pdf = \PDF::loadView('print.profile-indicator', $props);
-                    return $pdf->download($result->data->title . " (" . date('d M Y') . ')' . '.pdf');
+                    $file = $pdf->output();
+                    $file_name = \Str::slug($profile->title) . '.pdf';
+                    $makeFile = $this->fromBase64(base64_encode($file), $file_name);
+
+                    $upload = $this->fileUploadService->handleFile($makeFile)->saveToDb($profile->type === 'quality' ? 'quality_profile_indicator' : 'perfomance_profile_indicator');
+
+                    if($upload && $upload->id) {
+                        try {
+                            $image = $this->fileTable->newQuery()->find($upload->id);
+                            $image->update([
+                                'fileable_type' => 'App\Models\Table\DocumentTable',
+                                'fileable_id'   => $document->id,
+                            ]);
+        
+                            \DB::commit();
+                            return $this->sendSuccess($upload, 'Sukses menyimpan ke lemari mutu');
+                        } catch (\Exception $ex) {
+                            \DB::rollback();
+                            return $this->sendError(null, $ex->getMessage(), 400);
+                        }
+                    }
                 }else {
+                    \DB::rollback();
                     return $this->sendError(null, 'Invalid argument!', 400);
                 }
     
@@ -325,4 +385,40 @@ class IndicatorProfileController extends ApiController
             }
         }
     } 
+
+    public static function fromBase64(string $base64File, string $fname): UploadedFile
+    {
+        try {
+            //code...
+            // Get file data base64 string
+            $fileData = base64_decode(\Arr::last(explode(',', $base64File)));
+            
+            // Create temp file and get its absolute path
+            $tempFile = tmpfile();
+            $tempFilePath = stream_get_meta_data($tempFile)['uri'];
+            
+            // Save file data in file
+            file_put_contents($tempFilePath, $fileData);
+            
+            $tempFileObject = new File($tempFilePath);
+            $file = new UploadedFile(
+                $tempFileObject->getPathname(),
+                $fname,
+                $tempFileObject->getMimeType(),
+                0,
+                false // Mark it as test, since the file isn't from real HTTP POST.
+            );
+            
+            // Close this file after response is sent.
+            // Closing the file will cause to remove it from temp director!
+            app()->terminating(function () use ($tempFile) {
+                fclose($tempFile);
+            });
+            
+            // return UploadedFile object
+            return $file;
+        } catch (\Exception $ex) {
+            dd($ex);
+        }
+    }
 }

@@ -33,6 +33,7 @@ class DocumentController extends ApiController
         $sort           = $this->request->query('sort', 'DESC');
         $sortBy         = $this->request->query('sort_by', 'created_at');
         $program        = $this->request->query('programs', null);
+        $hideSecret         = $this->request->query('hide_secret', false);
 
         $programs = [];
         if($program !== null) {
@@ -43,7 +44,7 @@ class DocumentController extends ApiController
         }
 
         if ($paginate == 'true' || $paginate == '1') {
-            $result = $this->documentService->getPaginated($search, $year, $type, $programs, $perPage, $page, $sortBy, $sort);
+            $result = $this->documentService->getPaginated($search, $year, $type, $programs, $perPage, $page, $sortBy, $sort, $hideSecret);
         } else {
             $result = $this->documentService->getAll($search, $year, $type, $program);
         }

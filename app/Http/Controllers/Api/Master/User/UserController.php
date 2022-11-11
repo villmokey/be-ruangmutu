@@ -28,9 +28,10 @@ class UserController extends ApiController
         $page           = $this->request->query('page', null);
         $perPage        = $this->request->query('per_page', 15);
         $paginate       = $this->request->query('paginate', true);
+        $sort           = $this->request->query('sort', 'ASC');
 
         if ($paginate == 'true' || $paginate == '1') {
-            $result = $this->userService->getPaginated($search, $perPage, $page);
+            $result = $this->userService->getPaginated($search, $perPage, $page, $sort);
         } else {
             $result = $this->userService->getAll($search);
         }

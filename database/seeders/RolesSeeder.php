@@ -18,15 +18,15 @@ class RolesSeeder extends Seeder
     {
         Role::create([
             'id'   => "00000000-0000-1111-1111-000000000001",
-            'name' => 'admin'
+            'name' => 'Super Admin'
         ]);
         Role::create([
             'id'   => "00000000-0000-1111-1111-000000000002",
-            'name' => 'staff'
+            'name' => 'Admin'
         ]);
         Role::create([
             'id'   => "00000000-0000-1111-1111-000000000003",
-            'name' => 'guest'
+            'name' => 'User'
         ]);
     }
 }

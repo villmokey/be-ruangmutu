@@ -30,11 +30,20 @@ class EventController extends ApiController
         $paginate       = $this->request->query('paginate', true);
         $year           = $this->request->query('year', null);
         $month          = $this->request->query('month', null);
+        $program        = $this->request->query('program_id', null);
+
+        $programs = [];
+        if($program !== null) {
+            $explodeProgram = explode(',', $program);
+            if(count($explodeProgram) > 0) {
+                $programs = $explodeProgram;
+            }
+        }
 
         if ($paginate == 'true' || $paginate == '1') {
-            $result = $this->eventService->getPaginated($search, $year, $perPage, $page);
+            $result = $this->eventService->getPaginated($search, $year, $perPage, $page, $programs);
         } else {
-            $result = $this->eventService->getAll($search, $year, $month);
+            $result = $this->eventService->getAll($search, $year, $month, $programs);
         }
 
         try {

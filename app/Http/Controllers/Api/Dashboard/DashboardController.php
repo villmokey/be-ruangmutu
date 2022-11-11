@@ -83,7 +83,7 @@ class DashboardController extends ApiController
     }
 
     public function recapSatisfaction(Request $request) {
-        $year = $this->request->query('year', null);
+        $year = $this->request->query('year', date('Y'));
         $result = $this->dashboardService->recapSatisfaction($year);
 
         try {

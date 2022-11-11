@@ -66,17 +66,20 @@ class DocumentService extends AppService implements AppServiceInterface
         ]);
     }
 
-    public function getPaginated($search = null,$year = null, $type = null, $programs = [], $perPage = 15, $page = null, $sortBy = 'created_at', $sort = 'DESC')
+    public function getPaginated($search = null,$year = null, $type = null, $programs = [], $perPage = 15, $page = null, $sortBy = 'created_at', $sort = 'DESC', $hideSecret = false)
     {
-        $result  = $this->model->newQuery()->with(['related_program.program', 'documentType', 'file'])
+        $result  = $this->model->newQuery()->with(['related_program.program', 'documentType.thumbnail', 'file'])
                                 ->when($search, function ($query, $search) {
-                                    return $query->where('name','like','%'.$search.'%');
+                                    return $query->where('name','like','%'.$search.'%')->orWhere('document_number', 'like', '%'.$search.'%');
                                 })
                                 ->when($year, function ($query, $year) {
                                     return $query->whereYear('created_at', $year);
                                 })
                                 ->when($type, function ($query, $type) {
                                     return $query->where('document_type_id', $type);
+                                })
+                                ->when($hideSecret, function ($query) {
+                                    return $query->where('is_credential', 0);
                                 })
                                 ->when($programs, function ($query, $programs) {
                                     $query->whereHas('related_program.program', function($q) use ($programs) {
@@ -104,7 +107,7 @@ class DocumentService extends AppService implements AppServiceInterface
     {
         $result = $this->model->newQuery()
             ->with('file')
-            ->with('documentType')
+            ->with('documentType.thumbnail')
             ->with('relatedFile.related.file')
             ->with('related_program.program')
             ->find($id);
@@ -125,7 +128,7 @@ class DocumentService extends AppService implements AppServiceInterface
                 'document_type_id'  =>  $data['document_type_id'],
                 'document_number'   =>  $data['document_number'],
                 'publish_date'      =>  $data['publish_date'],
-                'is_confidential'   =>  $data['is_confidential'],
+                'is_credential'     =>  $data['is_confidential'],
             ]);
 
             if (isset($data['document_related'])) {

@@ -66,7 +66,7 @@ class CustomerComplaintService extends AppService implements AppServiceInterface
 
     public function getPaginated($search = null, $year = null, $perPage = 15, $page = null, $type = null)
     {
-        $isNotAdmin = !\Auth::user()->hasAnyRole('admin');
+        $isNotAdmin = !\Auth::user()->hasAnyRole('Super Admin');
         $result  = $this->model->newQuery()
                                 ->with(['program', 'healthService', 'creator'])
                                 ->when($search, function ($query, $search) {

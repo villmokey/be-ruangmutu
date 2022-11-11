@@ -75,9 +75,9 @@
         }
 
         .qr-box {
-            height: 60px;
-            width: 60px;
-            padding: 3px;
+            height: 120px;
+            width: 120px;
+            padding: 5px;
             text-align: center;
             display: flex;
             align-items: center;
@@ -137,7 +137,7 @@
         }
 
         @page {
-            margin: 100px 25px 130px 25px;
+            margin: 100px 25px 200px 25px;
         }
 
         header {
@@ -325,12 +325,12 @@
                         </td>
                         <td class="box" colspan="5" style="text-align: center;">
                             <div>
-                                <img style="width: 120px;" src="{{ public_path('images/sample-ttd-1.png') }}" />
+                                <img style="width: 120px;" src="data:image/png;base64, {!! $leaderSign !!}" />
                             </div>
                         </td>
                         <td class="box" style="text-align: center;">
-                            <div>DR. RATNA, MKM</div>
-                            <div>NIP. 102020202020202</div>
+                            <div>{{$leader_name}}</div>
+                            <div>NIP. {{$leader_nip}}</div>
                         </td>
                     </tr>
                 </thead>

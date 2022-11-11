@@ -4,9 +4,12 @@ namespace App\Models\Entity;
 
 use App\Models\AppAuthenticatable;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Permission\Traits\HasRoles;
+use App\Models\Table\PositionTable;
 
 class User extends AppAuthenticatable
 {
+    use HasRoles;
     use SoftDeletes;
 
     protected $table    =   'users';
@@ -45,4 +48,8 @@ class User extends AppAuthenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    public function position()
+    {
+        return $this->belongsTo(PositionTable::class, 'position_id');
+    }
 }

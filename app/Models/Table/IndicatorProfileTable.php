@@ -8,6 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class IndicatorProfileTable extends IndicatorProfile
 {
+    public function file()
+    {
+        return $this->morphOne(FileTable::class, 'fileable');
+    }
+
     public function program()
     {
         return $this->belongsTo(ProgramTable::class, 'program_id')->select('id', 'name');
@@ -40,7 +45,8 @@ class IndicatorProfileTable extends IndicatorProfile
 
     public function signature()
     {
-        return $this->hasMany(IndicatorProfileSignatureTable::class, 'indicator_profile_id')->with('user:id,nip,name')->select('id', 'indicator_profile_id', 'user_id', 'signed', 'level', 'signed_at');
+        // return $this->hasMany(IndicatorProfileSignatureTable::class, 'indicator_profile_id')->with('user:id,nip,name')->select('id', 'indicator_profile_id', 'user_id', 'signed', 'level', 'signed_at');
+        return $this->hasMany(IndicatorProfileSignatureTable::class, 'indicator_profile_id')->with(['user:id,nip,name,position_id','user.position:id,name', 'user.signature'])->select('id', 'indicator_profile_id', 'user_id', 'signed', 'level', 'signed_at')->orderBy('level', 'asc');
     }
 
     public function qualityDimension()

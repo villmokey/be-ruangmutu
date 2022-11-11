@@ -102,13 +102,14 @@ class IndicatorProfileService extends AppService implements AppServiceInterface
     public function getById($id)
     {
         $result = $this->model->newQuery()
+                                ->with('file')
                                 ->with('program')
                                 ->with('subProgram')
                                 ->with('firstPic')
                                 ->with('secondPic')
                                 ->with('assignBy')
                                 ->with('document')
-                                ->with('signature')
+                                ->with('signature.user.signature')
                                 ->with('qualityDimension')
                                 ->with('indicatorType')
                                 ->with('dataFrequency')
@@ -154,7 +155,7 @@ class IndicatorProfileService extends AppService implements AppServiceInterface
             if (!empty($data['document_id'])) {
                 $image = $this->fileTable->newQuery()->find($data['document_id']);
                 $image->update([
-                    'fileable_type' => get_class($indicatorProfile),
+                    'fileable_type' => 'App\Models\Table\IndicatorProfileTable',
                     'fileable_id'   => $indicatorProfile->id,
                 ]);
             }
@@ -381,26 +382,61 @@ class IndicatorProfileService extends AppService implements AppServiceInterface
         $year = $input->get('year', null);
         $status = $input->get('status', null);
         $type = $input->get('type', null);
+        $search = $input->get('search', null);
+        $paginate = $input->get('paginate', true);
+        $page = $input->get('page', 1);
+        $perPage = $input->get('limit', 10);
 
-        $result = $this->model->newQuery()
-                                ->whereHas('signature', function($query) use ($id) {
-                                    $query->where('user_id', $id);
-                                })
-                                ->with('subProgram')
-                                ->with('signature')
-                                ->when($program_id, function ($query) use ($program_id) {
-                                    return $query->whereIn('program_id', explode(',', $program_id));
-                                })
-                                ->when($status, function ($query) use ($status) {
-                                    return $query->where('status', $status === 'signed' ? '>' : '=', 0);
-                                })
-                                ->when($type, function ($query) use ($type) {
-                                    return $query->where('type', $type);
-                                })
-                                ->when($year, function ($query) use ($year) {
-                                    return $query->whereYear('created_at', $year);
-                                })
-                                ->get();
+
+        if ($paginate == 'true' || $paginate == '1'){
+            $result = $this->model->newQuery()
+                                    ->whereHas('signature', function($query) use ($id) {
+                                        $query->where('user_id', $id);
+                                    })
+                                    ->with('subProgram')
+                                    ->with('signature')
+                                    ->when($program_id, function ($query) use ($program_id) {
+                                        return $query->whereIn('program_id', explode(',', $program_id));
+                                    })
+                                    ->when($search, function ($query) use ($search) {
+                                        return $query->where('title', 'like', '%'.$search.'%');
+                                    })
+                                    ->when($status, function ($query) use ($status) {
+                                        return $query->where('status', $status === 'signed' ? '>' : '=', 0);
+                                    })
+                                    ->when($type, function ($query) use ($type) {
+                                        return $query->where('type', $type);
+                                    })
+                                    ->when($year, function ($query) use ($year) {
+                                        return $query->whereYear('created_at', $year);
+                                    })
+                                    ->paginate((int)$perPage, ['*'], null, $page);
+        }else {
+            $result = $this->model->newQuery()
+                                    ->whereHas('signature', function($query) use ($id) {
+                                        $query->where('user_id', $id);
+                                    })
+                                    ->with('subProgram')
+                                    ->with('signature')
+                                    ->when($program_id, function ($query) use ($program_id) {
+                                        return $query->whereIn('program_id', explode(',', $program_id));
+                                    })
+                                    ->when($search, function ($query) use ($search) {
+                                        return $query->where('title', 'like', '%'.$search.'%');
+                                    })
+                                    ->when($status, function ($query) use ($status) {
+                                        return $query->where('status', $status === 'signed' ? '>' : '=', 0);
+                                    })
+                                    ->when($type, function ($query) use ($type) {
+                                        return $query->where('type', $type);
+                                    })
+                                    ->when($year, function ($query) use ($year) {
+                                        return $query->whereYear('created_at', $year);
+                                    })
+                                    ->get();
+            
+        }
+
 
         return $this->sendSuccess($result);
     }

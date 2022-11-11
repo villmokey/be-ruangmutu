@@ -3,6 +3,7 @@
 namespace App\Models\Table;
 
 use App\Models\Entity\User;
+use App\Models\Entity\Role;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -15,7 +16,7 @@ class UserTable extends User
 
     public function role()
     {
-        return $this->belongsTo(RoleTable::class);
+        return $this->belongsTo(Role::class);
     }
 
     public function pic()
@@ -23,8 +24,8 @@ class UserTable extends User
         return $this->hasOne(ProgramTable::class, 'pic_id');
     }
 
-    public function position()
+    public function userPosition()
     {
-        return $this->belongsTo(PositionTable::class, 'position_id');
+        return $this->hasOne(PositionTable::class, 'position_id', 'id');
     }
 }

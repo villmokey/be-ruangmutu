@@ -33,7 +33,7 @@ class EventService extends AppService implements AppServiceInterface
         parent::__construct($model);
     }
 
-    public function getAll($search = null, $year = null, $month = null)
+    public function getAll($search = null, $year = null, $month = null, $programs = [])
     {
         $result =   $this->model->newQuery()->with(['relatedProgram.program', 'user', 'relatedFile.related.file', 'program', 'otherFiles'])
             ->when($search, function ($query, $search) {
@@ -41,6 +41,11 @@ class EventService extends AppService implements AppServiceInterface
             })
             ->when($month, function ($query, $month) {
                 return $query->where('created_at','like', '%'.$month.'%');
+            })
+            ->when($programs, function ($query, $programs) {
+                $query->whereHas('relatedProgram.program', function($q) use ($programs) {
+                    $q->whereIn('id', $programs);
+                });
             })
             ->when($year, function ($query, $year) {
                 return $query->whereYear('created_at', $year);
@@ -55,7 +60,7 @@ class EventService extends AppService implements AppServiceInterface
         return $this->sendSuccess($result->get());
     }
 
-    public function getPaginated($search = null, $year = null, $perPage = 15, $page = null)
+    public function getPaginated($search = null, $year = null, $perPage = 15, $page = null, $programs = [])
     {
         $result  = $this->model->newQuery()->with(['relatedProgram.program', 'user', 'relatedFile'])
             ->when($search, function ($query, $search) {
@@ -63,6 +68,11 @@ class EventService extends AppService implements AppServiceInterface
             })
             ->when($year, function ($query, $year) {
                 return $query->whereYear('created_at', $year);
+            })
+            ->when($programs, function ($query, $programs) {
+                $query->whereHas('relatedProgram.program', function($q) use ($programs) {
+                    $q->whereIn('id', $programs);
+                });
             })
             ->orderBy('created_at', 'DESC')
             ->paginate((int)$perPage, ['*'], null, $page);
@@ -73,7 +83,7 @@ class EventService extends AppService implements AppServiceInterface
     public function getById($id)
     {
         $result = $this->model->newQuery()
-            ->with('relatedFile.related.file')
+            ->with(['user','relatedFile.related.file'])
             ->find($id);
 
         return $this->sendSuccess($result);

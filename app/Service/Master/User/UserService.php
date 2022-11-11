@@ -45,13 +45,13 @@ class UserService extends AppService implements AppServiceInterface
         return $this->sendSuccess($result);
     }
 
-    public function getPaginated($search = null, $perPage = 15, $page = null)
+    public function getPaginated($search = null, $perPage = 15, $page = null, $sort = 'ASC')
     {
-        $result  = $this->model->newQuery()
+        $result  = User::with(['roles', 'position'])
                                 ->when($search, function ($query, $search) {
                                     return $query->where('name','like','%'.$search.'%');
                                 })
-                                ->orderBy('created_at','DESC')
+                                ->orderBy('name',$sort)
                                 ->paginate((int)$perPage, ['*'], null, $page);
 
         return $this->sendSuccess($result);
@@ -76,6 +76,7 @@ class UserService extends AppService implements AppServiceInterface
                 'nip'       =>  $data['nip'],
                 'name'      =>  $data['name'],
                 'email'     =>  $data['email'],
+                'position_id'     =>  $data['position_id'],
                 'password'  =>  Hash::make($data['password']),
                 'status'    =>  'active',
             ]);
@@ -114,10 +115,12 @@ class UserService extends AppService implements AppServiceInterface
             $user->nip          =   $data['nip'];
             $user->name         =   $data['name'];
             $user->email        =   $data['email'];
+            $user->position_id        =   $data['position_id'];
+
             if (isset($data['password'])) {
                 $user->password    =   Hash::make($data['password']);
             }
-            $user->status       =   $data['status'];
+
             $user->save();
 
             if (isset($data['role_id'])) {

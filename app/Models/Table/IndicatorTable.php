@@ -8,6 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class IndicatorTable extends Indicator{
 
+    public function file()
+    {
+        return $this->morphOne(FileTable::class, 'fileable');
+    }
+
     public function program()
     {
         return $this->belongsTo(ProgramTable::class, 'program_id')->select('id', 'name');

@@ -19,7 +19,7 @@ class IndicatorController extends ApiController
     {
         $this->indicatorService    =   $indicatorService;
         parent::__construct($request);
-        $this->middleware('auth:api', ['except' => ['index', 'show']]);
+        $this->middleware('auth:api', ['except' => ['index', 'show', 'generateIndicator']]);
     }
 
     public function index(Request $request): \Illuminate\Http\JsonResponse
@@ -158,6 +158,22 @@ class IndicatorController extends ApiController
         $result =   $this->indicatorService->changeStatus($id,$input);
 
         try {
+            if ($result->success) {
+                $response = $result->data;
+                return $this->sendSuccess($response, $result->message, $result->code);
+            }
+
+            return $this->sendError($result->data, $result->message, $result->code);
+        } catch (\Exception $exception) {
+            return $this->sendError($exception->getMessage(),"",500);
+        }
+    }
+
+    public function generateIndicator($id, $chartFileId, Request $request) {
+        $input  =   $request->all();
+        $result =   $this->indicatorService->generatePDF($id, $chartFileId, $input);
+        try {
+            $result;
             if ($result->success) {
                 $response = $result->data;
                 return $this->sendSuccess($response, $result->message, $result->code);

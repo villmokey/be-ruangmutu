@@ -21,4 +21,10 @@ class Document extends AppModel
         'publish_date',
         'is_credential'
     ];
+
+    public $appends = ['qr_url'];
+
+    public function getQrUrlAttribute () {
+        return config('app.frontend_url') . '/view-file/doc/' .$this->id;
+    }
 }

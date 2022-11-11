@@ -44,6 +44,7 @@ class DashboardService extends AppService
         $year = $input->get('year', null);
         $program_id = $input->get('program_id', null);
         $type = $input->get('type', 'quality');
+        $search = $input->get('search', null);
 
         $total = $this->indicator->newQuery()->where('type', $type)->count();
         $queryUnreached = $this->model->newQuery()->with(['indicator'])->where('type', $type)->get();
@@ -60,6 +61,9 @@ class DashboardService extends AppService
 
 
         $selected = $this->indicator->newQuery()
+                    ->when($search, function ($query) use($search) {
+                        return $query->where('title', 'LIKE', '%'. $search . '%');
+                    })
                     ->when($program_id, function ($query) use($program_id) {
                         return $query->where('program_id', $program_id);
                     })
@@ -81,6 +85,9 @@ class DashboardService extends AppService
                                 )
                                 ->with('subProgram')
                                 ->has('indicator')
+                                ->when($search, function ($query) use($search) {
+                                    return $query->where('title', 'LIKE', '%'. $search . '%');
+                                })
                                 ->when($program_id, function ($query) use($program_id) {
                                     return $query->whereIn('program_id', explode(',', $program_id));
                                 })
@@ -127,12 +134,19 @@ class DashboardService extends AppService
         $program_id = $input->get('program_id', null);
         $document_type = $input->get('document_type', null);
         $type = $input->get('type', null);
+        $search = $input->get('search', null);
 
         $results = [];
         if(!$document_type || $document_type === 'indicator') {
             $indicators = $this->indicator->newQuery()
                                     ->with(['profileIndicator','program', 'subProgram'])                        
-                                    ->when($program_id, function ($query) use($program_id) {
+                                    ->when($search, function ($query) use($search) {
+                                        $query->whereHas('profileIndicator', function ($q) use ($search) {
+                                            $q->where('title', 'like', '%'.$search.'%');
+                                        });
+                                    })->when($year, function ($query) use($year) {
+                                        return $query->where('created_at', 'LIKE', $year . '%');
+                                    })->when($program_id, function ($query) use($program_id) {
                                         return $query->whereIn('program_id', explode(',', $program_id));
                                     })
                                     ->when($type, function ($query) use($type) {
@@ -160,6 +174,9 @@ class DashboardService extends AppService
             ->with(['program', 'subProgram'])                        
                                     ->when($program_id, function ($query) use($program_id) {
                                         return $query->whereIn('program_id', explode(',', $program_id));
+                                    })
+                                    ->when($search, function ($query) use($search) {
+                                        return $query->where('title', 'LIKE', $search . '%');
                                     })
                                     ->when($year, function ($query) use($year) {
                                         return $query->where('created_at', 'LIKE', $year . '%');
@@ -289,7 +306,7 @@ class DashboardService extends AppService
                 if($key > 0) {
                     if($queries[$key-1]->month === $value->month) {
                         $calculates[$key-1]['indicator_total']   += 1;
-                        $calculates[$key-1]['total']            += $value->month_target;
+                        $calculates[$key-1]['total']             += $value->month_target;
                     }else {
                         array_push($calculates, [
                             'month'             => $value->month,
@@ -392,7 +409,7 @@ class DashboardService extends AppService
             if(count($findMe)) {
                 $results[] = [
                     'health_service'        => $service->name,
-                    'year'                  => date('Y'),
+                    'year'                  => $year,
                     'result'                => $findMe
                 ];
             }

@@ -10,6 +10,8 @@ use App\Models\Table\OperationalStandardHistoryTable;
 use App\Models\Table\DocumentTypeTable;
 use App\Models\Table\ProgramTable;
 use App\Models\Table\FileTable;
+use App\Models\Table\UserTable;
+use App\Models\Table\PositionTable;
 use App\Service\Document\DocumentService;
 use App\Service\FileUploadService;
 
@@ -30,6 +32,8 @@ class OperationalStandardService extends AppService implements AppServiceInterfa
     protected $documentService;
     protected $uploadService;
     protected $docTypeTable;
+    protected $positionTable;
+    protected $userTable;
 
     public function __construct(
         OperationalStandardTable $model,
@@ -40,14 +44,18 @@ class OperationalStandardService extends AppService implements AppServiceInterfa
         DocumentService $documentService,
         FileUploadService $uploadService,
         DocumentTypeTable $docTypeTable,
+        PositionTable $positionTable,
+        UserTable $userTable,
     ) {
-        $this->opsUnit = $opsUnit;
-        $this->opsHistory = $opsHistory;
-        $this->fileTable = $fileTable;
-        $this->documentService = $documentService;
-        $this->program = $program;
-        $this->uploadService = $uploadService;
-        $this->docTypeTable = $docTypeTable;
+        $this->opsUnit              = $opsUnit;
+        $this->opsHistory           = $opsHistory;
+        $this->fileTable            = $fileTable;
+        $this->documentService      = $documentService;
+        $this->program              = $program;
+        $this->uploadService        = $uploadService;
+        $this->docTypeTable         = $docTypeTable;
+        $this->positionTable        = $positionTable;
+        $this->userTable            = $userTable;
         parent::__construct($model);
     }
 
@@ -94,6 +102,16 @@ class OperationalStandardService extends AppService implements AppServiceInterfa
     public function create($data)
     {
         \DB::beginTransaction();
+        
+        $leaderPosition = $this->positionTable->newQuery()->where('is_leader', true)->first();
+        if($leaderPosition) {
+            $userLeader = $this->userTable->newQuery()->with(['signature'])->where('position_id', $leaderPosition->id)->orderBy('updated_at', 'DESC')->first();
+            if(!$userLeader) {
+                return $this->sendError(null, 'Pengguna dengan jabatan kepala puskesmas tidak ditemukan, silahkan atur pada menu pengguna');
+            }
+        }else {
+            return $this->sendError(null, 'Jabatan kepala puskesmas belum dibuat, silahkan buat terlebih dahulu dan pilih kepala puskesmas pada menu pengguna');
+        }
 
         try {
 
@@ -147,7 +165,7 @@ class OperationalStandardService extends AppService implements AppServiceInterfa
                 ]);
             }
 
-            if($this->saveToDocuments($data, $image)){
+            if($this->saveToDocuments($data, $image, $userLeader)){
                 \DB::commit(); // commit the changes
                 return $this->sendSuccess($document);
             }else {
@@ -195,7 +213,7 @@ class OperationalStandardService extends AppService implements AppServiceInterfa
         }
     }
 
-    public function saveToDocuments($data, $flowDiagram)
+    public function saveToDocuments($data, $flowDiagram, $leader)
     {
         \DB::beginTransaction();
 
@@ -235,8 +253,20 @@ class OperationalStandardService extends AppService implements AppServiceInterfa
                 dd($x);
             }
             try {
-                $qrCode = \QrCode::format('png')->size(60)->merge('/public/images/square_ruang_mutu.png', .3)->generate(env('FRONTEND_URL', 'http://localhost:3000') . '/view-file/sop/' . $doc->data->id);
+                if($leader && $leader->signature) {
+                    $leaderSign = \base64_encode(\Storage::disk(env('UPLOAD_STORAGE', 'public'))->get($leader->signature->file_path));
+                }else {
+                    $leaderSign = \base64_encode(\public_path('images/square_ruang_mutu.png'));
+                }
+
+                $qrCode = \QrCode::format('png')->size(120)->merge('/public/images/square_ruang_mutu.png', .3)->errorCorrection('H')->generate(config('app.frontend_url') . '/view-file/doc/' . $doc->data->id);
+                    
+
                 $props['qrcode'] = base64_encode($qrCode);
+
+                $props['leaderSign'] = $leaderSign;
+                $props['leader_nip'] = $leader->nip;
+                $props['leader_name'] = $leader->name;
                 
                 $pdf = \PDF::loadView('print.sop', $props);
                 $file_name = $params['slug'].'.pdf';    
