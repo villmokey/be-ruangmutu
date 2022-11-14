@@ -8,6 +8,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class CustomerComplaintTable extends CustomerComplaint
 {
+	public function attachments(){
+		return $this->morphMany(FileTable::class, 'fileable')->where('group', 'complaint_files');
+	} 
+
+	public function proof(){
+		return $this->morphMany(FileTable::class, 'fileable')->where('group', 'proof_complaint_files');
+	} 
+
     public function program() {
         return $this->belongsTo(ProgramTable::class, 'program_id')->select(['id', 'name']);
     }

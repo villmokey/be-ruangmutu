@@ -26,7 +26,7 @@ class CreateProgramRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' =>  'required|unique:programs',
+            'name' =>  'required|unique:programs,name,NULL,id,deleted_at,NULL',
             'color' => 'required'
         ];
     }

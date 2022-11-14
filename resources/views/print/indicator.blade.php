@@ -166,7 +166,7 @@
 
         .chart-image {
             margin: 10px 0;
-            width: 40%;
+            width: 100%;
         }
 
     </style>

@@ -49,7 +49,7 @@ class CustomerComplaintService extends AppService implements AppServiceInterface
     {
         $isNotAdmin = !\Auth::user()->hasAnyRole('admin');
         $result =   $this->model->newQuery()
-                                ->with(['program', 'healthService', 'creator'])
+                                ->with(['program', 'healthService', 'creator', 'attachments'])
                                 ->when($search, function ($query, $search) {
                                     return $query->where('report','like','%'.$search.'%');
                                 })
@@ -68,7 +68,7 @@ class CustomerComplaintService extends AppService implements AppServiceInterface
     {
         $isNotAdmin = !\Auth::user()->hasAnyRole('Super Admin');
         $result  = $this->model->newQuery()
-                                ->with(['program', 'healthService', 'creator'])
+                                ->with(['program', 'healthService', 'creator', 'attachments', 'proof'])
                                 ->when($search, function ($query, $search) {
                                     return $query->where('report','like','%'.$search.'%');
                                 })
@@ -111,6 +111,19 @@ class CustomerComplaintService extends AppService implements AppServiceInterface
                 'created_id'                => \Auth::user()->id,
             ]);
 
+            if (isset($data['attachments'])) {
+                if (!empty($data['attachments'])) {
+                    foreach ($data['attachments'] as $file) {
+                        $fileRow = $this->fileTable->newQuery()->find($file);
+                        $fileRow->update([
+                            'fileable_type' => get_class($satisfaction),
+                            'fileable_id'   => $satisfaction->id,
+                        ]);
+                    }
+                }
+            }
+
+
             \DB::commit(); // commit the changes
             return $this->sendSuccess($satisfaction);
         } catch (\Exception $exception) {
@@ -133,6 +146,18 @@ class CustomerComplaintService extends AppService implements AppServiceInterface
             $complaint->clarification_date   =   date('Y-m-d');
             $complaint->is_public            =   $data['type'] === 'publish' ? true : false;
             $complaint->save();
+
+            if (isset($data['attachments'])) {
+                if (!empty($data['attachments'])) {
+                    foreach ($data['attachments'] as $file) {
+                        $fileRow = $this->fileTable->newQuery()->find($file);
+                        $fileRow->update([
+                            'fileable_type' => get_class($complaint),
+                            'fileable_id'   => $complaint->id,
+                        ]);
+                    }
+                }
+            }
 
             $this->saveToDocuments($complaint, null);
 
