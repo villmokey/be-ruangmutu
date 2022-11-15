@@ -140,15 +140,14 @@
             left: 0px;
             right: 0px;
             height: 50px;
-
         }
 
         footer {
-            position: fixed;
-            bottom: -40px;
-            left: 0px;
+            position: fixed; 
+            bottom: -100px; 
+            left: 0px; 
             right: 0px;
-            height: 130px;
+            height: 100px; 
         }
 
         input[type=checkbox] {
@@ -228,7 +227,7 @@
                                 SUB PROGRAM
                             </p>
                             <div class="box">
-                                {{ $data->sub_program->id ?? '-' }}
+                                {{ $data->subProgram->name ?? '-' }}
                             </div>
                         </div>
                     </td>
@@ -339,9 +338,13 @@
                             <div class="box">
                                 @foreach ($list_dimension as $item)
                                     <label>
-                                        <input id="{{ $item['value'] }}" type="checkbox"
-                                            {{ $item['value'] === 'Manfaat' ? 'checked' : '' }} />
-                                        {{ $item['value'] }}
+                                        @foreach ($data->qualityDimension as $x)
+                                            @if ($x->name === $item['value'])
+                                                <input id="{{ $item['value'] }}" checked type="checkbox"/> {{ $item['value'] }}
+                                            @else
+                                                <input id="{{ $item['value'] }}" type="checkbox"/> {{ $item['value'] }}
+                                            @endif
+                                        @endforeach
                                     </label>
                                 @endforeach
                             </div>
@@ -391,9 +394,13 @@
                             <div class="box">
                                 @foreach ($list_reports as $item)
                                     <label>
-                                        <input type="checkbox"
-                                            {{ $item['value'] === 'Tahunan' ? 'checked' : '' }} />
-                                        {{ $item['value'] }}
+                                        @foreach ($data->dataPeriod as $x)
+                                            @if ($x->name === $item['value'])
+                                                <input id="{{ $item['value'] }}" checked type="checkbox"/> {{ $item['value'] }}
+                                            @else
+                                                <input id="{{ $item['value'] }}" type="checkbox"/> {{ $item['value'] }}
+                                            @endif
+                                        @endforeach
                                     </label>
                                 @endforeach
                             </div>
@@ -407,9 +414,13 @@
                             <div class="box">
                                 @foreach ($list_frequently as $item)
                                     <label>
-                                        <input type="checkbox"
-                                            {{ $item['value'] === 'Mingguan' ? 'checked' : '' }} />
-                                        {{ $item['value'] }}
+                                        @foreach ($data->dataFrequency as $x)
+                                            @if ($x->name === $item['value'])
+                                                <input id="{{ $item['value'] }}" checked type="checkbox"/> {{ $item['value'] }}
+                                            @else
+                                                <input id="{{ $item['value'] }}" type="checkbox"/> {{ $item['value'] }}
+                                            @endif
+                                        @endforeach
                                     </label>
                                 @endforeach
                             </div>
@@ -426,9 +437,13 @@
                                 @foreach ($list_indicator_options as $item)
                                     <div>
                                         <label>
-                                            <input type="checkbox"
-                                                {{ $item['value'] === 'Output' ? 'checked' : '' }} />
-                                            {{ $item['value'] }}
+                                            @foreach ($data->indicatorType as $x)
+                                                @if ($x->name === $item['value'])
+                                                    <input id="{{ $item['value'] }}" checked type="checkbox"/> {{ $item['value'] }}
+                                                @else
+                                                    <input id="{{ $item['value'] }}" type="checkbox"/> {{ $item['value'] }}
+                                                @endif
+                                            @endforeach
                                         </label>
                                     </div>
                                 @endforeach
@@ -443,9 +458,13 @@
                             <div class="box">
                                 @foreach ($list_reports as $item)
                                     <label>
-                                        <input type="checkbox"
-                                            {{ $item['value'] === 'Triwulan' ? 'checked' : '' }} />
-                                        {{ $item['value'] }}
+                                        @foreach ($data->analystPeriod as $x)
+                                            @if ($x->name === $item['value'])
+                                                <input id="{{ $item['value'] }}" checked type="checkbox"/> {{ $item['value'] }}
+                                            @else
+                                                <input id="{{ $item['value'] }}" type="checkbox"/> {{ $item['value'] }}
+                                            @endif
+                                        @endforeach
                                     </label>
                                 @endforeach
                             </div>
@@ -476,10 +495,8 @@
             </table>
             <table width='100%'>
                 @if ($data && count($data->signature) > 0)
-                
                 <tr>
                     @foreach ($data->signature as $item)
-                    {{print_r($data->signature)}}
                         <td width="50%" style="text-align: center">
                             {{-- <p class="text-2">Penanggung Jawab</p> --}}
                             <p class="text-2">
@@ -487,9 +504,9 @@
                             </p>
                             @if ($item->signed === 1)
                                 @if ($item->user->signature)
-                                    <img style="width: 200px;" src="{{ public_path('storage/'.$item->user->signature->file_path) }}" />
+                                    <img style="width: 100px; height: 100px;" src="{{ public_path('storage/'.$item->user->signature->file_path) }}" />
                                 @else
-                                    <img style="width: 100px;" src="{{ public_path('images/square_ruang_mutu.png') }}" />
+                                    <img style="width: 100px; height: 100px;" src="{{ public_path('images/square_ruang_mutu.png') }}" />
                                     {{-- <p class="sign-text">Signed</p> --}}
                                 @endif
                             @else

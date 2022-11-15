@@ -28,7 +28,7 @@ class CreateIndicatorRequest extends FormRequest
         return [
             'title' => 'required|exists:indicator_profiles,id',
             'program_id' => 'required|exists:programs,id',
-            'sub_program_id' => 'required|exists:sub_programs,id',
+            'sub_program_id' => 'required|exists:programs,id',
             'month_target' => 'required|numeric',
             'month' => 'required',
             'quality_goal' => 'required',

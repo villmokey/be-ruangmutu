@@ -116,7 +116,7 @@ class DashboardService extends AppService
             ->where('title', $value->id)
             ->where('sub_program_id', $value->sub_program_id)
             // ->where('type', $value->type)
-            ->join('sub_programs', 'sub_programs.id', '=', 'indicators.sub_program_id')
+            ->join('programs', 'programs.id', '=', 'indicators.sub_program_id')
             ->get()
             ->toArray();
         }

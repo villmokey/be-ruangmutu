@@ -13,6 +13,7 @@ use App\Models\Table\DocumentTypeTable;
 use App\Service\AppService;
 use App\Service\AppServiceInterface;
 use App\Service\FileUploadService;
+use App\Service\Document\DocumentService;
 
 use Illuminate\Http\UploadedFile;
 use Illuminate\Http\File;
@@ -25,6 +26,7 @@ class IndicatorService extends AppService implements AppServiceInterface
     protected $signatureTable;
     protected $documentTypeTable;
     protected $documentTable;
+    protected $documentService;
 
     public function __construct(
         FileUploadService $fileUploadService,
@@ -32,10 +34,12 @@ class IndicatorService extends AppService implements AppServiceInterface
         IndicatorSignatureTable $signatureTable,
         DocumentTable $documentTable,
         DocumentTypeTable $documentTypeTable,
+        DocumentService $documentService,
         IndicatorTable $model
     )
     {
         $this->fileUploadService    =   $fileUploadService;
+        $this->documentService      =   $documentService;
         $this->fileTable            =   $fileTable;
         $this->documentTable        =   $documentTable;
         $this->documentTypeTable    =   $documentTypeTable;
@@ -335,14 +339,28 @@ class IndicatorService extends AppService implements AppServiceInterface
 
                     $nameOrigin = $indicator->profileIndicator->title . ' ' . $indicator->month . ' ' . date('Y', strtotime($indicator->created_at));
 
-                    $document = $this->documentTable->newQuery()->create([
+                    // $document = $this->documentTable->newQuery()->create([
+                    //     'name'              =>  $indicator->profileIndicator->title . '-' . $indicator->month,
+                    //     'slug'              =>  \Str::slug($nameOrigin),
+                    //     'document_type_id'  =>  $docType->id,
+                    //     'document_number'   =>  null,
+                    //     'publish_date'      =>  date('Y-m-d'),
+                    //     'is_confidential'   =>  false,
+                    // ]);
+
+                    $params = [
                         'name'              =>  $indicator->profileIndicator->title . '-' . $indicator->month,
                         'slug'              =>  \Str::slug($nameOrigin),
                         'document_type_id'  =>  $docType->id,
                         'document_number'   =>  null,
                         'publish_date'      =>  date('Y-m-d'),
                         'is_confidential'   =>  false,
-                    ]);
+                        'program_related'   =>  [$indicator->program_id, $indicator->sub_program_id],
+                    ];
+            
+                    $doc = $this->documentService->backendCreate($params);
+
+                    $document = $doc->data;
 
                     $qrCode = \QrCode::format('png')->size(120)->merge('/public/images/square_ruang_mutu.png', .3)->errorCorrection('H')->generate(
                         config('app.frontend_url') . '/view-file/doc/' . $document->id);

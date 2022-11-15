@@ -170,7 +170,7 @@ class IndicatorProfileService extends AppService implements AppServiceInterface
 
     public function update($id, $data)
     {
-        $indicatorProfile   =   $this->model->newQuery()->find($id);
+        $indicatorProfile          =   $this->model->newQuery()->find($id);
         $oldImage                  =   $indicatorProfile->document()->first();
 
         \DB::beginTransaction();

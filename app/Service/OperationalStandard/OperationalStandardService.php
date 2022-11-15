@@ -233,6 +233,7 @@ class OperationalStandardService extends AppService implements AppServiceInterfa
                 'document_type_id'  =>  $docType->id,
                 'document_number'   =>  $data['document_number'],
                 'publish_date'      =>  $data['released_date'],
+                'program_related'   =>  explode(',', $data['related_program']),
                 'is_confidential'   =>  'true',
             ];
     

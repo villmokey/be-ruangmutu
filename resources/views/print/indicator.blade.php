@@ -131,7 +131,7 @@
         }
 
         @page {
-            margin: 100px 25px 140px 25px;
+            margin: 100px 25px 200px 25px;
         }
 
         header {
@@ -140,15 +140,14 @@
             left: 0px;
             right: 0px;
             height: 50px;
-
         }
 
         footer {
-            position: fixed;
-            bottom: -30px;
-            left: 0px;
+            position: fixed; 
+            bottom: -100px; 
+            left: 0px; 
             right: 0px;
-            height: 140px;
+            height: 100px; 
         }
 
         input[type=checkbox] {
@@ -205,8 +204,7 @@
         <div class="container">
             <div class="header">
                 <img src="{{ public_path('images/logo-puskes-gambir.png') }}" style="width: 50px; height: 50px;" />
-                {{-- <p class="text-1">INDIKATOR {{$data->type === 'quality' ? 'MUTU' : 'KINERJA'}}</p> --}}
-                <p class="text-1">INDIKATOR KINERJA</p>
+                <p class="text-1">INDIKATOR {{$data->type === 'quality' ? 'MUTU' : 'KINERJA'}}</p>
                 <p class="text-1">PUSKESMAS KECAMATAN GAMBIR</p>
             </div>
             <table class="map-data" width="100%">
@@ -348,7 +346,6 @@
 
             <table width='100%'>
                 @if ($data && count($data->signature) > 0)
-                
                 <tr>
                     @foreach ($data->signature as $item)
                         <td width="50%" style="text-align: center">
@@ -358,9 +355,9 @@
                             </p>
                             @if ($item->signed === 1)
                                 @if ($item->user->signature)
-                                    <img style="width: 200px;" src="{{ public_path('storage/'.$item->user->signature->file_path) }}" />
+                                    <img style="width: 100px; height: 100px;" src="{{ public_path('storage/'.$item->user->signature->file_path) }}" />
                                 @else
-                                    <img style="width: 100px;" src="{{ public_path('images/square_ruang_mutu.png') }}" />
+                                    <img style="width: 100px; height: 100px;" src="{{ public_path('images/square_ruang_mutu.png') }}" />
                                     {{-- <p class="sign-text">Signed</p> --}}
                                 @endif
                             @else

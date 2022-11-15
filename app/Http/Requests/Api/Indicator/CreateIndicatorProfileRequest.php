@@ -27,7 +27,7 @@ class CreateIndicatorProfileRequest extends FormRequest
     {
         return [
             'program_id' => 'required|exists:programs,id',
-            'sub_program_id' => 'required|exists:sub_programs,id',
+            'sub_program_id' => 'required|exists:programs,id',
             'title' =>  'required',
             'indicator_selection_based' =>  'required',
             'objective' =>  'required',

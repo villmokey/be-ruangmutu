@@ -20,7 +20,7 @@ class IndicatorTable extends Indicator{
 
     public function subProgram()
     {
-        return $this->belongsTo(SubProgramTable::class, 'sub_program_id')->select('id', 'name');
+        return $this->belongsTo(ProgramTable::class, 'sub_program_id')->select('id', 'name');
     }
 
     public function profileIndicator()

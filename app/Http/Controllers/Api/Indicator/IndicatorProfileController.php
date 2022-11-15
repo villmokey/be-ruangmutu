@@ -9,6 +9,7 @@ use App\Http\Requests\Api\Indicator\UpdateIndicatorProfileRequest;
 use App\Service\Indicator\IndicatorProfileService;
 use Illuminate\Http\Request;
 use App\Service\FileUploadService;
+use App\Service\Document\DocumentService;
 use App\Models\Table\DocumentTable;
 use App\Models\Table\FileTable;
 use App\Models\Table\DocumentTypeTable;
@@ -19,6 +20,7 @@ use Illuminate\Http\File;
 class IndicatorProfileController extends ApiController
 {
     protected $indicatorProfileService;
+    protected $documentService;
     protected $fileUploadService;
     protected $documentTable;
     protected $fileTable;
@@ -30,9 +32,11 @@ class IndicatorProfileController extends ApiController
         DocumentTable $documentTable,
         FileTable $fileTable,
         DocumentTypeTable $documentTypeTable,
+        DocumentService $documentService,
         Request $request)
     {
         $this->indicatorProfileService    =   $indicatorProfileService;
+        $this->documentService      =   $documentService;
         $this->fileUploadService    =   $fileUploadService;
         $this->documentTable        =   $documentTable;
         $this->fileTable            =   $fileTable;
@@ -333,14 +337,19 @@ class IndicatorProfileController extends ApiController
                         ]);
                     }
 
-                    $document = $this->documentTable->newQuery()->create([
+                    $params = [
                         'name'              =>  $profile->title,
                         'slug'              =>  \Str::slug($profile->title),
                         'document_type_id'  =>  $docType->id,
                         'document_number'   =>  null,
                         'publish_date'      =>  date('Y-m-d'),
                         'is_confidential'   =>  false,
-                    ]);
+                        'program_related'   =>  [$profile->program_id, $profile->sub_program_id],
+                    ];
+            
+                    $doc = $this->documentService->backendCreate($params);
+
+                    $document = $doc->data;
 
                     $qrCode = \QrCode::format('png')->size(120)->merge('/public/images/square_ruang_mutu.png', .3)->errorCorrection('H')->generate(
                         config('app.frontend_url') . '/view-file/doc/' . $document->id);
