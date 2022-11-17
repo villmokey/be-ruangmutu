@@ -131,7 +131,7 @@ class UserService extends AppService implements AppServiceInterface
             if (!empty($data['signature_id'])) {
                 $image = $this->fileTable->newQuery()->find($data['signature_id']);
                 $image->update([
-                    'fileable_type' => get_class($user),
+                    'fileable_type' => 'App\Models\Table\UserTable',
                     'fileable_id'   => $user->id,
                 ]);
             }

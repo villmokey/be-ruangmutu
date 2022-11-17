@@ -158,6 +158,10 @@
             display: flex;
             align-items: center;
         }
+
+        #table-content tr td::nth-child(1) {
+            width: 50% !important;
+        }
     </style>
 </head>
 
@@ -197,7 +201,7 @@
                 <p class="text-1">PROFIL INDIKATOR {{$data->type === 'quality' ? 'MUTU' : 'KINERJA'}}</p>
                 <p class="text-1">PUSKESMAS KECAMATAN GAMBIR</p>
             </div>
-            <table width="100%">
+            <table width="100%" id="table-content">
                 <tr>
                     <td>
                         <div class="wrapper">
@@ -256,7 +260,7 @@
                     <td>
                         <div class="wrapper">
                             <p class="text-2">
-                                PENGUMPULAN DATA
+                                DESAIN PENGUMPULAN DATA
                             </p>
                             <div class="box">
                                 {{ $data->data_collection_design }}

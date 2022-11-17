@@ -410,6 +410,7 @@ class IndicatorProfileService extends AppService implements AppServiceInterface
                                     ->when($year, function ($query) use ($year) {
                                         return $query->whereYear('created_at', $year);
                                     })
+                                    ->orderBy('status', 'asc')
                                     ->paginate((int)$perPage, ['*'], null, $page);
         }else {
             $result = $this->model->newQuery()
@@ -433,6 +434,7 @@ class IndicatorProfileService extends AppService implements AppServiceInterface
                                     ->when($year, function ($query) use ($year) {
                                         return $query->whereYear('created_at', $year);
                                     })
+                                    ->orderBy('status', 'asc')
                                     ->get();
             
         }

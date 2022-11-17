@@ -29,7 +29,7 @@ class UpdateUserRequest extends FormRequest
             'nip'       =>  'required|string|max:255',
             'name'      =>  'required|string|max:255',
             'email'     =>  'required|string|email|max:255|unique:users,email,'.$this->user,
-            'password'  =>  'string|min:6|confirmed',
+            'password'  =>  'nullable|string|min:6|confirmed',
             'role_id'   =>  'required|string|exists:roles,id',
         ];
     }

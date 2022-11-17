@@ -129,10 +129,12 @@ class EventService extends AppService implements AppServiceInterface
                 if (!empty($data['event_files'])) {
                     foreach ($data['event_files'] as $file) {
                         $fileRow = $this->fileTable->newQuery()->find($file);
-                        $fileRow->update([
-                            'fileable_type' => get_class($document),
-                            'fileable_id'   => $document->id,
-                        ]);
+                        if($fileRow) {
+                            $fileRow->update([
+                                'fileable_type' => get_class($document),
+                                'fileable_id'   => $document->id,
+                            ]);
+                        }
                     }
                 }
             }

@@ -261,7 +261,7 @@ class IndicatorService extends AppService implements AppServiceInterface
                                     })
                                     ->when($year, function ($query, $year) {
                                         return $query->whereYear('created_at', $year);
-                                    })->paginate((int)$perPage, ['*'], null, $page);        
+                                    })->orderBy('status', 'asc')->paginate((int)$perPage, ['*'], null, $page);        
         }else {
             $result = $this->model->newQuery()
                                     ->whereHas('signature', function($query) use ($id) {
@@ -285,7 +285,7 @@ class IndicatorService extends AppService implements AppServiceInterface
                                     })
                                     ->when($year, function ($query, $year) {
                                         return $query->whereYear('created_at', $year);
-                                    })->get();
+                                    })->orderBy('status', 'asc')->get();
         }
 
         return $this->sendSuccess($result);
