@@ -45,6 +45,8 @@ class DashboardService extends AppService
         $program_id = $input->get('program_id', null);
         $type = $input->get('type', 'quality');
         $search = $input->get('search', null);
+        $perPage = $input->get('per_page', 1);
+        $page = $input->get('page', 1);
 
         $total = $this->indicator->newQuery()->where('type', $type)->count();
         $queryUnreached = $this->model->newQuery()->with(['indicator'])->where('type', $type)->get();
@@ -97,9 +99,12 @@ class DashboardService extends AppService
                                 ->when($year, function ($query) use($year) {
                                     return $query->where('created_at', 'LIKE', $year . '%');
                                 })
-                                ->get();
+                                ->orderBy('created_at', 'desc')
+                                ->paginate((int)$perPage, ['*'], null, $page);
 
-        foreach($indicator as $key => $value) {
+        $enc = json_decode($indicator->toJson(), true);
+        
+        foreach($enc['data'] as $key => $value) {
             $indicator[$key]['month'] = $this->indicator->newQuery()
             ->select(
                 'indicators.id',
@@ -113,8 +118,8 @@ class DashboardService extends AppService
                 'indicators.environment',
                 'indicators.next_plan',
                 )
-            ->where('title', $value->id)
-            ->where('sub_program_id', $value->sub_program_id)
+            ->where('title', $value['id'])
+            ->where('sub_program_id', $value['sub_program_id'])
             // ->where('type', $value->type)
             ->join('programs', 'programs.id', '=', 'indicators.sub_program_id')
             ->get()
