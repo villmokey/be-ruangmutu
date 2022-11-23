@@ -220,7 +220,7 @@ class CustomerComplaintService extends AppService implements AppServiceInterface
                 dd($x);
             }
             try {
-                $qrCode = \QrCode::format('png')->size(60)->merge('/public/images/square_ruang_mutu.png', .3)->generate(env('FRONTEND_URL', 'http://localhost:3000') . '/view-file/doc/' . $doc->data->id);
+                $qrCode = \QrCode::format('png')->size(120)->merge('/public/images/square_ruang_mutu.png', .3)->errorCorrection('H')->generate(config('app.frontend_url', 'http://localhost:3000') . '/view-file/doc/' . $doc->data->id);
                 $props['qrcode'] = base64_encode($qrCode);
                 // dd($props);
                 $pdf = \PDF::loadView('print.complaint', $props);

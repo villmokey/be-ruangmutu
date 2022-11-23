@@ -135,7 +135,7 @@ class UserService extends AppService implements AppServiceInterface
                     'fileable_id'   => $user->id,
                 ]);
             }
-
+            
             \DB::commit(); // commit the changes
             return $this->sendSuccess($user);
         } catch (\Exception $exception) {

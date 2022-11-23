@@ -462,7 +462,7 @@
                                 <th style="width: 25px;">No.</th>
                                 <th style="width: 20%;">YANG DIRUBAH</th>
                                 <th>ISI PERUBAHAN</th>
-                                <th class="w-20">TANGGAL MULAI DITERAPKAN</th>
+                                <th class="w-20">TANGGAL MULAI DITERBITKAN</th>
                             </tr>
                             @forelse ($data['histories'] as $value)
                                 <tr>

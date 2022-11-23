@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use App\Service\FileUploadService;
 use App\Service\Document\DocumentService;
 use App\Models\Table\DocumentTable;
+use App\Models\Table\IndicatorProfileTable;
 use App\Models\Table\FileTable;
 use App\Models\Table\DocumentTypeTable;
 
@@ -376,6 +377,13 @@ class IndicatorProfileController extends ApiController
                                 'fileable_type' => 'App\Models\Table\DocumentTable',
                                 'fileable_id'   => $document->id,
                             ]);
+
+                            $find = IndicatorProfileTable::find($id);
+
+                            if($find) {
+                                $find->is_generated = true;
+                                $find->save();
+                            }
         
                             \DB::commit();
                             return $this->sendSuccess($upload, 'Sukses menyimpan ke lemari mutu');

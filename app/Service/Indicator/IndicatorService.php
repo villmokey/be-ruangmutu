@@ -339,15 +339,6 @@ class IndicatorService extends AppService implements AppServiceInterface
 
                     $nameOrigin = $indicator->profileIndicator->title . ' ' . $indicator->month . ' ' . date('Y', strtotime($indicator->created_at));
 
-                    // $document = $this->documentTable->newQuery()->create([
-                    //     'name'              =>  $indicator->profileIndicator->title . '-' . $indicator->month,
-                    //     'slug'              =>  \Str::slug($nameOrigin),
-                    //     'document_type_id'  =>  $docType->id,
-                    //     'document_number'   =>  null,
-                    //     'publish_date'      =>  date('Y-m-d'),
-                    //     'is_confidential'   =>  false,
-                    // ]);
-
                     $params = [
                         'name'              =>  $indicator->profileIndicator->title . '-' . $indicator->month,
                         'slug'              =>  \Str::slug($nameOrigin),
@@ -393,6 +384,9 @@ class IndicatorService extends AppService implements AppServiceInterface
                                 'fileable_type' => 'App\Models\Table\DocumentTable',
                                 'fileable_id'   => $document->id,
                             ]);
+                            
+                            $indicator->is_generated = true;
+                            $indicator->save();
         
                             \DB::commit();
                             return $this->sendSuccess($upload, 'Sukses menyimpan ke lemari mutu');

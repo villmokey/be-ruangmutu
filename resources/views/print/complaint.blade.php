@@ -73,8 +73,8 @@
         }
 
         .qr-box {
-            height: 60px;
-            width: 60px;
+            height: 120px;
+            width: 120px;
             padding: 3px;
             text-align: center;
             display: flex;

@@ -183,18 +183,20 @@ class DocumentService extends AppService implements AppServiceInterface
                             $tpl = $pdf->importPage($i); 
                             $size = $pdf->getTemplateSize($tpl); 
                             $pdf->addPage(); 
-                            $pdf->useTemplate($tpl, 1, 1, $size['width'], $size['height'], TRUE); 
+                            // $pdf->useTemplate($tpl, 1, 1, $size['width'], $size['height'], TRUE); 
+                            $pdf->useTemplate($tpl, null, 1, $size['width'], $size['height'], TRUE); 
                             
-                            $xxx_final = ($size['width']-35); 
-                            $yyy_final = ($size['height']-275); 
+                            // $xxx_final = ($size['width']-35); 
+                            // $yyy_final = ($size['height']-275); 
+                            $xxx_final = ($size['width']-($size['width'] / 6)); 
+                            $yyy_final = ($size['height']-($size['height'] - 4)); 
                             $pdf->Image($text_image, $xxx_final, $yyy_final, 0, 0, 'png'); 
                         } 
-        
                         // Remove qrcode and temporary file From Storage
                         \Storage::disk($disk)->delete($temporaryPath.$temporaryName);
                         \Storage::disk($disk)->delete($filePathOrigin);
                         $fileOriginData->delete();
-        
+
                         $newPdfName = FileUploadService::generateNewName() . '.pdf';
                         $makeNewPdf = \App\Service\OperationalStandard\OperationalStandardService::fromBase64(base64_encode($pdf->Output('S', $newPdfName)), $newPdfName);
 

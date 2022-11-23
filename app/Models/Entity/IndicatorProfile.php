@@ -35,6 +35,7 @@ class IndicatorProfile extends AppModel
         'first_pic_id',
         'second_pic_id',
         'created_by',
+        'is_generated',
         'assign_by',
         'status',
         'type'
