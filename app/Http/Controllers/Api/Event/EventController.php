@@ -41,7 +41,7 @@ class EventController extends ApiController
         }
 
         if ($paginate == 'true' || $paginate == '1') {
-            $result = $this->eventService->getPaginated($search, $year, $perPage, $page, $programs);
+            $result = $this->eventService->getPaginated($search, $year, $perPage, $page, $month, $programs);
         } else {
             $result = $this->eventService->getAll($search, $year, $month, $programs);
         }

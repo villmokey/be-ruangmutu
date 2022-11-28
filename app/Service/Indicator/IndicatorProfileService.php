@@ -492,7 +492,7 @@ class IndicatorProfileService extends AppService implements AppServiceInterface
         try {
             if (isset($data['status']) == 'rejected') {
                 $indicatorProfile->update([
-                    'status' => -1
+                    'status' => -1,
                 ]);
                 $signature = $indicatorProfile->signature()->where('user_id', $data['user_id'])->first();
                 $signature->update([

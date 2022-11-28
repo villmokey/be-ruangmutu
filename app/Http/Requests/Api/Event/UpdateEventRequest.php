@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Requests\Api\Document;
+namespace App\Http\Requests\Api\Event;
 
 use App\Http\Requests\InitialRequestValidation;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateDocumentRequest extends FormRequest
+class UpdateEventRequest extends FormRequest
 {
     use InitialRequestValidation;
     /**

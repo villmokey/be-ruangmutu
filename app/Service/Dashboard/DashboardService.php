@@ -138,70 +138,54 @@ class DashboardService extends AppService
         $year = $input->get('year', null);
         $program_id = $input->get('program_id', null);
         $document_type = $input->get('document_type', null);
+        $variant = $input->get('variant', 'indicator');
         $type = $input->get('type', null);
         $search = $input->get('search', null);
+        $page = $input->get('page', 1);
+        $perPage = $input->get('per_page', 15);
 
         $results = [];
-        if(!$document_type || $document_type === 'indicator') {
-            $indicators = $this->indicator->newQuery()
-                                    ->with(['profileIndicator','program', 'subProgram'])                        
-                                    ->when($search, function ($query) use($search) {
-                                        $query->whereHas('profileIndicator', function ($q) use ($search) {
-                                            $q->where('title', 'like', '%'.$search.'%');
-                                        });
-                                    })->when($year, function ($query) use($year) {
-                                        return $query->where('created_at', 'LIKE', $year . '%');
-                                    })->when($program_id, function ($query) use($program_id) {
-                                        return $query->whereIn('program_id', explode(',', $program_id));
-                                    })
-                                    ->when($type, function ($query) use($type) {
-                                        return $query->where('type', $type);
-                                    })
-                                    ->when($year, function ($query) use($year) {
-                                        return $query->where('created_at', 'LIKE', $year . '%');
-                                    })->get();
-
-            foreach ($indicators as $ind) {
-                $results[] = [
-                    'id' => $ind->title,
-                    'indicator_id' => $ind->id,
-                    'title' => $ind->profileIndicator->title,
-                    'is_profile_indicator' => false,
-                    'month' => $ind->month,
-                    'created_at' => $ind->created_at
-                ];
+        if($variant === 'indicator') {
+            if(!$document_type || $document_type === 'indicator') {
+                $results = $this->indicator->newQuery()
+                                        ->with(['profileIndicator','program', 'subProgram'])                        
+                                        ->when($search, function ($query) use($search) {
+                                            $query->whereHas('profileIndicator', function ($q) use ($search) {
+                                                $q->where('title', 'like', '%'.$search.'%');
+                                            });
+                                        })->when($year, function ($query) use($year) {
+                                            return $query->where('created_at', 'LIKE', $year . '%');
+                                        })->when($program_id, function ($query) use($program_id) {
+                                            return $query->whereIn('program_id', explode(',', $program_id));
+                                        })
+                                        ->when($type, function ($query) use($type) {
+                                            return $query->where('type', $type);
+                                        })
+                                        ->when($year, function ($query) use($year) {
+                                            return $query->where('created_at', 'LIKE', $year . '%');
+                                        })->paginate((int)$perPage, ['*'], null, $page);
+                
             }
+        }else {
+            if (!$document_type || $document_type === 'indicator_profile') {
+                $results = $this->model->newQuery()
+                ->with(['program', 'subProgram'])                        
+                                        ->when($program_id, function ($query) use($program_id) {
+                                            return $query->whereIn('program_id', explode(',', $program_id));
+                                        })
+                                        ->when($search, function ($query) use($search) {
+                                            return $query->where('title', 'LIKE', $search . '%');
+                                        })
+                                        ->when($year, function ($query) use($year) {
+                                            return $query->where('created_at', 'LIKE', $year . '%');
+                                        })
+                                        ->when($type, function ($query) use($type) {
+                                            return $query->where('type', $type);
+                                        })->paginate((int)$perPage, ['*'], null, $page);
             
+            }
         }
         
-        if (!$document_type || $document_type === 'indicator_profile') {
-            $profiles = $this->model->newQuery()
-            ->with(['program', 'subProgram'])                        
-                                    ->when($program_id, function ($query) use($program_id) {
-                                        return $query->whereIn('program_id', explode(',', $program_id));
-                                    })
-                                    ->when($search, function ($query) use($search) {
-                                        return $query->where('title', 'LIKE', $search . '%');
-                                    })
-                                    ->when($year, function ($query) use($year) {
-                                        return $query->where('created_at', 'LIKE', $year . '%');
-                                    })
-                                    ->when($type, function ($query) use($type) {
-                                        return $query->where('type', $type);
-                                    })->get();
-            
-            foreach ($profiles as $ind) {
-                $results[] = [
-                    'id' => $ind->id,
-                    'indicator_id' => null,
-                    'title' => $ind->title,
-                    'is_profile_indicator' => true,
-                    'month' => null,
-                    'created_at' => $ind->created_at
-                ];
-            }
-        }
-
         return $this->sendSuccess($results);
     }
 
@@ -347,7 +331,8 @@ class DashboardService extends AppService
         return $this->sendSuccess(['year' => $year, 'results' => $results]);
     }
 
-    public function recapComplaint($year = null) {
+    public function recapComplaint($year = null) 
+    {
         $year = $year ?? date('Y');
         
         $queries = \DB::select("SELECT

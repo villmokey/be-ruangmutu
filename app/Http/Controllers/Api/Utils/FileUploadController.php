@@ -92,5 +92,20 @@ class FileUploadController extends ApiController
             dd($ex);
         }
     }
+
+    public function destroy($id): \Illuminate\Http\JsonResponse
+    {
+        $result =   $this->fileUploadService->delete($id);
+        try {
+            if ($result->success) {
+                $response = $result->data;
+                return $this->sendSuccess($response, $result->message, $result->code);
+            }
+
+            return $this->sendError($result->data, $result->message, $result->code);
+        } catch (\Exception $exception) {
+            return $this->sendError($exception->getMessage(),"",500);
+        }
+    }
 }
 

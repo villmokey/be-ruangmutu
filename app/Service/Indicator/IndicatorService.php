@@ -301,6 +301,11 @@ class IndicatorService extends AppService implements AppServiceInterface
                 $indicator->update([
                     'status' => -1,
                 ]);
+                $signature = $indicator->signature()->where('user_id', $data['user_id'])->first();
+                $signature->update([
+                    'signed' => -1,
+                    'signed_at' => date('Y-m-d H:i:s'),
+                ]);
             } else {
                 $signature = $indicator->signature()->where('user_id', $data['user_id'])->first();
                 $signature->update([

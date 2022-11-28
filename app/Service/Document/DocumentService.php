@@ -88,8 +88,7 @@ class DocumentService extends AppService implements AppServiceInterface
                                 })
                                 ->when($sort && $sortBy, function ($query) use ($sort, $sortBy) {
                                     $query->orderBy($sortBy, $sort);
-                                })
-                                ->paginate((int)$perPage, ['*'], null, $page);
+                                });
 
         $countAll       = $this->model->newQuery()->count();
         $countSelected  = $result->count();
@@ -99,7 +98,7 @@ class DocumentService extends AppService implements AppServiceInterface
             'countAll' => $countAll,
             'countSelected' => $countSelected,
             'countNew' => $countNew,
-            'data' => $result,
+            'data' => $result->paginate((int)$perPage, ['*'], null, $page),
         ]);
     }
 

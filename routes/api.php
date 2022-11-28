@@ -127,4 +127,5 @@ Route::middleware('api')->prefix('v1')->group(function(){
     // File Upload
     Route::post('/upload/image',[FileUploadController::class,'uploadImage']);
     Route::post('/upload/file',[FileUploadController::class,'uploadFile']);
+    Route::delete('/upload/{id}',[FileUploadController::class,'destroy']);
 });

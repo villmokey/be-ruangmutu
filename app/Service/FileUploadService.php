@@ -258,4 +258,18 @@ class FileUploadService extends AppService
     {
         return str_replace('\\', '/', $subject);
     }
+
+    public function delete($id)
+    {
+        $read   =   $this->model->newQuery()->find($id);
+        try {
+            $this->deleteFiles($read->file_path);
+            $read->delete();
+            \DB::commit(); // commit the changes
+            return $this->sendSuccess($read);
+        } catch (\Exception $exception) {
+            \DB::rollBack(); // rollback the changes
+            return $this->sendError(null, $this->debug ? $exception->getMessage() : null);
+        }
+    }
 }
