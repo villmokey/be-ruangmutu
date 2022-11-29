@@ -353,6 +353,9 @@
                             <p class="text-2">
                                 {{$item->level === 1 ? 'Pembuat Dokumen' : ($item->level === 2 ? 'Penanggung Jawab 1' : 'Penanggung Jawab 2')}}
                             </p>
+                            <p class="text-2">
+                                {{$item->user && $item->user->position && $item->user->position->name ? $item->user->position->name : '-'}}
+                            </p>
                             @if ($item->signed === 1)
                                 @if ($item->user->signature)
                                     <img style="width: 100px; height: 100px;" src="{{ public_path('storage/'.$item->user->signature->file_path) }}" />

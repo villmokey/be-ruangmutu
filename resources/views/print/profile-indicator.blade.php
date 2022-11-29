@@ -158,10 +158,6 @@
             display: flex;
             align-items: center;
         }
-
-        #table-content tr td::nth-child(1) {
-            width: 50% !important;
-        }
     </style>
 </head>
 
@@ -213,17 +209,8 @@
                             </div>
                         </div>
                     </td>
-                    <td>
-                        <div class="wrapper">
-                            <p class="text-2">
-                                KRITERIA INKLUSI & EKSKLUSI
-                            </p>
-                            <div class="box">
-                                {{ $data->criteria }}
-                            </div>
-                        </div>
-                    </td>
                 </tr>
+               
                 <tr>
                     <td>
                         <div class="wrapper">
@@ -232,16 +219,6 @@
                             </p>
                             <div class="box">
                                 {{ $data->subProgram->name ?? '-' }}
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="wrapper">
-                            <p class="text-2">
-                                FORMULA PENGUKURAN
-                            </p>
-                            <div class="box">
-                                {{ $data->measurement_formula }}
                             </div>
                         </div>
                     </td>
@@ -257,6 +234,154 @@
                             </div>
                         </div>
                     </td>
+                </tr>
+                <tr>
+                    <td> <div class="wrapper">
+                        <p class="text-2">
+                                DASAR PEMILIHAN INDIKATOR
+                            </p>
+                            <div class="box">
+                                {{ $data->indicator_selection_based }}
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td>
+                        <div class="wrapper">
+                            <p class="text-2">
+                                TARGET CAPAIAN
+                            </p>
+                            <div class="box">
+                                {{ $data->achievement_target }}
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td>
+                        <div class="wrapper">
+                            <p class="text-2">
+                                TUJUAN
+                            </p>
+                            <div class="box">
+                                {{ $data->objective }}
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td>
+                        <div class="wrapper">
+                            <p class="text-2">
+                                DIMENSI MUTU
+                            </p>
+                            <div class="box">
+                                @foreach ($list_dimension as $item)
+                                    <label>
+                                        {{-- @foreach ( as $x) --}}
+                                            @if ($data->qualityDimension->where('name', $item['value'])->first())
+                                                <input id="{{ $item['value'] }}" checked type="checkbox"/> {{ $item['value'] }}
+                                            @else
+                                                <input id="{{ $item['value'] }}" type="checkbox"/> {{ $item['value'] }}
+                                            @endif
+                                        {{-- @endforeach --}}
+                                    </label>
+                                @endforeach
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                {{-- <tr>
+                    <td>
+                        <div class="wrapper">
+                            <p class="text-2">
+                                DIMENSI MUTU
+                            </p>
+                            <div class="box">
+                                @foreach ($list_dimension as $item)
+                                    <label>
+                                        @foreach ($data->qualityDimension->where('name', $item['value'])->first() as $x)
+                                            @if ($x->name === $item['value'])
+                                                <input id="{{ $item['value'] }}" checked type="checkbox"/> {{ $item['value'] }}
+                                            @else
+                                                <input id="{{ $item['value'] }}" type="checkbox"/> {{ $item['value'] }}
+                                            @endif
+                                        @endforeach
+                                    </label>
+                                @endforeach
+                            </div>
+                        </div>
+                    </td>
+                </tr> --}}
+                
+                <tr>
+                    <td>
+                        <div class="wrapper">
+                            <p class="text-2">
+                                POPULASI ATAU SAMPEL
+                            </p>
+                            <div class="box">
+                                {{ $data->population }}
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td>
+                        <div class="wrapper">
+                            <p class="text-2">
+                                NUMERATOR
+                            </p>
+                            <div class="box">
+                                {{ $data->numerator }}
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td>
+                        <div class="wrapper">
+                            <p class="text-2">
+                                DENOMINATOR
+                            </p>
+                            <div class="box">
+                                {{ $data->denominator }}
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+{{-- ll --}}
+                <tr>
+                    <td>
+                        <div class="wrapper">
+                            <p class="text-2">
+                                KRITERIA INKLUSI & EKSKLUSI
+                            </p>
+                            <div class="box">
+                                {{ $data->criteria }}
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="wrapper">
+                            <p class="text-2">
+                                FORMULA PENGUKURAN
+                            </p>
+                            <div class="box">
+                                {{ $data->measurement_formula }}
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
                     <td>
                         <div class="wrapper">
                             <p class="text-2">
@@ -269,15 +394,6 @@
                     </td>
                 </tr>
                 <tr>
-                    <td> <div class="wrapper">
-                        <p class="text-2">
-                                DASAR PEMILIHAN INDIKATOR
-                            </p>
-                            <div class="box">
-                                {{ $data->indicator_selection_based }}
-                            </div>
-                        </div>
-                    </td>
                     <td>
                         <div class="wrapper">
                             <p class="text-2">
@@ -293,16 +409,6 @@
                     <td>
                         <div class="wrapper">
                             <p class="text-2">
-                                TARGET CAPAIAN
-                            </p>
-                            <div class="box">
-                                {{ $data->achievement_target }}
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="wrapper">
-                            <p class="text-2">
                                 PENYAJIAN DATA
                             </p>
                             <div class="box">
@@ -315,16 +421,6 @@
                     <td>
                         <div class="wrapper">
                             <p class="text-2">
-                                TUJUAN
-                            </p>
-                            <div class="box">
-                                {{ $data->objective }}
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="wrapper">
-                            <p class="text-2">
                                 STATUS PENGUKURAN
                             </p>
                             <div class="box">
@@ -334,51 +430,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>
-                        <div class="wrapper">
-                            <p class="text-2">
-                                DIMENSI MUTU
-                            </p>
-                            <div class="box">
-                                @foreach ($list_dimension as $item)
-                                    <label>
-                                        @foreach ($data->qualityDimension as $x)
-                                            @if ($x->name === $item['value'])
-                                                <input id="{{ $item['value'] }}" checked type="checkbox"/> {{ $item['value'] }}
-                                            @else
-                                                <input id="{{ $item['value'] }}" type="checkbox"/> {{ $item['value'] }}
-                                            @endif
-                                        @endforeach
-                                    </label>
-                                @endforeach
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="wrapper">
-                            <p class="text-2">
-                                POPULASI ATAU SAMPEL
-                            </p>
-                            <div class="box">
-                                {{ $data->population }}
-                            </div>
-                        </div>
-                        <div class="wrapper">
-                            <p class="text-2">
-                                NUMERATOR
-                            </p>
-                            <div class="box">
-                                {{ $data->numerator }}
-                            </div>
-                        </div>
-                        <div class="wrapper">
-                            <p class="text-2">
-                                DENOMINATOR
-                            </p>
-                            <div class="box">
-                                {{ $data->denominator }}
-                            </div>
-                        </div>
+                    <td>    
                         <div class="wrapper">
                             <p class="text-2">
                                 DEFINISI OPERASIONAL
@@ -410,6 +462,8 @@
                             </div>
                         </div>
                     </td>
+                </tr>
+                <tr>
                     <td>
                         <div class="wrapper">
                             <p class="text-2">
@@ -418,13 +472,11 @@
                             <div class="box">
                                 @foreach ($list_frequently as $item)
                                     <label>
-                                        @foreach ($data->dataFrequency as $x)
-                                            @if ($x->name === $item['value'])
+                                            @if ($data->dataFrequency->where('name', $item['value'])->first())
                                                 <input id="{{ $item['value'] }}" checked type="checkbox"/> {{ $item['value'] }}
                                             @else
                                                 <input id="{{ $item['value'] }}" type="checkbox"/> {{ $item['value'] }}
                                             @endif
-                                        @endforeach
                                     </label>
                                 @endforeach
                             </div>
@@ -454,6 +506,8 @@
                             </div>
                         </div>
                     </td>
+                </tr>
+                <tr>
                     <td>
                         <div class="wrapper">
                             <p class="text-2">
@@ -462,13 +516,11 @@
                             <div class="box">
                                 @foreach ($list_reports as $item)
                                     <label>
-                                        @foreach ($data->analystPeriod as $x)
-                                            @if ($x->name === $item['value'])
+                                            @if ($data->analystPeriod->where('name', $item['value'])->first())
                                                 <input id="{{ $item['value'] }}" checked type="checkbox"/> {{ $item['value'] }}
                                             @else
                                                 <input id="{{ $item['value'] }}" type="checkbox"/> {{ $item['value'] }}
                                             @endif
-                                        @endforeach
                                     </label>
                                 @endforeach
                             </div>
@@ -493,8 +545,6 @@
                     <td>
                        <p class="p-generate">Digenerate Pada: {{date('d F Y H:m:s')}}</p>
                     </td>
-                    <td>
-                    </td>
                 </tr>
             </table>
             <table width='100%'>
@@ -505,6 +555,9 @@
                             {{-- <p class="text-2">Penanggung Jawab</p> --}}
                             <p class="text-2">
                                 {{$item->level === 1 ? 'Pembuat Dokumen' : ($item->level === 2 ? 'Penanggung Jawab 1' : 'Penanggung Jawab 2')}}
+                            </p>
+                            <p class="text-2">
+                                {{$item->user && $item->user->position && $item->user->position->name ? $item->user->position->name : '-'}}
                             </p>
                             @if ($item->signed === 1)
                                 @if ($item->user->signature)
