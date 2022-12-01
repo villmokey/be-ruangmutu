@@ -223,25 +223,25 @@ class DashboardService extends AppService
             foreach ($queries as $key => $value) {
                 if($key > 0) {
                     if($queries[$key-1]->month === $value->month) {
-                        $calculates[$key-1]['indicator_total']   += 1;
-                        $calculates[$key-1]['total']            += $value->month_target;
+                        $calculates[count($calculates) - 1]['indicator_total']   += 1;
+                        $calculates[count($calculates) - 1]['total']            += $value->month_target;
                     }else {
-                        array_push($calculates, [
+                        $calculates[] = [
                             'month'             => $value->month,
                             'month_number'      => $value->month_number,
                             'month_target'      => $value->month_target,
                             'total'             => $value->month_target,
                             'indicator_total'   => 1,
-                        ]);
+                        ];
                     }
                 } else {
-                    array_push($calculates, [
+                    $calculates[] = [
                         'month'             => $value->month,
                         'month_number'      => $value->month_number,
                         'month_target'      => $value->month_target,
                         'total'             => $value->month_target,
                         'indicator_total'   => 1,
-                    ]);
+                    ];
                 }
             }
         
@@ -289,40 +289,40 @@ class DashboardService extends AppService
 
         $calculates = [];
         $results = [];
-
+        
         if($queries && count($queries) > 0) {
             foreach ($queries as $key => $value) {
                 if($key > 0) {
                     if($queries[$key-1]->month === $value->month) {
-                        $calculates[$key-1]['indicator_total']   += 1;
-                        $calculates[$key-1]['total']             += $value->month_target;
+                        $calculates[count($calculates) - 1]['indicator_total']   += 1;
+                        $calculates[count($calculates) - 1]['total']             += $value->month_target;
                     }else {
-                        array_push($calculates, [
+                        $calculates[] = [
                             'month'             => $value->month,
                             'month_number'      => $value->month_number,
                             'month_target'      => $value->month_target,
                             'total'             => $value->month_target,
                             'indicator_total'   => 1,
-                        ]);
+                        ];
                     }
                 } else {
-                    array_push($calculates, [
+                    $calculates[] = [
                         'month'             => $value->month,
                         'month_number'      => $value->month_number,
                         'month_target'      => $value->month_target,
                         'total'             => $value->month_target,
                         'indicator_total'   => 1,
-                    ]);
+                    ];
                 }
             }
-        
+
             if($calculates && count($calculates) > 0) {
                 foreach ($calculates as $value) {
                     $results[] = [
                         'month'             => $value['month'],
                         'month_number'      => $value['month_number'],
                         'indicator_total'   => $value['indicator_total'],
-                        'average'           => $value['total'] / $value['indicator_total'],
+                        'average'           => ceil($value['total'] / $value['indicator_total']),
                     ];
                 }
             }
