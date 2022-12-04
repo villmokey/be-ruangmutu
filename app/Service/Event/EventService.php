@@ -33,54 +33,48 @@ class EventService extends AppService implements AppServiceInterface
         parent::__construct($model);
     }
 
-    public function getAll($search = null, $year = null, $month = null, $programs = [])
+    public function getAll($search = null, $year = null, $month = null, $programs = null)
     {
         $result =   $this->model->newQuery()->with(['relatedProgram.program', 'user', 'relatedFile.related.file', 'program', 'otherFiles'])
             ->when($search, function ($query, $search) {
                 return $query->where('name', 'like', '%' . $search . '%');
-            })
-            ->when($month, function ($query, $month) {
-                return $query->where('created_at','like', '%'.$month.'%');
             })
             ->when($programs, function ($query, $programs) {
                 $query->whereHas('relatedProgram.program', function($q) use ($programs) {
                     $q->whereIn('id', $programs);
                 });
             })
+            ->when($month, function ($query, $month) {
+                return $query->where('start_date','like', '%-'.$month.'-%');
+            })
             ->when($year, function ($query, $year) {
-                return $query->whereYear('created_at', $year);
-            });
-            
-            if($year && $month && $month != 'ALL') {
-                $result->where('created_at','like', $year . '-' .$month.'%');
-            }
-            
-            $result->orderBy('created_at', 'DESC');
+                return $query->where('start_date','like', $year.'-%');
+            })->orderBy('start_date', 'DESC')->get();
 
-        return $this->sendSuccess($result->get());
+        return $this->sendSuccess($result);
     }
 
-    public function getPaginated($search = null, $year = null, $perPage = 15, $page = null, $month = null, $programs = [])
+    public function getPaginated($search = null, $year = null, $perPage = 15, $page = null, $month = null, $programs = null)
     {
         $result = $this->model->newQuery()->with(['relatedProgram.program', 'user', 'relatedFile.related.file', 'program', 'otherFiles'])
                                             ->when($search, function ($query, $search) {
                                                 return $query->where('name', 'like', '%' . $search . '%');
-                                            })
-                                            ->when($month, function ($query, $month) {
-                                                return $query->where('created_at','like', '%'.$month.'%');
                                             })
                                             ->when($programs, function ($query, $programs) {
                                                 $query->whereHas('relatedProgram.program', function($q) use ($programs) {
                                                     $q->whereIn('id', $programs);
                                                 });
                                             })
-                                            ->when($year, function ($query, $year) {
-                                                return $query->whereYear('created_at', $year);
+                                            ->when($month, function ($query, $month) {
+                                                return $query->where('start_date','like', '%-'.$month.'-%');
                                             })
-                                            ->orderBy('created_at', 'DESC')
+                                            ->when($year, function ($query, $year) {
+                                                return $query->where('start_date','like', $year.'-%');
+                                            })
+                                            ->orderBy('start_date', 'DESC')
                                             ->paginate((int)$perPage, ['*'], null, $page);
 
-        return $this->sendSuccess($result);
+                                            return $this->sendSuccess($result);
     }
 
     public function getById($id)
