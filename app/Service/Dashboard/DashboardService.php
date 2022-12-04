@@ -351,8 +351,8 @@ class DashboardService extends AppService
             foreach ($queries as $key => $value) {
                 if($key > 0) {
                     if($queries[$key-1]->month === $value->month) {
-                        $calculates[$key-1]['done']              += $value->done;
-                        $calculates[$key-1]['pending']           += $value->pending;
+                        $calculates[count($calculates) - 1]['done']              += $value->done;
+                        $calculates[count($calculates) - 1]['pending']           += $value->pending;
                     }else {
                         array_push($calculates, [
                             'month'             => $value->month,

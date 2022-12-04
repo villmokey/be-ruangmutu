@@ -176,7 +176,15 @@ class CustomerComplaintService extends AppService implements AppServiceInterface
 
     public function delete($id)
     {
-        return $this->sendError(null, 'Forbidden', 403);
+        $read   =   $this->model->newQuery()->find($id);
+        try {
+            $read->delete();
+            \DB::commit(); // commit the changes
+            return $this->sendSuccess($read);
+        } catch (\Exception $exception) {
+            \DB::rollBack(); // rollback the changes
+            return $this->sendError(null, $this->debug ? $exception->getMessage() : null);
+        }
     }
 
     public function saveToDocuments($data, $flowDiagram)

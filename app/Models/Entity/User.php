@@ -20,6 +20,7 @@ class User extends AppAuthenticatable
      * @var array
      */
     protected $fillable = [
+        'id',
         'name',
         'email',
         'password',

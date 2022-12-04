@@ -78,13 +78,13 @@ class DocumentService extends AppService implements AppServiceInterface
                                 ->when($type, function ($query, $type) {
                                     return $query->where('document_type_id', $type);
                                 })
-                                ->when($hideSecret, function ($query) {
-                                    return $query->where('is_credential', 0);
-                                })
                                 ->when($programs, function ($query, $programs) {
                                     $query->whereHas('related_program.program', function($q) use ($programs) {
                                         $q->whereIn('id', $programs);
                                     });
+                                })
+                                ->when($hideSecret === "true", function ($query) {
+                                    return $query->where('is_credential', 0);
                                 })
                                 ->when($sort && $sortBy, function ($query) use ($sort, $sortBy) {
                                     $query->orderBy($sortBy, $sort);
