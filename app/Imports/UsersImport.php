@@ -20,24 +20,24 @@ class UsersImport implements ToModel, WithHeadingRow, WithStartRow,WithBatchInse
     public function model(array $row)
     {
         if(isset($row['nip'])) {
-            echo $row['email'];
-            $newUuid = \Str::uuid();
-            $user = new User([
-                'id'    => $newUuid,
-                'nip' => $row['nip'],
-                'name' => $row['nama_lengkap_dan_gelar'], 
-                'email' => $row['email'],
-                'password' => \Hash::make(substr($row['nip'], -6)) 
-            ]);
-
-            $roleId = \App\Models\Entity\Role::where('name', self::getRoleName($row['role_user']))->first()->id;
-
-            \DB::table('model_has_roles')->insert([
-                ['role_id' => $roleId, 'model_type' => 'App\Models\Entity\User', 'model_id' => $newUuid]
-            ]);
-
-            return $user;
-                        
+            if(User::where('email', $row['email'])->count() === 0) {
+                echo $row['email'];
+                $newUuid = \Str::uuid();
+                $user = new User([
+                    'id'    => $newUuid,
+                    'nip' => $row['nip'],
+                    'name' => $row['nama_lengkap_dan_gelar'], 
+                    'email' => $row['email'],
+                    'password' => \Hash::make(substr($row['nip'], -6)) 
+                ]);
+    
+                $roleId = \App\Models\Entity\Role::where('name', self::getRoleName($row['role_user']))->first()->id;
+    
+                \DB::table('model_has_roles')->insert([
+                    ['role_id' => $roleId, 'model_type' => 'App\Models\Entity\User', 'model_id' => $newUuid]
+                ]);
+                return $user;           
+            }
         }
     }
 
