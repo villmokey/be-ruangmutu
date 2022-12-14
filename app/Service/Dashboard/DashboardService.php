@@ -408,15 +408,20 @@ class DashboardService extends AppService
         return $this->sendSuccess($results);
     }
 
-    public function eventInfo()
+    public function eventInfo($year = null)
     {
         try {
-            $upcoming = \DB::select("SELECT * FROM events e WHERE start_date > CURDATE() limit 5");
-            $realized = \DB::select("SELECT * FROM events e WHERE start_date < CURDATE() AND is_realized = true limit 5");
+            if($year === date('Y')) {
+                $upcoming = \DB::select("SELECT * FROM events e WHERE start_date > CURDATE() limit 5");
+                $realized = \DB::select("SELECT * FROM events e WHERE start_date < CURDATE() AND is_realized = true limit 5");
+            }else {
+                $upcoming = \DB::select("SELECT * FROM events e WHERE YEAR(start_date) = $year limit 5");
+                $realized = \DB::select("SELECT * FROM events e WHERE YEAR(start_date) = $year AND is_realized = true limit 5");
+            }
     
             $result = [
-                'realized'  => $realized,
-                'upcoming'    => $upcoming
+                'realized'      => $realized,
+                'upcoming'      => $upcoming
             ];
     
             return $this->sendSuccess($result);
@@ -425,10 +430,12 @@ class DashboardService extends AppService
         }
     }
 
-    public function documentInfo()
+    public function documentInfo($year = null)
     {
         try {
-            $total = $this->documentTable->newQuery()->count();
+            $total = $this->documentTable->newQuery()->when($year, function($q) use ($year) {
+                $q->whereYear('created_at', $year);
+            })->count();
             $thisYear = $this->documentTable->newQuery()->whereYear('created_at', date('Y'))->count();
     
             $result = [

@@ -113,7 +113,8 @@ class DashboardController extends ApiController
     }
     
     public function eventInfo(Request $request) {
-        $result = $this->dashboardService->eventInfo($request);
+        $year = $this->request->query('year', date('Y'));
+        $result = $this->dashboardService->eventInfo($year);
 
         try {
             if ($result->success) {
@@ -127,7 +128,8 @@ class DashboardController extends ApiController
     }
 
     public function documentInfo(Request $request) {
-        $result = $this->dashboardService->documentInfo($request);
+        $year = $this->request->query('year', date('Y'));
+        $result = $this->dashboardService->documentInfo($year);
 
         try {
             if ($result->success) {

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>Standar Operasional</title>
     <style>
         body {
@@ -220,11 +220,8 @@
                 </td>
                 <td id="pageNumber">
                     <div>
-                        <script type="text/php">
-                            if (isset($pdf)) {
-                                $pdf->page_text(290, 807, "Halaman {PAGE_NUM} Dari {PAGE_COUNT}", null, 7, array(0, 0, 0));
-                            }
-                        </script>
+                        
+                        
                     </div>
                     <div class="text-bg " style="text-align: center;">
                         PUSKESMAS KECAMATAN GAMBIR
@@ -303,12 +300,12 @@
                             <div>
                                 <script type="text/php">
                                     if (isset($pdf)) {
-                                        $font = $fontMetrics->getFont("Arial", "bold");
+                                        $font = $fontMetrics->getFont("Arial");
+                                        $color = array(0,0,0);
                                         $pdf->page_text(300, 224, "{PAGE_NUM}", $font, 10, array(0, 0, 0));
-                                    }
-                                    if (isset($pdf)) {
-                                        $font = $fontMetrics->getFont("Arial", "bold");
                                         $pdf->page_text(400, 224, "{PAGE_COUNT}", $font, 10, array(0, 0, 0));
+                                        if($PAGE_NUM < 2) {
+                                        }
                                     }
                                 </script>
                             </div>    
@@ -325,7 +322,7 @@
                         </td>
                         <td class="box" colspan="5" style="text-align: center;">
                             <div>
-                                <img style="width: 120px;" src="data:image/png;base64, {!! $leaderSign !!}" />
+                                <img style="width: 120px; height: 50px;" src="data:image/png;base64, {!! $leaderSign !!}" />
                             </div>
                         </td>
                         <td class="box" style="text-align: center;">
@@ -487,6 +484,20 @@
                 </tr>
             </table>
         </div>
+        <script type="text/php">
+            if (isset($pdf)) {
+                $x = 290;
+                $y = 807;
+                $text = "Halaman {PAGE_NUM} Dari {PAGE_COUNT}";
+                $font = null;
+                $size = 7;
+                $color = array(0,0,0);
+                $word_space = 0.0;
+                $char_space = 0.0;
+                $angle = 0.0; 
+                $pdf->page_text($x, $y, $text, $font, $size, $color, $word_space, $char_space, $angle);
+            }                            
+        </script>
     </main>
 </body>
 
