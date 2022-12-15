@@ -40,6 +40,7 @@ class UserService extends AppService implements AppServiceInterface
                                 ->when($search, function ($query, $search) {
                                     return $query->where('name','like','%'.$search.'%');
                                 })
+                                ->orderBy('name', 'asc')
                                 ->get();
 
         return $this->sendSuccess($result);
