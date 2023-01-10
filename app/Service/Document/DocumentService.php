@@ -284,18 +284,31 @@ class DocumentService extends AppService implements AppServiceInterface
 
         try {
 
-            $document->name    =   $data['name'];
-            $document->slug    =   Str::slug($data['name']);
-            $document->document_type_id = $data['document_type_id'];
-            $document->program_id = $data['program_id'];
+            $document->name             =   $data['name'];
+            $document->slug             =   Str::slug($data['name']);
+            $document->publish_date     =   $data['publish_date'];
+            $document->document_number  =   $data['document_number'];
+            $document->document_type_id =   $data['document_type_id'];
+            $document->is_credential    =   $data['is_credential'];
+            
             $document->save();
 
             $this->documentRelated->newQuery()->where('document_id', $id)->delete();
             foreach($data['document_related'] as $doc) {
                 $this->documentRelated->newQuery()->create([
-                    'document_id'            =>  $doc->id,
+                    'document_id'            =>  $document->id,
                     'related_document_id'    =>  $doc,
                 ]);
+            }
+            
+            $this->programRelated->newQuery()->where('document_id', $id)->delete();
+            if (isset($data['program_related'])) {
+                foreach($data['program_related'] as $program) {
+                    $this->programRelated->newQuery()->create([
+                        'document_id'            =>  $document->id,
+                        'program_id'             =>  $program,
+                    ]);
+                }
             }
 
             \DB::commit(); // commit the changes
