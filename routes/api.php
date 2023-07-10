@@ -39,6 +39,9 @@ Route::get('/health/check', function () {
 });
 
 Route::middleware('api')->prefix('v1')->group(function(){
+    // TEST ENDPOINT
+    Route::get('/login', [AuthController::class, 'login']);
+    // END TEST
     // Auth
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);
