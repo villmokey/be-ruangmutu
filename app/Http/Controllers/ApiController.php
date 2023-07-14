@@ -25,7 +25,7 @@ class ApiController extends Controller
     {
         $data = $this->responseWrapper($data)->success($message, $statusCode);
 
-        return response()->header('Access-Control-Allow-Headers', '*')->header('Access-Control-Allow-Origin', 'origin')->header('Access-Control-Allow-Methods', '*')->json($data, $data->code);
+        return response()->header('Access-Control-Allow-Headers', '*')->header('Access-Control-Allow-Origin', 'https://ruangmutu-pkcgambir.jakarta.go.id')->header('Access-Control-Allow-Methods', '*')->json($data, $data->code);
     }
 
     /**
@@ -40,6 +40,6 @@ class ApiController extends Controller
     {
         $data = $this->responseWrapper($data)->error($message, $statusCode);
 
-        return response()->header('Access-Control-Allow-Headers', '*')->header('Access-Control-Allow-Origin', 'origin')->header('Access-Control-Allow-Methods', '*')->json($data, $data->code);
+        return response()->header('Access-Control-Allow-Headers', '*')->header('Access-Control-Allow-Origin', 'https://ruangmutu-pkcgambir.jakarta.go.id')->header('Access-Control-Allow-Methods', '*')->json($data, $data->code);
     }
 }
