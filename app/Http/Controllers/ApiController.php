@@ -25,7 +25,7 @@ class ApiController extends Controller
     {
         $data = $this->responseWrapper($data)->success($message, $statusCode);
 
-        return response()->json($data, $data->code);
+        return response()->header('Access-Control-Allow-Headers', '*')->header('Access-Control-Allow-Origin', '*')->header('Access-Control-Allow-Methods', '*')->json($data, $data->code);
     }
 
     /**
@@ -40,6 +40,6 @@ class ApiController extends Controller
     {
         $data = $this->responseWrapper($data)->error($message, $statusCode);
 
-        return response()->json($data, $data->code);
+        return response()->header('Access-Control-Allow-Headers', '*')->header('Access-Control-Allow-Origin', '*')->header('Access-Control-Allow-Methods', '*')->json($data, $data->code);
     }
 }
